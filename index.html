@@ -151,7 +151,7 @@
             font-size: 10px; position: absolute; left: -27px; width: 20px; height: 20px; line-height: 1.3; text-align: center; top: 5px; z-index: 1;
         }
         .timeline-time { font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
-        .timeline-action { margin-bottom: 6px; white-space: pre-wrap; } /* Allow wrapping for long text */
+        .timeline-action { margin-bottom: 6px; white-space: pre-wrap; } 
         .timeline-user { font-size: 0.9em; color: var(--text-light); }
 
 
@@ -276,7 +276,6 @@
             { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.'} ]},
             { id: 'JC-0051', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Review Cloud Firewall Rules for Audit Finding', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:00', closedTime: null, slaSuccess: false, description: 'Review and update firewall rules based on security audit findings.', timeline: [ { date: '2025-09-29 10:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to address firewall rules.'} ]},
             { id: 'CU-085', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Schedule Remediation Tasks for Audit', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'clickup', relationship: 'Child', date: '2025-09-29 11:00', closedTime: null, slaSuccess: false, description: 'Create and assign tasks in ClickUp for all remediation activities.', timeline: [ { date: '2025-09-29 11:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to manage remediation tasks.'} ]},
-            // --- UPDATED TICKET FROM USER ---
             { id: 'GT-1027', sid: '586225', cid: '586225', subject: 'Website access issue (cdd.go.th) on FTTX backup link', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'gt4u', relationship: 'Parent', date: '2025-02-21 10:12', closedTime: null, slaSuccess: false, description: 'Investigating a recurring issue where branch offices cannot access websites under the cdd.go.th domain whenever the primary connection fails over to the FTTX backup link. This issue affects all branches and requires a solution redesign.', 
                 timeline: [
                     { date: '2025-06-04 14:22', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 14.15 น.ประชุมภายในกับ presale ตี้,2 Tier คุณเทพ,NOC แบงค์ ทางตี้แจ้งว่า ปัญหามี 2 เรื่องคือ 1.ศพจ เปิดเว็บไม่ได้บางเครื่องให้แนะนำลค.ให้เช็ค DNS ว่าเป็นของกรมหรือยัง,ทำการ update chrome หรือ clear chache 2.ศพช หรือ ศูนย์เรียนรู้ เปิดเว็บกรมฯไม่ได้หาก FTTX down การแก้ไขคือ ให้แก้ dns เป็นของกรมฯเท่านั้น และเร่งแก้ไข FTTX ส่่วนระยะยาวจะมีการ redesign ใหม่ รอทดสอบก่อน//ประชุมอีกครั้งเดือนกย.' },
@@ -304,7 +303,7 @@
         const relationshipData = [
             { parent: masterTicketData[0], children: [ masterTicketData[7], masterTicketData[13], masterTicketData[17] ] },
             { parent: masterTicketData[12], children: [ masterTicketData[22], masterTicketData[23] ] }, 
-            { parent: masterTicketData[24], children: [ masterTicketData[26] ] } 
+            { parent: masterTicketData[24], children: [ masterTicketData[25] ] } // CORRECTED INDEX
         ];
 
         // --- SCRIPT LOGIC ---
