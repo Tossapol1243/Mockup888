@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Ticket Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #34d399;
+            --secondary-color: #6b7280;
+            --accent-gold: #fbbf24;
+            --background-color: #f9fafb;
+            --background-light: #ffffff;
+            --card-background: #ffffff;
+            --border-color: #e5e7eb;
+            --text-dark: #111827;
+            --text-medium: #6b7280;
+            --text-light: #9ca3af;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08);
+            --gradient-green: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            --gradient-white: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #f9fafb 100%);
+            color: var(--text-medium);
+            min-height: 100vh;
+            padding: 40px 20px 80px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.08), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.08), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(167, 243, 208, 0.05), transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px;
+            box-shadow: 
+                0 0 0 1px rgba(16, 185, 129, 0.08),
+                0 25px 50px -12px rgba(0, 0, 0, 0.08),
+                0 0 80px rgba(16, 185, 129, 0.06);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(229, 231, 235, 0.8);
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, 
+                #10b981 0%, 
+                #34d399 25%, 
+                #6ee7b7 50%, 
+                #34d399 75%, 
+                #10b981 100%);
+            background-size: 200% 100%;
+            animation: shimmer 4s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+            animation: rotate 25s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .header h1 {
+            font-size: 3.2em;
+            font-weight: 900;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #047857 0%, #10b981 50%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.15));
+        }
+        
+        .header h1 i {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.2));
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            font-weight: 500;
+            color: var(--text-medium);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.98) 100%);
+            padding: 0 30px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 22px 28px;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
+        }
+        
+        .tab-btn:hover::before {
+            width: 80%;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-color);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%);
+        }
+        
+        .tab-btn.active::before {
+            width: 100%;
+        }
+        
+        .tab-btn i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .tab-btn:hover i {
+            transform: scale(1.15);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 50px;
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .filter-controls-container {
+            margin-bottom: 40px;
+            padding: 36px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.98) 100%);
+            border: 1px solid var(--border-color);
+            box-shadow: 
+                var(--shadow-lg),
+                0 0 0 1px rgba(16, 185, 129, 0.05) inset;
+            backdrop-filter: blur(10px);
+        }
+        
+        .filter-inputs {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-inputs input,
+        .filter-inputs select,
+        .filter-inputs button {
+            padding: 16px 24px;
+            font-size: 1em;
+            min-height: 56px;
+            border-radius: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .filter-inputs input[type="text"],
+        .filter-inputs select,
+        .filter-inputs input[type="date"] {
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+        }
+        
+        .filter-inputs input:focus,
+        .filter-inputs select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .filter-inputs button {
+            border: none;
+            color: white;
+            cursor: pointer;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-inputs button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .filter-inputs button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .filter-inputs button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+        }
+        
+        .filter-inputs button:active {
+            transform: translateY(-1px);
+        }
+        
+        .stats-grid,
+        .pending-apps-grid,
+        .circuit-apps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+            padding: 32px;
+            border-radius: 20px;
+            color: var(--text-dark);
+            box-shadow: 
+                var(--shadow-md),
+                0 0 0 1px rgba(229, 231, 235, 0.8);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 5px solid currentColor;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, currentColor 0%, transparent 70%);
+            opacity: 0.05;
+            transform: translate(40%, -40%);
+            transition: all 0.4s ease;
+        }
+        
+        .stat-card:hover::before {
+            transform: translate(30%, -30%) scale(1.3);
+            opacity: 0.08;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 30px -10px rgba(0, 0, 0, 0.08),
+                0 0 0 1px currentColor;
+        }
+        
+        .stat-card.total { border-left-color: #06b6d4; color: #06b6d4; }
+        .stat-card.open { border-left-color: #f59e0b; color: #f59e0b; }
+        .stat-card.progress { border-left-color: #8b5cf6; color: #8b5cf6; }
+        .stat-card.closed { border-left-color: #10b981; color: #10b981; }
+        
+        .stat-card .stat-label {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 3em;
+            font-weight: 900;
+            color: currentColor;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pending-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+            border: 1px solid var(--border-color);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-md);
+            padding: 32px;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pending-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            transform: translate(30%, -30%);
+            transition: transform 0.4s ease;
+        }
+        
+        .pending-card:hover::after {
+            transform: translate(20%, -20%) scale(1.4);
+        }
+        
+        .pending-card .stat-value {
+            font-size: 3em;
+            font-weight: 900;
+        }
+        
+        .pending-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 30px -10px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(16, 185, 129, 0.2);
+        }
+        
+        .circuit-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .circuit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.03) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .circuit-card:hover::before {
+            opacity: 1;
+        }
+        
+        .circuit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 30px -10px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(16, 185, 129, 0.15);
+        }
+        
+        .circuit-card-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 28px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .circuit-card-icon {
+            font-size: 2.2em;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+        }
+        
+        .circuit-card-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .circuit-total {
+            font-size: 3em;
+            font-weight: 900;
+            margin-left: auto;
+        }
+        
+        .circuit-card.gt4u .circuit-card-icon,
+        .circuit-card.gt4u .circuit-total { color: #10b981; }
+        .circuit-card.jiracloud .circuit-card-icon,
+        .circuit-card.jiracloud .circuit-total { color: #f59e0b; }
+        .circuit-card.jiracbe .circuit-card-icon,
+        .circuit-card.jiracbe .circuit-total { color: #06b6d4; }
+        .circuit-card.clickup .circuit-card-icon,
+        .circuit-card.clickup .circuit-total { color: #8b5cf6; }
+        
+        .circuit-service-list {
+            font-size: 0.98em;
+            padding: 24px 28px;
+            list-style: none;
+        }
+        
+        .circuit-service-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+        }
+        
+        .circuit-service-list li:hover {
+            padding-left: 10px;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
+        }
+        
+        .circuit-service-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .service-count-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+        
+        .chart-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+            padding: 36px;
+            border-radius: 20px;
+            box-shadow: 
+                var(--shadow-md),
+                0 0 0 1px rgba(229, 231, 235, 0.8);
+            border: 1px solid var(--border-color);
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            box-shadow: 
+                var(--shadow-xl),
+                0 0 0 1px rgba(16, 185, 129, 0.2);
+        }
+        
+        .chart-title {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-bottom: 28px;
+            font-size: 1.25em;
+        }
+        
+        .chart-title i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+        
+        .app-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+        
+        .tickets-table-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 40px;
+            overflow-x: auto;
+            border-radius: 20px;
+        }
+        
+        .section-title {
+            color: var(--text-dark);
+            margin-bottom: 32px;
+            padding-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1.6em;
+            font-weight: 800;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+            border-radius: 3px;
+        }
+        
+        .section-title i {
+            color: var(--primary-color);
+            font-size: 1.1em;
+            filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.2));
+        }
+        
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1em;
+        }
+        
+        .tickets-table thead {
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.6) 0%, rgba(209, 250, 229, 0.4) 100%);
+            color: var(--text-dark);
+        }
+        
+        .tickets-table th,
+        .tickets-table td {
+            padding: 22px;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tickets-table th {
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            color: var(--primary-dark);
+        }
+        
+        .tickets-table tbody tr {
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .tickets-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        .clickable-row:hover {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.06) 0%, transparent 100%);
+            cursor: pointer;
+        }
+        
+        .clickable-row.active-row {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 100%);
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .tickets-table tbody tr.nested-child-row {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
+            border-left: 5px solid #8b5cf6;
+        }
+        
+        .tickets-table tbody tr.nested-child-row:hover {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
+        }
+        
+        .status-badge,
+        .priority-badge,
+        .servicetype-badge {
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: capitalize;
+            white-space: nowrap;
+            display: inline-block;
+            border: 1px solid currentColor;
+        }
+        
+        .status-badge.status-open {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border-color: #fbbf24;
+        }
+        .status-badge.status-progress {
+            background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+            color: #6b21a8;
+            border-color: #a78bfa;
+        }
+        .status-badge.status-closed {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-color: #34d399;
+        }
+        
+        .priority-badge.priority-high {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border-color: #f87171;
+        }
+        .priority-badge.priority-medium {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e3a8a;
+            border-color: #60a5fa;
+        }
+        .priority-badge.priority-low {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-color: #34d399;
+        }
+        
+        .servicetype-badge {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #3730a3;
+            border-color: #818cf8;
+        }
+        
+        .sub-text {
+            font-size: 0.85em;
+            color: var(--text-light);
+            display: block;
+            margin-top: 6px;
+        }
+        
+        .detail-row td {
+            padding: 0 !important;
+        }
+        
+        .ticket-details-container {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 48px;
+        }
+        
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .details-header h4 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin: 0;
+            font-weight: 900;
+        }
+        
+        .details-header button {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .details-header button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .detail-block {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .detail-block:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        
+        .detail-label {
+            display: block;
+            color: var(--text-light);
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+        
+        .detail-value {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: var(--text-dark);
+            word-wrap: break-word;
+        }
+        
+        .detail-value .status-badge,
+        .detail-value .priority-badge {
+            font-size: 1em;
+            padding: 8px 20px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .relationship-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+            font-size: 1em;
+        }
+        
+        .relationship-list li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            margin: 10px 0;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.06) 0%, transparent 100%);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.2s ease;
+        }
+        
+        .relationship-list li:hover {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+            transform: translateX(6px);
+        }
+        
+        .timeline-container {
+            position: relative;
+            padding-left: 36px;
+            margin-top: 24px;
+        }
+        
+        .timeline-title {
+            font-size: 1.4em;
+            margin-bottom: 28px;
+            color: var(--text-dark);
+            font-weight: 800;
+        }
+        
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 20px;
+            bottom: 20px;
+            width: 3px;
+            background: linear-gradient(180deg, #10b981 0%, #34d399 100%);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(10px);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .timeline-item::before {
+            content: "\f111";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: white;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: 4px solid white;
+            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(16, 185, 129, 0.3);
+            border-radius: 50%;
+            font-size: 11px;
+            position: absolute;
+            left: -40px;
+            width: 28px;
+            height: 28px;
+            line-height: 20px;
+            text-align: center;
+            top: 26px;
+            z-index: 2;
+        }
+        
+        .timeline-time {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .timeline-action {
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+        
+        .timeline-user {
+            font-size: 0.9em;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .timeline-user i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .key-metric-card-wrapper {
+            grid-column: span 2;
+        }
+        
+        .key-metric-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 48px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 
+                0 20px 40px -15px rgba(16, 185, 129, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .key-metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .key-metric-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .key-metric-card .metric-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+        
+        .key-metric-card .metric-value {
+            font-size: 4.2em;
+            font-weight: 900;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .key-metric-card .metric-unit {
+            font-size: 1.5em;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-left: 14px;
+        }
+        
+        .key-metric-card .metric-icon {
+            font-size: 5.5em;
+            opacity: 0.15;
+        }
+        
+        .clickable-child-id {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.08) 100%);
+            transition: all 0.2s ease;
+            display: inline-block;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .clickable-child-id:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.15) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 48px 20px;
+            margin-top: 60px;
+            color: var(--text-medium);
+            font-size: 0.95em;
+            font-weight: 500;
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            border-radius: 10px;
+            border: 2px solid #f3f4f6;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-grid,
+            .pending-apps-grid,
+            .circuit-apps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .app-charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid,
+            .pending-apps-grid,
+            .circuit-apps-grid,
+            .app-charts-grid,
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2.2em;
+            }
+            .tab-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-ticket-alt"></i> Unified Ticket Dashboard</h1>
+            <p>Ticket monitoring and analysis across all applications</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'dashboard-search')"><i class="fas fa-search"></i> Dashboard</button>
+            <button class="tab-btn" onclick="openTab(event, 'relationships')"><i class="fas fa-project-diagram"></i> Parent-Child Relationship</button>
+            <button class="tab-btn" onclick="openTab(event, 'gt4u')">GT4U</button>
+            <button class="tab-btn" onclick="openTab(event, 'jira-cloud')">JIRA (CLOUD HM)</button>
+            <button class="tab-btn" onclick="openTab(event, 'jira-cbe')">JIRA (CBE)</button>
+            <button class="tab-btn" onclick="openTab(event, 'clickup')">ClickUp (BNG)</button>
+        </div>
+
+        <div id="dashboard-search" class="tab-content active">
+            <h2 class="section-title" id="circuit-summary-title" style="margin-top: 0px; display: none;"><i class="fas fa-plug"></i> Circuit & Service Summary for <span id="current-customer-name"></span></h2>
+            <div id="circuit-summary-section" class="circuit-apps-grid" style="display: none;"></div>
+            <div class="filter-controls-container">
+                <h2 class="section-title"><i class="fas fa-search"></i> Universal Ticket Explorer</h2>
+                <div class="filter-inputs">
+                    <input type="text" id="universalSearch" placeholder="ค้นหาด้วย ID, Subject, หรือชื่อบริษัท" style="flex-grow: 4;"/>
+                    <select id="appFilter" style="flex-grow: 2;"><option value="all">ทุก Application</option><option value="gt4u">GT4U</option><option value="jira-cloud">JIRA (CLOUD HM)</option><option value="jira-cbe">JIRA (CBE)</option><option value="clickup">ClickUp (BNG)</option></select>
+                    <input type="date" id="startDate" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
+                    <input type="date" id="endDate" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
+                    <button id="resetAllTicketsBtn" onclick="resetDashboard()" style="flex-grow: 0; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                    <button id="searchAllTicketsBtn" onclick="filterAllTickets()" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
+                </div>
+            </div>
+            <div class="master-ticket-table-container" style="display: none;">
+                <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-list-ul"></i> ผลลัพธ์ Ticket ที่ค้นหา</h2>
+                <table class="tickets-table master-ticket-table">
+                    <thead><tr><th>Ticket ID</th><th>Subject</th><th>Company Name</th><th>Application</th><th>Service Type</th><th>Status</th><th>Priority</th><th>ความสัมพันธ์</th></tr></thead>
+                    <tbody id="universalTicketTableBody"></tbody>
+                </table>
+            </div>
+            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-tachometer-alt"></i> Overall Ticket Summary</h2>
+            <div id="overall-stats-content" class="stats-grid"></div>
+            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-hourglass-half"></i> Pending Tickets Summary (Click to view App)</h2>
+            <div class="pending-apps-grid" id="pending-ticket-summary"></div>
+            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-chart-area"></i> Application Performance Charts</h2>
+            <div class="app-charts-grid">
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-ticket-alt"></i> Ticket Count by Application</h2><div class="chart-wrapper"><canvas id="ticketCountChart"></canvas></div></div>
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-check-circle"></i> Overall SLA Success Rate</h2><div class="chart-wrapper"><canvas id="overallSlaPieChart"></canvas></div></div>
+            </div>
+            <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-percent"></i> SLA Success Rate Comparison</h2>
+            <div id="sla-comparison-section" style="grid-template-columns: 1fr;"></div>
+            <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-project-diagram"></i> Overall Relationship Summary</h2>
+            <div class="app-charts-grid" id="dashboard-relationship-charts" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="dashboardParentTicketChart"></canvas></div></div>
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="dashboardChildDistributionChart"></canvas></div></div>
+            </div>
+        </div>
+
+        <div id="relationships" class="tab-content"></div>
+        <div id="gt4u" class="tab-content"></div>
+        <div id="jira-cloud" class="tab-content"></div>
+        <div id="jira-cbe" class="tab-content"></div>
+        <div id="clickup" class="tab-content"></div>
+    </div>
+
+    <div class="footer">
+        &copy; 2025 Unified Ticket Dashboard. All Rights Reserved. | Data Simulated for Demonstration Purposes.
+    </div>
+
+    <script>
+        // --- SCRIPT START ---
+        let chartInstances = {};
+        let relationshipMap = {};
+
+        // --- THEME COLORS ---
+        const chartColors = { gt4u: '#10b981', jiracloud: '#f59e0b', jiracbe: '#06b6d4', clickup: '#8b5cf6', open: '#f59e0b', progress: '#8b5cf6', closed: '#10b981', slaSuccess: '#10b981', slaFailure: '#ef4444' };
+        const pendingColors = { gt4u: '#10b981', 'jira-cloud': '#f59e0b', 'jira-cbe': '#06b6d4', clickup: '#8b5cf6' };
+        const applicationNames = { 'gt4u': 'GT4U (Connectivity)', 'jira-cloud': 'JIRA (CLOUD HM)', 'jira-cbe': 'JIRA (CBE)', 'clickup': 'ClickUp (BNG)' };
+        const applicationIcons = { 'gt4u': 'fas fa-globe', 'jira-cloud': 'fas fa-cloud', 'jira-cbe': 'fas fa-shield-alt', 'clickup': 'fas fa-lightbulb' };
+
+
+        // --- DATA ---
+        const circuitSummaryData = { 'Customer A': { 'gt4u': { appName: 'Connectivity', total: 10, service: { 'MPLS': 4, 'Internet': 5, 'VAS': 1 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 5, service: { 'Cloud VM': 3, 'Fortigate': 2 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 3, service: { 'Firewall Audit': 2, 'Vulnerability Scan': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 4, service: { 'ERP Module A': 3, 'App Integration': 1 } } }, 'Customer B': { 'gt4u': { appName: 'Connectivity', total: 5, service: { 'MPLS': 1, 'Internet': 4 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 2, service: { 'Cloud VM': 1, 'Load Balancer': 1 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 1, service: { 'WAF Deployment': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 6, service: { 'CRM Customization': 4, 'Training': 2 } } }, 'Customer C': { 'gt4u': { appName: 'Connectivity', total: 3, service: { 'MPLS': 1, 'Internet': 1, 'VAS': 1 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 3, service: { 'Cloud VM': 1, 'Fortigate': 1, 'Load Balancer': 1 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 5, service: { 'Firewall Audit': 3, 'WAF Deployment': 1, 'Vulnerability Scan': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 2, service: { 'ERP Module A': 1, 'App Integration': 1 } } } };
+        const masterTicketData = [
+            { id: 'GT-0987', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Major Service Outage - East Region', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Parent', date: '2025-09-29 09:00', closedTime: null, slaSuccess: false, description: 'Service went down for 4 hours.', timeline: [ { date: '2025-09-29 11:30', user: 'N. T.', action: 'Initial investigation points to a core router failure.'}, { date: '2025-09-29 09:15', user: 'S. J.', action: 'Assigned ticket to Network Team. Status changed to In Progress.'}, { date: '2025-09-29 09:05', user: 'Monitoring System', action: 'Ticket automatically created from alert.'} ]},
+            { id: 'GT-1011', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Schema Update for new DB version', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Request for DB schema update.', timeline: [ { date: '2025-10-01 10:20', user: 'A. P.', action: 'Request acknowledged. Pending developer availability.'}, { date: '2025-10-01 10:00', user: 'Customer B Portal', action: 'Ticket created by customer.'} ]},
+            { id: 'GT-1012', sid: 'SID-23948105', cid: 'CID-234512', subject: 'API connection refactor', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 14:00', closedTime: null, slaSuccess: false, description: 'Refactoring of connection layer.', timeline: [ { date: '2025-10-01 14:00', user: 'Internal Request', action: 'Ticket opened for scheduled maintenance.'} ]},
+            { id: 'GT-1018', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Critical Vulnerability Fix (GT4U)', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'gt4u', relationship: 'Child', date: '2025-09-30 08:00', closedTime: '2025-09-30 12:30', slaSuccess: true, description: 'Patch deployed successfully.', timeline: [ { date: '2025-09-30 12:30', user: 'M. H.', action: 'Patch deployed and verified. Ticket closed.'}, { date: '2025-09-30 08:00', user: 'Security Team', action: 'Child ticket created to track GT4U-specific patch.'} ]},
+            { id: 'GT-1024', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Performance Degradation', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: '2025-10-02 10:00', slaSuccess: false, description: 'Identified memory leak. Fixed by rolling back.', timeline: [ { date: '2025-10-02 10:00', user: 'S. J.', action: 'Rollback complete, performance restored. Ticket closed.'}, { date: '2025-10-02 09:45', user: 'S. J.', action: 'Root cause found. Preparing rollback.'}, { date: '2025-10-01 10:00', user: 'Customer A', action: 'Reported slow performance.'} ]},
+            { id: 'GT-1025', sid: 'SID-11223344', cid: 'CID-998877', subject: 'Database Connection Timeout', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer D', application: 'gt4u', relationship: 'Standard', date: '2025-10-02 16:00', closedTime: '2025-10-03 09:00', slaSuccess: true, description: 'Increased connection pool size.', timeline: [ { date: '2025-10-03 09:00', user: 'DevOps Team', action: 'Configuration updated. Closing ticket.'} ]},
+            { id: 'GT-1026', sid: 'SID-55667788', cid: 'CID-112233', subject: 'New Customer Onboarding: Project Alpha', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer E', application: 'gt4u', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: null, slaSuccess: false, description: 'Initial setup of network infrastructure.', timeline: [ { date: '2025-10-03 11:00', user: 'Sales Team', action: 'New onboarding ticket created.'} ]},
+            { id: 'JC-0045', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Cloud VM CPU Spike', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:30', closedTime: null, slaSuccess: false, description: 'Investigating potential rogue process.', timeline: [ { date: '2025-09-29 10:45', user: 'Cloud Team', action: 'Starting diagnostics on the affected VM instance.'}, { date: '2025-09-29 10:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to address Cloud VM issue.'} ]},
+            { id: 'JC-0046', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Fortigate Policy Review', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-01 15:00', closedTime: '2025-10-02 11:00', slaSuccess: true, description: 'Policy review completed.', timeline: [ { date: '2025-10-02 11:00', user: 'P. L.', action: 'Rules applied and verified. Ticket Closed.'} ]},
+            { id: 'JC-0047', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Load Balancer Configuration Change', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 09:00', closedTime: null, slaSuccess: false, description: 'Request to modify LB session settings.', timeline: [ { date: '2025-10-02 09:00', user: 'Customer B', action: 'New request submitted.'} ]},
+            { id: 'JC-0048', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Instance Creation Request', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 14:00', closedTime: '2025-10-03 14:00', slaSuccess: false, description: 'New VM created for testing environment.', timeline: [ { date: '2025-10-03 14:00', user: 'Automation Script', action: 'VM created and details sent to customer. Ticket Closed.'} ]},
+            { id: 'JC-0050', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Cloud Service Monitoring Setup', status: 'progress', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-03 08:00', closedTime: null, slaSuccess: false, description: 'Implementing new Azure Monitor dashboards.', timeline: [ { date: '2025-10-03 08:00', user: 'Project Manager', action: 'Task created for monitoring setup.'} ]},
+            { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Parent', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Annual security audit in progress. Findings require remediation across multiple teams.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.'} ]}, 
+            { id: 'JCB-011', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Firewall Rule Adjustment', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cbe', relationship: 'Child', date: '2025-09-30 11:00', closedTime: '2025-10-01 11:00', slaSuccess: true, description: 'Opened port 8080 for temporary access.', timeline: [ { date: '2025-10-01 11:00', user: 'CBE Team', action: 'Rules implemented and tested. Ticket Closed.'}, { date: '2025-09-30 11:00', user: 'Parent Ticket GT-0987', action: 'Child ticket created to adjust firewall rules.'} ]},
+            { id: 'JCB-012', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Vulnerability Scan Report', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Generated weekly vulnerability scan report.', timeline: [ { date: '2025-10-01 10:00', user: 'System', action: 'Report generated and attached.'} ]},
+            { id: 'JCB-013', sid: 'SID-23948105', cid: 'CID-234512', subject: 'New WAF Policy Implementation', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-02 12:00', closedTime: '2025-10-03 12:00', slaSuccess: true, description: 'Deployed new custom WAF rule.', timeline: [ { date: '2025-10-03 12:00', user: 'CBE Team', action: 'Policy deployed. Ticket Closed.'} ]},
+            { id: 'JCB-014', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Security Policy Update', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-03 14:00', closedTime: null, slaSuccess: false, description: 'Policy requires update.', timeline: [ { date: '2025-10-03 14:00', user: 'Compliance Officer', action: 'Ticket opened for policy review.'} ]},
+            { id: 'CU-080', sid: 'SID-83749201', cid: 'CID-583921', subject: 'ERP Module A Bug Fix', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'clickup', relationship: 'Child', date: '2025-09-30 09:30', closedTime: null, slaSuccess: false, description: 'Debugging in progress.', timeline: [ { date: '2025-09-30 10:00', user: 'Dev Team', action: 'Bug acknowledged. Investigation started.'}, { date: '2025-09-30 09:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to track ERP bug.'} ]},
+            { id: 'CU-081', sid: 'SID-23948105', cid: 'CID-234512', subject: 'CRM Dashboard Customization', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-01 13:00', closedTime: '2025-10-02 13:00', slaSuccess: true, description: 'Custom sales pipeline view implemented.', timeline: [ { date: '2025-10-02 13:00', user: 'BNG Consultant', action: 'Customization complete. Ticket Closed.'} ]},
+            { id: 'CU-082', sid: 'SID-83749201', cid: 'CID-583921', subject: 'App Integration Testing', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'clickup', relationship: 'Standard', date: '2025-10-02 10:00', closedTime: null, slaSuccess: false, description: 'Testing phase for new integration.', timeline: [ { date: '2025-10-02 10:00', user: 'QA Team', action: 'Testing task created.'} ]},
+            { id: 'CU-083', sid: 'SID-23948105', cid: 'CID-234512', subject: 'User Training Session Schedule', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: '2025-10-03 15:00', slaSuccess: true, description: 'Training scheduled for new module.', timeline: [ { date: '2025-10-03 15:00', user: 'Training Coordinator', action: 'Session scheduled. Ticket Closed.'} ]},
+            { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.'} ]},
+            { id: 'JC-0051', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Review Cloud Firewall Rules for Audit Finding', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:00', closedTime: null, slaSuccess: false, description: 'Review and update firewall rules based on security audit findings.', timeline: [ { date: '2025-09-29 10:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to address firewall rules.'} ]},
+            { id: 'CU-085', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Schedule Remediation Tasks for Audit', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'clickup', relationship: 'Child', date: '2025-09-29 11:00', closedTime: null, slaSuccess: false, description: 'Create and assign tasks in ClickUp for all remediation activities.', timeline: [ { date: '2025-09-29 11:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to manage remediation tasks.'} ]},
+            { id: 'GT-1027', sid: '586225', cid: '586225', subject: 'Website access issue (cdd.go.th) on FTTX backup link', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'gt4u', relationship: 'Parent', date: '2025-02-21 10:12', closedTime: null, slaSuccess: false, description: 'Investigating a recurring issue where branch offices cannot access websites under the cdd.go.th domain whenever the primary connection fails over to the FTTX backup link. This issue affects all branches and requires a solution redesign.', 
+                timeline: [
+                    { date: '2025-06-04 14:22:56', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 14.15 น.ประชุม ภายในกับ presale ตี้,2 Tier คุณเทพ,NOC แบงค์ ทางตี้แจ้งว่า ปัญหามี 2 เรื่องคือ 1.ศพจ เปิดเว็บไม่ได้บางเครื่องให้แนะนำลค.ให้เช็ค DNS ว่าเป็นของกรมหรือยัง,ทำการ update chrome หรือ clear chache 2.ศพช หรือ ศูนย์เรียนรู้ เปิดเว็บกรมฯไม่ได้หา FTTX down การแก้ไขคือ ให้แก้ dns เป็นของกรมฯเท่านั้น และเร่งแก้ไข FTTX ส่่วนระยะยาวจะมีการ redesign ใหม่ รอทดสอบก่อน//ประชุมอีกครั้งเดือนกย.' },
+                    { date: '2025-05-28 14:20:05', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 2:17 PM ขอเชิญประชุม ภายในเพื่อหาแนวทางการแก้ไขปัญหาสาขาไม่สามารถใช้งาน service ภายใต้ domain:cdd.go.th ได้ เมื่อเกิดเหตุ Link Backup FTTX down สามารถเข้าร่วมประชุมตาม Link ด้านล่างครับ (from theptai_s@xx.xx)' },
+                    { date: '2025-05-28 14:18:48', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 1:54 PM วันพุธที่ 4 ช่วงบ่าย ได้ครับ (from theptai_s)' },
+                    { date: '2025-05-28 14:18:06', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 10:24 AM ขอเป็น วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น. ค่ะ (from napat_c@xx.xx)' },
+                    { date: '2025-05-27 18:19:13', user: 'thitipan_t', action: 'Mail Activity: Tuesday, May 27, 2025 6:13 PM เรียนทุกท่าน ขอนัดคุยภายในเพื่อหาข้อสรุป รบกวนทุกท่านแจ้ง slot ที่สะดวกให้ด้วยครับ (ใช้เวลาประมาณ 2 ชั่วโมง) วันศุกร์ที่ 30/5/2025 ช่วงเช้า 09:00-12:00 น. วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น.' },
+                    { date: '2025-05-26 10:01:02', user: 'chattip_k', action: 'Mail Activity: จ. 26/5/2568 9:58 Dear คุณคำ ผ่านมา 2 เดือนแล้วครับ ทำไมยังวนกลับมาที่เดิมครับ ควรหาทางแก้ไขได้แล้วนะครับ (from sorapong_l@xx.xx)' },
+                    { date: '2025-05-26 09:23:23', user: 'thitipan_t', action: 'Mail Activity: Monday, May 26, 2025 9:22 AM เรียน ตี้ครับ สำเนาเรียนคุณเทพ ตามที่ประชุมเมื่อ 14/3/2025 ซึ่งยังไม่ได้ข้อสรุป รบกวนปรึกษาแนวทางการแก้ไขด้วยครับ หรือหากได้ solution แล้วรบกวนแจ้งด้วยครับ (from napat)' }
+                ]
+            },
+            { id: 'JCB-015', sid: '586225', cid: '586225', subject: 'Firewall Policy Review for cdd.go.th Asymmetric Routing', status: 'open', serviceType: 'Request', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'jira-cbe', relationship: 'Child', date: '2025-03-15 10:00', closedTime: null, slaSuccess: false, description: 'Analyze and propose new Palo Alto firewall policies to resolve the asymmetric routing issue for cdd.go.th traffic originating from branch MPLS links during FTTX failover.', timeline: [ { date: '2025-03-15 10:00', user: 'Parent Ticket GT-1027', action: 'Child ticket created to address firewall policy review.'} ]},
+        ];
+        const relationshipData = [
+            { parent: masterTicketData[0], children: [ masterTicketData[7], masterTicketData[13], masterTicketData[17] ] },
+            { parent: masterTicketData[12], children: [ masterTicketData[22], masterTicketData[23] ] }, 
+            { parent: masterTicketData[24], children: [ masterTicketData[25] ] } 
+        ];
+
+        // --- SCRIPT LOGIC ---
+        function buildRelationshipMap() {
+            relationshipMap = {};
+            relationshipData.forEach(rel => {
+                const parentId = rel.parent.id;
+                relationshipMap[parentId] = { type: 'Parent', children: rel.children.map(c => ({ id: c.id, application: c.application, name: applicationNames[c.application] })) };
+                rel.children.forEach(child => {
+                    relationshipMap[child.id] = { type: 'Child', parent: { id: parentId, application: rel.parent.application, name: applicationNames[rel.parent.application] } };
+                });
+            });
+        }
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            if (evt.currentTarget) {
+                evt.currentTarget.classList.add('active');
+            } else { 
+                document.querySelector(`.tab-btn[onclick*="'${tabName}'"]`).classList.add('active');
+            }
+
+            if (document.getElementById(tabName).getAttribute('data-rendered') !== 'true') {
+                 if (tabName === 'relationships') {
+                    renderRelationshipTab();
+                } else if (applicationNames[tabName]) {
+                    renderAppTab(tabName);
+                }
+                document.getElementById(tabName).setAttribute('data-rendered', 'true');
+            }
+        }
+
+        function calculateStatsAndChartData(data) {
+            const stats = { totalTickets: data.length, open: 0, progress: 0, closed: 0, slaSuccess: 0 };
+            const pendingByApp = {
+                gt4u: { total: 0, pending: 0, name: 'GT4U (Connectivity)', color: pendingColors.gt4u, icon: 'fas fa-globe' },
+                'jira-cloud': { total: 0, pending: 0, name: 'JIRA (CLOUD HM)', color: pendingColors['jira-cloud'], icon: 'fas fa-cloud' },
+                'jira-cbe': { total: 0, pending: 0, name: 'JIRA (CBE)', color: pendingColors['jira-cbe'], icon: 'fas fa-shield-alt' },
+                'clickup': { total: 0, pending: 0, name: 'ClickUp (BNG)', color: pendingColors.clickup, icon: 'fas fa-lightbulb' }
+            };
+            data.forEach(ticket => {
+                if(stats[ticket.status] !== undefined) stats[ticket.status]++;
+                if (ticket.status === 'open' || ticket.status === 'progress') {
+                    if(pendingByApp[ticket.application]) pendingByApp[ticket.application].pending++;
+                }
+                if (ticket.closedTime && ticket.slaSuccess) stats.slaSuccess++;
+                if(pendingByApp[ticket.application]) pendingByApp[ticket.application].total++;
+            });
+            stats.slaPercentage = stats.closed > 0 ? ((stats.slaSuccess / stats.closed) * 100).toFixed(1) : '0.0';
+            return { overallStats: stats, pendingByApp };
+        }
+
+        function renderOverallStats(stats) {
+            document.getElementById('overall-stats-content').innerHTML = `
+                <div class="stat-card total"><div class="stat-label">Total Tickets</div><div class="stat-value">${stats.totalTickets}</div></div>
+                <div class="stat-card open"><div class="stat-label">Open Tickets</div><div class="stat-value">${stats.open}</div></div>
+                <div class="stat-card progress"><div class="stat-label">In Progress Tickets</div><div class="stat-value">${stats.progress}</div></div>
+                <div class="stat-card closed"><div class="stat-label">Closed Tickets</div><div class="stat-value">${stats.closed}</div></div>`;
+        }
+
+        function renderPendingSummary(pendingByApp) {
+             let pendingContentHTML = '';
+             Object.entries(pendingByApp).forEach(([appKey, app]) => { 
+                  if (app.total > 0) {
+                        pendingContentHTML += `<div class="pending-card" style="border-left: 5px solid ${app.color};" onclick="document.querySelector('.tab-btn[onclick*=\\'${appKey}\\']').click();">
+                                  <div class="stat-label"><i class="${app.icon}" style="color: ${app.color};"></i> ${app.name}</div>
+                                  <div class="stat-value" style="color: ${app.color};">${app.pending} / ${app.total}</div>
+                                  <div class="stat-label" style="margin-top: 10px; font-size: 0.8em; opacity: 0.8;">Pending / Total</div>
+                             </div>`;
+                  }
+             });
+             document.getElementById('pending-ticket-summary').innerHTML = pendingContentHTML;
+        }
+
+        function getGrandTotalCircuitSummary() {
+            const grandTotal = {};
+            Object.keys(applicationNames).forEach(key => grandTotal[key] = { appName: applicationNames[key].split('(')[1].replace(')','').trim(), total: 0, service: {} });
+
+            Object.values(circuitSummaryData).forEach(customerData => {
+                for (const appKey in customerData) {
+                    if (grandTotal[appKey]) {
+                        const app = customerData[appKey];
+                        grandTotal[appKey].total += app.total;
+                        for (const serviceName in app.service) {
+                            grandTotal[appKey].service[serviceName] = (grandTotal[appKey].service[serviceName] || 0) + app.service[serviceName];
+                        }
+                    }
+                }
+            });
+            return grandTotal;
+        }
+
+        function renderCircuitSummary(customerName) {
+            const summaryTitle = document.getElementById('circuit-summary-title');
+            const summarySection = document.getElementById('circuit-summary-section');
+            let summaryData = customerName ? circuitSummaryData[customerName] : getGrandTotalCircuitSummary();
+
+            if (!summaryData || Object.keys(summaryData).length === 0) {
+                summaryTitle.style.display = 'none';
+                summarySection.style.display = 'none';
+                return;
+            }
+            summaryTitle.style.display = 'flex';
+            document.getElementById('current-customer-name').textContent = customerName || 'All Customers (รวมทุกบริษัท)';
+            summarySection.style.display = 'grid';
+
+            let html = '';
+            for(const appKey in summaryData) {
+                const app = summaryData[appKey];
+                const cardClass = appKey.replace(/-/g, '');
+                let serviceListHtml = '<ul class="circuit-service-list">';
+                const servicesToShow = Object.entries(app.service).filter(([, count]) => count > 0).sort((a, b) => b[1] - a[1]);
+                servicesToShow.forEach(([serviceName, serviceCount]) => {
+                    serviceListHtml += `<li><span>${serviceName}</span><span class="service-count-badge">${serviceCount}</span></li>`;
+                });
+                serviceListHtml += '</ul>';
+
+                html += `<div class="circuit-card ${cardClass}">
+                              <div class="circuit-card-header">
+                                  <i class="circuit-card-icon ${applicationIcons[appKey]}"></i>
+                                  <span class="circuit-card-title">${app.appName}</span>
+                                  <div class="circuit-total">${app.total}</div>
+                              </div>
+                              ${serviceListHtml}
+                          </div>`;
+            }
+            summarySection.innerHTML = html;
+        }
+
+        function filterTickets() {
+            const searchVal = document.getElementById('universalSearch').value.toLowerCase();
+            const appVal = document.getElementById('appFilter').value;
+            const startDateVal = document.getElementById('startDate').value;
+            const endDateVal = document.getElementById('endDate').value;
+
+            let customerName = null;
+            if (searchVal.includes('customer a')) customerName = 'Customer A';
+            else if (searchVal.includes('customer b')) customerName = 'Customer B';
+            else if (searchVal.includes('customer c')) customerName = 'Customer C';
+            renderCircuitSummary(customerName);
+
+            return masterTicketData.filter(ticket => {
+                const matchSearch = !searchVal || ticket.id.toLowerCase().includes(searchVal) || ticket.subject.toLowerCase().includes(searchVal) || ticket.company.toLowerCase().includes(searchVal);
+                const matchApp = appVal === 'all' || ticket.application === appVal;
+                const ticketDate = new Date(ticket.date.split(' ')[0]);
+                const matchStartDate = !startDateVal || ticketDate >= new Date(startDateVal);
+                const matchEndDate = !endDateVal || ticketDate <= new Date(endDateVal);
+                return matchSearch && matchApp && matchStartDate && matchEndDate;
+            });
+        }
+
+        function createHierarchicalList(data) {
+            const hierarchicalList = [];
+            const childTicketsToExclude = new Set();
+            const filteredIds = new Set(data.map(t => t.id));
+            data.filter(t => relationshipMap[t.id]?.type === 'Parent').forEach(parent => {
+                hierarchicalList.push(parent);
+                relationshipMap[parent.id]?.children.forEach(childRef => {
+                    if (filteredIds.has(childRef.id)) {
+                        const childTicket = data.find(t => t.id === childRef.id);
+                        if(childTicket) {
+                            hierarchicalList.push({ ...childTicket, isChildOfParent: true });
+                            childTicketsToExclude.add(childTicket.id);
+                        }
+                    }
+                });
+            });
+            data.filter(t => !childTicketsToExclude.has(t.id) && relationshipMap[t.id]?.type !== 'Parent').forEach(ticket => {
+                hierarchicalList.push(ticket);
+            });
+            return hierarchicalList;
+        }
+
+        function renderTicketTable(data, tableBodyId) {
+            const tbody = document.getElementById(tableBodyId);
+            tbody.innerHTML = ``;
+            if (!tbody) return;
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 30px; color: #9ca3af;">ไม่พบข้อมูล Ticket ตามเงื่อนไขที่ค้นหา</td></tr>`;
+                return;
+            }
+            const colCount = tbody.closest('table').querySelector('thead tr').children.length;
+            data.forEach(ticket => {
+                const relationshipInfo = relationshipMap[ticket.id];
+                let relationshipIcon = '<i class="fas fa-minus-circle" title="Standard Ticket" style="color:#6b7280;"></i>', relationshipText = 'Standard';
+                if (relationshipInfo) {
+                    relationshipText = relationshipInfo.type;
+                    if (relationshipInfo.type === 'Parent') relationshipIcon = '<i class="fas fa-sitemap" title="Parent Ticket" style="color:#06b6d4;"></i>';
+                    else if (relationshipInfo.type === 'Child') relationshipIcon = '<i class="fas fa-link" title="Child Ticket" style="color:#8b5cf6;"></i>';
+                }
+                const row = document.createElement('tr');
+                row.className = 'clickable-row' + (ticket.isChildOfParent ? ' nested-child-row' : '');
+                row.dataset.ticketId = ticket.id;
+
+                let innerHtml = `
+                    <td>${ticket.id}</td><td>${ticket.subject}</td><td>${ticket.company}</td>
+                    ${colCount === 8 ? `<td>${applicationNames[ticket.application] || ticket.application}</td>` : ''}
+                    <td><span class="servicetype-badge servicetype-${ticket.serviceType.toLowerCase()}">${ticket.serviceType}</span></td>
+                    <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
+                    <td><span class="priority-badge priority-${ticket.priority}">${ticket.priority}</span></td>
+                    <td>${relationshipIcon} ${relationshipText}</td>`;
+                row.innerHTML = innerHtml;
+
+                if (ticket.isChildOfParent && tableBodyId === 'universalTicketTableBody') {
+                    const firstCell = row.querySelector('td:first-child');
+                    firstCell.style.paddingLeft = '40px';
+                    firstCell.innerHTML = `<i class="fas fa-level-up-alt fa-rotate-90" style="color: #8b5cf6; margin-right: 10px; font-size: 0.9em;"></i>` + firstCell.innerHTML;
+                }
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterAllTickets() {
+            const filteredData = filterTickets();
+            document.querySelector('.master-ticket-table-container').style.display = 'block';
+            renderTicketTable(createHierarchicalList(filteredData), 'universalTicketTableBody');
+            renderDashboardContent(filteredData);
+        }
+
+        function resetDashboard() {
+            ['universalSearch', 'startDate', 'endDate'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('appFilter').value = 'all';
+            document.querySelector('.master-ticket-table-container').style.display = 'none';
+            renderDashboardContent(masterTicketData);
+        }
+
+        function renderDashboardContent(data) {
+            const { overallStats, pendingByApp } = calculateStatsAndChartData(data);
+            renderOverallStats(overallStats);
+            renderPendingSummary(pendingByApp);
+            renderCircuitSummary(null);
+            renderApplicationPerformanceCharts(data);
+            renderSlaBarChart(data);
+            renderRelationshipCharts(data, 'dashboardParentTicketChart', 'dashboardChildDistributionChart');
+        }
+
+        function destroyChart(chartId) {
+            if (chartInstances[chartId]) {
+                chartInstances[chartId].destroy();
+                delete chartInstances[chartId];
+            }
+        }
+
+        function renderApplicationPerformanceCharts(data) {
+            destroyChart('ticketCountChart');
+            destroyChart('overallSlaPieChart');
+
+            const appStatusCounts = data.reduce((acc, ticket) => {
+                const app = applicationNames[ticket.application] || ticket.application;
+                if (!acc[app]) acc[app] = { open: 0, progress: 0, closed: 0 };
+                if (acc[app][ticket.status] !== undefined) acc[app][ticket.status]++;
+                return acc;
+            }, {});
+
+            const labels = Object.keys(appStatusCounts);
+            const datasets = ['open', 'progress', 'closed'].map(status => ({
+                label: status.charAt(0).toUpperCase() + status.slice(1),
+                data: labels.map(label => appStatusCounts[label][status]),
+                backgroundColor: chartColors[status]
+            }));
+
+            const ticketCountCtx = document.getElementById('ticketCountChart')?.getContext('2d');
+            if(ticketCountCtx) chartInstances['ticketCountChart'] = new Chart(ticketCountCtx, {
+                type: 'bar', data: { labels, datasets },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { mode: 'index', intersect: false }, legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+            });
+
+            const closedTickets = data.filter(t => t.status === 'closed');
+            const slaSuccessCount = closedTickets.filter(t => t.slaSuccess).length;
+            const successPercentage = closedTickets.length > 0 ? ((slaSuccessCount / closedTickets.length) * 100) : 0;
+
+            const centerTextPlugin = {
+                id: 'centerText', afterDraw: (chart) => {
+                    let ctx = chart.ctx; ctx.save();
+                    let centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                    let centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.font = 'bold 32px Inter'; ctx.fillStyle = chartColors.slaSuccess;
+                    ctx.fillText(`${successPercentage.toFixed(1)}%`, centerX, centerY - 10);
+                    ctx.font = '16px Inter'; ctx.fillStyle = '#6b7280'; ctx.fillText('Success', centerX, centerY + 20);
+                    ctx.restore();
+                }
+            };
+
+            const overallSlaCtx = document.getElementById('overallSlaPieChart')?.getContext('2d');
+            if(overallSlaCtx) chartInstances['overallSlaPieChart'] = new Chart(overallSlaCtx, {
+                type: 'doughnut',
+                data: { labels: ['SLA Success', 'SLA Failure'], datasets: [{ data: [slaSuccessCount, closedTickets.length - slaSuccessCount], backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], borderWidth: 0 }] },
+                plugins: [centerTextPlugin],
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } } }
+            });
+        }
+
+        function renderSlaBarChart(data) {
+            const slaSection = document.getElementById('sla-comparison-section');
+            if(!slaSection) return;
+            slaSection.innerHTML = '';
+
+            const percentages = Object.keys(applicationNames).map(appKey => {
+                const appData = data.filter(t => t.application === appKey && t.status === 'closed');
+                return appData.length > 0 ? (appData.filter(t => t.slaSuccess).length / appData.length) * 100 : 0;
+            });
+
+            const container = document.createElement('div');
+            container.className = 'chart-container';
+            container.innerHTML = `<h2 class="chart-title"><i class="fas fa-chart-bar"></i> SLA Success Rate by Application</h2><div class="chart-wrapper"><canvas id="slaBarChart"></canvas></div>`;
+            slaSection.appendChild(container);
+
+            destroyChart('slaBarChart');
+            const ctx = document.getElementById('slaBarChart').getContext('2d');
+            chartInstances['slaBarChart'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.values(applicationNames),
+                    datasets: [{
+                        label: 'SLA Success Rate (%)', data: percentages,
+                        backgroundColor: Object.values(chartColors).slice(0, 4),
+                        borderRadius: 5, barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } }
+                }
+            });
+        }
+
+        function renderRelationshipCharts(data, parentCanvasId, childCanvasId) {
+            destroyChart(parentCanvasId);
+            destroyChart(childCanvasId);
+
+            const parentTickets = data.filter(t => relationshipMap[t.id]?.type === 'Parent');
+            const parentAppCounts = parentTickets.reduce((acc, t) => { acc[t.application] = (acc[t.application] || 0) + 1; return acc; }, {});
+
+            const childTickets = data.filter(t => relationshipMap[t.id]?.type === 'Child');
+            const childAppCounts = childTickets.reduce((acc, t) => { acc[t.application] = (acc[t.application] || 0) + 1; return acc; }, {});
+
+            const parentChartCtx = document.getElementById(parentCanvasId)?.getContext('2d');
+            if (parentChartCtx && parentTickets.length > 0) {
+                chartInstances[parentCanvasId] = new Chart(parentChartCtx, {
+                    type: 'pie', data: { labels: Object.keys(parentAppCounts).map(k => applicationNames[k]), datasets: [{ data: Object.values(parentAppCounts), backgroundColor: Object.keys(parentAppCounts).map(k => chartColors[k.replace('-','')]), hoverOffset: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            } else if(parentChartCtx) { parentChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #9ca3af;">ไม่พบ Parent Ticket</div>'; }
+
+            const childChartCtx = document.getElementById(childCanvasId)?.getContext('2d');
+            if (childChartCtx && childTickets.length > 0) {
+                chartInstances[childCanvasId] = new Chart(childChartCtx, {
+                    type: 'bar', data: { labels: Object.keys(childAppCounts).map(k => applicationNames[k]), datasets: [{ label: 'Child Tickets', data: Object.values(childAppCounts), backgroundColor: Object.keys(childAppCounts).map(k => chartColors[k.replace('-','')]) }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            } else if(childChartCtx) { childChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #9ca3af;">ไม่พบ Child Ticket</div>'; }
+        }
+
+        function renderTicketDetails(ticket, colspan) {
+            const closedTimeHtml = ticket.closedTime ? `<span style="color: #10b981; font-weight: 700;">${ticket.closedTime}</span>` : '<span style="color: #ef4444; font-weight: 700;">N/A (Still Open)</span>';
+            const slaHtml = ticket.closedTime ? (ticket.slaSuccess ? '<span class="status-badge" style="background-color:#d1fae5; color:#065f46;">Success</span>' : '<span class="status-badge" style="background-color:#fee2e2; color:#991b1b;">Failure</span>') : '<span class="status-badge" style="background-color:#e9d5ff; color:#6b21a8;">Pending</span>';
+
+            let relationshipHtml = '';
+            if (relationshipMap[ticket.id]?.type === 'Parent') {
+                const childListHtml = relationshipMap[ticket.id].children.length > 0
+                    ? relationshipMap[ticket.id].children.map(c => `<li><i class="fas fa-link" style="color:#8b5cf6;"></i> <strong>${c.id}</strong> (${c.name})</li>`).join('')
+                    : '<li><i class="fas fa-minus-circle" style="color:#9ca3af;"></i> ไม่มี Child Ticket</li>';
+                relationshipHtml = `<div class="detail-block full-width">
+                    <span class="detail-label"><i class="fas fa-sitemap" style="color:#06b6d4;"></i> Child Tickets (${relationshipMap[ticket.id].children.length} รายการ)</span>
+                    <div class="detail-value"><ul class="relationship-list">${childListHtml}</ul></div>
+                </div>`;
+            } else if (relationshipMap[ticket.id]?.type === 'Child') {
+                const parent = relationshipMap[ticket.id].parent;
+                relationshipHtml = `<div class="detail-block">
+                    <span class="detail-label"><i class="fas fa-sitemap" style="color:#06b6d4;"></i> Parent Ticket ID</span>
+                    <span class="detail-value" style="color: #06b6d4; font-weight: 700;">${parent.id}</span>
+                </div>
+                <div class="detail-block">
+                    <span class="detail-label">Parent Application</span>
+                    <span class="detail-value">${parent.name}</span>
+                </div>`;
+            }
+
+            let timelineHtml = '';
+            if (ticket.timeline && ticket.timeline.length > 0) {
+                const timelineItems = ticket.timeline.slice().reverse().map(item =>
+                    `<div class="timeline-item">
+                        <div class="timeline-time">${item.date}</div>
+                        <div class="timeline-action">${item.action}</div>
+                        <div class="timeline-user"><i class="fas fa-user"></i> ผู้ดำเนินการ: ${item.user}</div>
+                    </div>`).join('');
+                timelineHtml = `<div class="detail-block full-width">
+                    <h5 class="timeline-title"><i class="fas fa-history"></i> Progressive Timeline History</h5>
+                    <div class="timeline-container">${timelineItems}</div>
+                </div>`;
+            }
+
+            return `<tr class="detail-row" data-detail-for="${ticket.id}"><td colspan="${colspan}">
+                <div class="ticket-details-container">
+                    <div class="details-header">
+                        <h4>Ticket Details: ${ticket.id}</h4>
+                        <button onclick="hideTicketDetail(this)"><i class="fas fa-times-circle"></i> ปิดรายละเอียด</button>
+                    </div>
+                    <div class="details-grid">
+                        <div class="detail-block">
+                            <span class="detail-label">Ticket ID</span><span class="detail-value">${ticket.id}</span>
+                        </div>
+                        <div class="detail-block">
+                             <span class="detail-label">Application</span><span class="detail-value">${applicationNames[ticket.application]}</span>
+                        </div>
+                        <div class="detail-block">
+                             <span class="detail-label">Company</span><span class="detail-value">${ticket.company}</span>
+                        </div>
+                         <div class="detail-block">
+                             <span class="detail-label">SID</span><span class="detail-value">${ticket.sid || 'N/A'}</span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">CID</span><span class="detail-value">${ticket.cid || 'N/A'}</span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">Service Type</span><span class="detail-value"><span class="servicetype-badge">${ticket.serviceType}</span></span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">Status</span><span class="detail-value"><span class="status-badge status-${ticket.status}">${ticket.status}</span></span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">Priority</span><span class="detail-value"><span class="priority-badge priority-${ticket.priority}">${ticket.priority}</span></span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">SLA Status</span><span class="detail-value">${slaHtml}</span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">Created Date</span><span class="detail-value">${ticket.date}</span>
+                         </div>
+                         <div class="detail-block">
+                              <span class="detail-label">Closed Date</span><span class="detail-value">${closedTimeHtml}</span>
+                         </div>
+                         ${relationshipHtml ? '' : `<div class="detail-block"><span class="detail-label">Relationship</span><span class="detail-value">Standard</span></div>`}
+                         ${relationshipHtml}
+                         <div class="detail-block full-width">
+                             <span class="detail-label">Description</span>
+                             <span class="detail-value">${ticket.description || 'No description available.'}</span>
+                         </div>
+                         ${timelineHtml}
+                    </div>
+                </div>
+            </td></tr>`;
+        }
+
+        function hideTicketDetail(button) {
+            const detailRow = button.closest('.detail-row');
+            if(detailRow) {
+                const dataRow = document.querySelector(`.clickable-row[data-ticket-id="${detailRow.dataset.detailFor}"]`);
+                if(dataRow) dataRow.classList.remove('active-row');
+                detailRow.remove();
+            }
+        }
+
+        function handleDataRowClick(event) {
+            let target = event.target.closest('.clickable-row');
+            if (target && !event.target.closest('.clickable-child-id')) {
+                const ticketId = target.dataset.ticketId;
+                const ticket = masterTicketData.find(t => t.id === ticketId);
+                if (!ticket) return;
+                const table = target.closest('table');
+                const colspan = table.querySelector('thead tr').children.length;
+                const isDetailOpen = target.nextElementSibling?.dataset.detailFor === ticketId;
+
+                table.querySelectorAll('.detail-row').forEach(row => row.remove());
+                table.querySelectorAll('.active-row').forEach(row => row.classList.remove('active-row'));
+
+                if (!isDetailOpen) {
+                    target.classList.add('active-row');
+                    target.insertAdjacentHTML('afterend', renderTicketDetails(ticket, colspan));
+                    target.nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function handleRelationshipTableClick(event) {
+            const childIdSpan = event.target.closest('.clickable-child-id');
+            if (childIdSpan) {
+                const childId = childIdSpan.dataset.ticketId;
+                const parentRow = childIdSpan.closest('.clickable-row');
+                const parentId = parentRow.dataset.ticketId;
+
+                const childTicket = masterTicketData.find(t => t.id === childId);
+                const parentTicket = masterTicketData.find(t => t.id === parentId);
+
+                if (childTicket && parentTicket && parentRow) {
+                    const table = parentRow.closest('table');
+                    const colspan = table.querySelector('thead tr').children.length;
+                    const isDetailOpen = parentRow.nextElementSibling?.dataset.detailFor === parentId;
+
+                    table.querySelectorAll('.detail-row').forEach(row => row.remove());
+                    table.querySelectorAll('.active-row').forEach(row => row.classList.remove('active-row'));
+
+                    if (!isDetailOpen) {
+                        parentRow.classList.add('active-row');
+                        const parentDetails = renderTicketDetails(parentTicket, colspan);
+                        const childDetails = renderTicketDetails(childTicket, colspan);
+                        parentRow.insertAdjacentHTML('afterend', parentDetails + childDetails);
+                    }
+                }
+            }
+        }
+
+        function renderRelationshipTab(){
+            const tab = document.getElementById('relationships');
+            if(!tab) return;
+            tab.innerHTML = `
+                <h2 class="section-title"><i class="fas fa-project-diagram"></i> Parent-Child Relationship (Detailed View)</h2>
+                <div class="filter-controls-container">
+                     <h2 class="section-title"><i class="fas fa-search"></i> ค้นหา Parent Ticket</h2>
+                    <div class="filter-inputs">
+                        <input type="text" id="relationshipSearch" placeholder="ค้นหาด้วย ID หรือ Subject" style="flex-grow: 2;"/>
+                        <select id="relationshipAppFilter"><option value="all">ทุก Application</option><option value="gt4u">GT4U</option><option value="jira-cloud">JIRA (CLOUD HM)</option><option value="jira-cbe">JIRA (CBE)</option><option value="clickup">ClickUp (BNG)</option></select>
+                        <input type="date" id="relationshipStartDate" style="max-width: 180px;" title="จากวันที่เริ่มต้น" />
+                        <input type="date" id="relationshipEndDate" style="max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
+                        <button onclick="filterRelationshipTable()"><i class="fas fa-search"></i> ค้นหา</button>
+                        <button onclick="resetRelationshipFilter()" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                    </div>
+                </div>
+                <div class="tickets-table-container">
+                    <h2 class="section-title"><i class="fas fa-sitemap"></i> Parent-Child Relationship Map</h2>
+                    <table class="tickets-table" id="relationships-main-table">
+                        <thead><tr><th>Parent Ticket (Click for Detail)</th><th>Service Type</th><th>Status / Priority</th><th>Child Tickets (Click ID to view)</th></tr></thead>
+                        <tbody id="relationships-table-body"></tbody>
+                    </table>
+                </div>
+                <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-chart-area"></i> Relationship Charts Summary</h2>
+                <div class="app-charts-grid">
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="relationshipParentTicketChart"></canvas></div></div>
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="relationshipChildDistributionChart"></canvas></div></div>
+                </div>`;
+            filterRelationshipTable();
+            document.getElementById('relationships-main-table')?.addEventListener('click', handleRelationshipTableClick);
+        }
+
+        function filterRelationshipTable() {
+            const searchVal = document.getElementById('relationshipSearch').value.toLowerCase();
+            const appVal = document.getElementById('relationshipAppFilter').value;
+            const startDateVal = document.getElementById('relationshipStartDate').value;
+            const endDateVal = document.getElementById('relationshipEndDate').value;
+            const filteredData = relationshipData.filter(rel => {
+                const parent = rel.parent;
+                const matchSearch = !searchVal || parent.id.toLowerCase().includes(searchVal) || parent.subject.toLowerCase().includes(searchVal);
+                const matchApp = appVal === 'all' || parent.application === appVal;
+                const ticketDate = new Date(parent.date.split(' ')[0]);
+                return matchSearch && matchApp && (!startDateVal || ticketDate >= new Date(startDateVal)) && (!endDateVal || ticketDate <= new Date(endDateVal));
+            });
+            renderRelationshipTable(filteredData);
+            const allRelatedTickets = filteredData.flatMap(r => [r.parent, ...r.children]);
+            renderRelationshipCharts(allRelatedTickets, 'relationshipParentTicketChart', 'relationshipChildDistributionChart');
+        }
+
+        function resetRelationshipFilter() {
+            ['relationshipSearch', 'relationshipStartDate', 'relationshipEndDate'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('relationshipAppFilter').value = 'all';
+            filterRelationshipTable();
+        }
+
+        function renderRelationshipTable(relationships) {
+            const tbody = document.getElementById('relationships-table-body');
+            tbody.innerHTML = '';
+            if (relationships.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #9ca3af;">ไม่พบ Parent Ticket</td></tr>`;
+                return;
+            }
+            relationships.forEach(rel => {
+                const parent = rel.parent;
+                const childIds = rel.children.map(c => `<span class="clickable-child-id" data-ticket-id="${c.id}" style="color:var(--primary-color); text-decoration: underline; cursor: pointer;">${c.id}</span>`).join(', ');
+                const row = document.createElement('tr');
+                row.className = 'clickable-row parent-row';
+                row.dataset.ticketId = parent.id;
+                row.innerHTML = `
+                    <td>
+                        <strong>${parent.id}</strong>: ${parent.subject}
+                        <span class="sub-text">${applicationNames[parent.application]}</span>
+                    </td>
+                    <td><span class="servicetype-badge servicetype-${parent.serviceType.toLowerCase()}">${parent.serviceType}</span></td>
+                    <td>
+                        <span class="status-badge status-${parent.status}">${parent.status}</span>
+                        <span class="priority-badge priority-${parent.priority}">${parent.priority}</span>
+                    </td>
+                    <td>${childIds || 'ไม่มี'}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderAppTab(appKey) {
+            const appTab = document.getElementById(appKey);
+            const appName = applicationNames[appKey];
+            appTab.innerHTML = `
+                <h2 class="section-title"><i class="fas fa-ticket-alt"></i> ${appName} Ticket Dashboard</h2>
+                <div class="filter-controls-container">
+                    <h2 class="section-title"><i class="fas fa-search"></i> ค้นหา Ticket ใน ${appName}</h2>
+                    <div class="filter-inputs">
+                        <input type="text" id="search-${appKey}" placeholder="ค้นหาด้วย ID, Subject, หรือชื่อบริษัท" style="flex-grow: 4;"/>
+                        <input type="date" id="startDate-${appKey}" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
+                        <input type="date" id="endDate-${appKey}" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
+                        <button onclick="resetAppFilter('${appKey}')" style="flex-grow: 0; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                        <button onclick="filterAppTickets('${appKey}')" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
+                    </div>
+                </div>
+                <div id="${appKey}-stats-container" class="stats-grid"></div>
+                <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-chart-area"></i> Performance Metrics</h2>
+                <div class="app-charts-grid">
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Status Distribution</h2><div class="chart-wrapper"><canvas id="${appKey}-statusChart"></canvas></div></div>
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Service Type Breakdown</h2><div class="chart-wrapper"><canvas id="${appKey}-serviceTypeChart"></canvas></div></div>
+                    <div id="${appKey}-avgTime-container" class="key-metric-card-wrapper"></div>
+                </div>
+                <div class="tickets-table-container">
+                    <h3 class="section-title" style="font-size: 1.2em;"><i class="fas fa-list-ul"></i> Ticket List for ${appName}</h3>
+                    <table class="tickets-table app-ticket-table">
+                        <thead><tr><th>Ticket ID</th><th>Subject</th><th>Company Name</th><th>Service Type</th><th>Status</th><th>Priority</th><th>ความสัมพันธ์</th></tr></thead>
+                        <tbody id="${appKey}-ticketTableBody"></tbody>
+                    </table>
+                </div>`;
+
+            updateAppTab(appKey, masterTicketData.filter(t => t.application === appKey));
+        }
+
+        function updateAppTab(appKey, data) {
+            const { overallStats } = calculateStatsAndChartData(data);
+            const statsContainer = document.getElementById(`${appKey}-stats-container`);
+            statsContainer.innerHTML = `
+                <div class="stat-card total"><div class="stat-label">Total Tickets</div><div class="stat-value">${overallStats.totalTickets}</div></div>
+                <div class="stat-card open"><div class="stat-label">Open Tickets</div><div class="stat-value">${overallStats.open}</div></div>
+                <div class="stat-card progress"><div class="stat-label">In Progress Tickets</div><div class="stat-value">${overallStats.progress}</div></div>
+                <div class="stat-card closed"><div class="stat-label">Closed Tickets</div><div class="stat-value">${overallStats.closed}</div></div>`;
+
+            renderAppTabCharts(data, appKey);
+            renderTicketTable(data, `${appKey}-ticketTableBody`);
+        }
+
+        function filterAppTickets(appKey) {
+            const searchVal = document.getElementById(`search-${appKey}`).value.toLowerCase();
+            const startDateVal = document.getElementById(`startDate-${appKey}`).value;
+            const endDateVal = document.getElementById(`endDate-${appKey}`).value;
+            const filteredData = masterTicketData.filter(t => t.application === appKey && (!searchVal || t.id.toLowerCase().includes(searchVal) || t.subject.toLowerCase().includes(searchVal) || t.company.toLowerCase().includes(searchVal)) && (!startDateVal || new Date(t.date.split(' ')[0]) >= new Date(startDateVal)) && (!endDateVal || new Date(t.date.split(' ')[0]) <= new Date(endDateVal)));
+            updateAppTab(appKey, filteredData);
+        }
+
+        function resetAppFilter(appKey) {
+            document.getElementById(`search-${appKey}`).value = '';
+            document.getElementById(`startDate-${appKey}`).value = '';
+            document.getElementById(`endDate-${appKey}`).value = '';
+            updateAppTab(appKey, masterTicketData.filter(t => t.application === appKey));
+        }
+
+        function renderAppTabCharts(data, appKey) {
+            const appId = appKey.replace(/-/g, '');
+            const appColor = chartColors[appId];
+            const statusCounts = data.reduce((acc, ticket) => { acc[ticket.status] = (acc[ticket.status] || 0) + 1; return acc; }, {});
+            const statusData = ['open', 'progress', 'closed'].map(s => statusCounts[s] || 0);
+
+            destroyChart(`${appKey}-statusChart`);
+            const statusCtx = document.getElementById(`${appKey}-statusChart`)?.getContext('2d');
+            if(statusCtx) {
+                chartInstances[`${appKey}-statusChart`] = new Chart(statusCtx, {
+                    type: 'pie', data: { labels: ['Open', 'In Progress', 'Closed'], datasets: [{ data: statusData, backgroundColor: [chartColors.open, chartColors.progress, chartColors.closed], hoverOffset: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+            const serviceTypeCounts = data.reduce((acc, ticket) => { acc[ticket.serviceType] = (acc[ticket.serviceType] || 0) + 1; return acc; }, {});
+            destroyChart(`${appKey}-serviceTypeChart`);
+            const serviceTypeCtx = document.getElementById(`${appKey}-serviceTypeChart`)?.getContext('2d');
+            if(serviceTypeCtx) {
+                chartInstances[`${appKey}-serviceTypeChart`] = new Chart(serviceTypeCtx, {
+                    type: 'bar', data: { labels: Object.keys(serviceTypeCounts), datasets: [{ label: 'Service Type Count', data: Object.values(serviceTypeCounts), backgroundColor: appColor }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            }
+
+            const closedTickets = data.filter(t => t.closedTime);
+            let totalHours = 0;
+            if (closedTickets.length > 0) {
+                totalHours = closedTickets.reduce((sum, ticket) => {
+                    const startDate = new Date(ticket.date);
+                    const endDate = new Date(ticket.closedTime);
+                    const diffMs = endDate - startDate;
+                    return sum + (diffMs / (1000 * 60 * 60));
+                }, 0);
+            }
+            const avgHours = closedTickets.length > 0 ? (totalHours / closedTickets.length) : 0;
+            destroyChart(`${appKey}-avgTimeChart`);
+            const avgTimeContainer = document.getElementById(`${appKey}-avgTime-container`);
+            if (avgTimeContainer) {
+                 avgTimeContainer.innerHTML = `
+                      <div class="key-metric-card">
+                          <div>
+                             <div class="metric-title">Average Time to Resolution</div>
+                              <div>
+                                 <span class="metric-value">${avgHours.toFixed(1)}</span>
+                                 <span class="metric-unit">Hours</span>
+                             </div>
+                          </div>
+                         <i class="fas fa-hourglass-half metric-icon"></i>
+                      </div>`;
+            }
+        }
+
+        function runInitialization() {
+            buildRelationshipMap();
+            renderDashboardContent(masterTicketData);
+            document.querySelector('.container').addEventListener('click', handleDataRowClick);
+        }
+
+        document.addEventListener('DOMContentLoaded', runInitialization);
+    </script>
+</body>
+</html>
