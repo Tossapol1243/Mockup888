@@ -1,264 +1,856 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unified Ticket Dashboard</title> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Ticket Dashboard</title> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <style>
-        :root {
-            --primary-color: #28a745; --secondary-color: #6c757d; --background-color: #f8f9fa;
-            --card-background-color: #ffffff; --border-color: #dee2e6; --text-dark: #212529; --text-light: #6c757d;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--background-color);
-            color: var(--text-light); min-height: 100vh; padding: 20px; padding-bottom: 50px;
-        }
-        .container {
-            max-width: 1600px; margin: 0 auto; background: var(--card-background-color); border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid var(--border-color);
-        }
-        .header {
-            background: var(--card-background-color); color: var(--text-dark); padding: 40px; text-align: center;
-            position: relative; border-bottom: 1px solid var(--border-color);
-        }
-        .header h1 { font-size: 2.8em; font-weight: 800; margin-bottom: 12px; letter-spacing: -1px; color: #000; }
-        .header h1 i { color: var(--primary-color); }
-        .header p { font-size: 1.1em; font-weight: 400; opacity: 0.8; }
-        .tabs { display: flex; background: var(--card-background-color); padding: 0 30px; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
-        .tab-btn {
-            background: none; border: none; padding: 18px 24px; font-size: 0.95em; font-weight: 600; color: var(--text-light);
-            cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 3px solid transparent; white-space: nowrap;
-        }
-        .tab-btn i { margin-right: 8px; }
-        .tab-btn:hover { color: var(--primary-color); background-color: var(--background-color); }
-        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        .tab-content { display: none; padding: 40px; animation: fadeIn 0.4s ease-in-out; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .filter-controls-container { margin-bottom: 30px; padding: 25px; border: 1px solid var(--border-color); border-radius: 16px; background-color: var(--card-background-color); }
-        .filter-inputs { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .filter-inputs input, .filter-inputs select, .filter-inputs button { padding: 14px 20px; font-size: 1em; min-height: 50px; border-radius: 12px; }
-        .filter-inputs input[type="text"], .filter-inputs select, .filter-inputs input[type="date"] { border: 1px solid #ced4da; }
-        .filter-inputs input:focus, .filter-inputs select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.15); }
-        .filter-inputs button { border: none; color: white; cursor: pointer; transition: all 0.2s ease; background: var(--primary-color); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2); }
-        .filter-inputs button:hover { transform: translateY(-2px); background: #218838; box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3); }
-        .stats-grid, .pending-apps-grid, .circuit-apps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .stat-card { background: var(--card-background-color); padding: 20px; border-radius: 12px; color: var(--text-dark); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; border: 1px solid var(--border-color); border-left-width: 5px; position: relative; }
-        .stat-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10;}
-        .stat-card.total { border-left-color: #17a2b8; } .stat-card.open { border-left-color: #ffc107; }
-        .stat-card.progress { border-left-color: #fd7e14; } .stat-card.closed { border-left-color: #0d6efd; }
-        .stat-card .stat-label { font-size: 0.8em; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; }
-        .stat-card .stat-value { font-size: 2.2em; font-weight: 700; text-shadow: none; }
-        .stat-card.total .stat-value { color: #17a2b8; } .stat-card.open .stat-value { color: #ffc107; }
-        .stat-card.progress .stat-value { color: #fd7e14; } .stat-card.closed .stat-value { color: #0d6efd; }
-        .pending-card { background: var(--card-background-color); border: 1px solid var(--border-color); color: var(--text-dark); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; transition: all 0.3s ease; }
-        .pending-card .stat-value { font-size: 2.2em; font-weight: 700; }
-        .pending-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10; }
-        
-        /* --- NEW Circuit Card Style --- */
-        .circuit-card { 
-            background-color: var(--card-background-color); display: flex; flex-direction: column; border-radius: 12px;
-            overflow: hidden; transition: all 0.3s ease;  border: 1px solid var(--border-color); 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        .circuit-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10; }
-        .circuit-card-header { display: flex; align-items: center; padding: 20px; }
-        .circuit-card-icon {
-            font-size: 24px; width: 60px; height: 60px; border-radius: 50%;
-            display: grid; place-items: center; margin-right: 16px; flex-shrink: 0;
-        }
-        .circuit-card-title h4 { font-size: 1.2em; margin: 0; color: var(--text-dark); font-weight: 600; }
-        .circuit-card-title span { font-size: 2.8em; font-weight: 800; }
-        .circuit-card.gt4u .circuit-card-icon { background: rgba(40, 167, 69, 0.1); color: var(--primary-color); }
-        .circuit-card.jiracloud .circuit-card-icon { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
-        .circuit-card.jiracbe .circuit-card-icon { background: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
-        .circuit-card.clickup .circuit-card-icon { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
-        .circuit-card.gt4u .circuit-card-title span { color: var(--primary-color); }
-        .circuit-card.jiracloud .circuit-card-title span { color: #ffc107; }
-        .circuit-card.jiracbe .circuit-card-title span { color: #0dcaf0; }
-        .circuit-card.clickup .circuit-card-title span { color: #0d6efd; }
-        .circuit-service-list {
-            font-size: 0.9em; list-style: none; padding: 0 20px 20px 20px; margin-top: auto;
-        }
-        .circuit-service-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e9ecef;}
-        .circuit-service-list li:last-child { border-bottom: none; }
-        
-        .chart-container { background: var(--card-background-color); padding: 28px; border-radius: 16px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); min-height: 420px; display: flex; flex-direction: column; }
-        .chart-container:hover { border-color: var(--primary-color); box-shadow: 0 8px 32px rgba(40, 167, 69, 0.1); }
-        .chart-title i { color: var(--primary-color); }
-        .chart-wrapper { position: relative; flex-grow: 1; }
-        .app-charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px; }
-        .tickets-table-container { background: var(--card-background-color); border: 1px solid var(--border-color); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05); margin-bottom: 30px; overflow-x: auto;}
-        .section-title { color: var(--text-dark); border-bottom: 3px solid var(--primary-color); margin-bottom: 24px; padding-bottom: 12px; display: flex; align-items: center; gap: 12px; font-size: 1.4em;}
-        .section-title i { color: var(--primary-color); }
-        
-        .tickets-table { width: 100%; border-collapse: collapse; font-size: 1.05em; line-height: 1.6; }
-        .tickets-table thead { background: var(--background-color); color: var(--text-dark); }
-        .tickets-table th, .tickets-table td { padding: 20px; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--border-color);}
-        .tickets-table tbody tr { transition: background-color 0.2s ease; }
-        .tickets-table tbody tr:nth-child(even) { background-color: transparent; }
-        .clickable-row:hover { background: #f1f3f5; cursor: pointer; }
-        .clickable-row.active-row { background: #e9f5ec; }
-        
-        .tickets-table tbody tr.nested-child-row { background: #e7f1ff; border-left: 4px solid #0d6efd; }
-        .tickets-table tbody tr.nested-child-row:hover { background: #d0e3ff !important; }
-        .detail-row { background: #e9f5ec; }
-        .detail-row td { border-top: 3px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); }
-        .ticket-details-container { background: var(--card-background-color); border-radius: 12px; margin: 8px 0; padding: 20px; }
-        .details-summary { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e9ecef;}
-        .details-content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .detail-item { display: flex; flex-direction: column; gap: 4px; }
-        .detail-item strong { font-size: 0.85em; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
-        .detail-item span { font-size: 1em; color: var(--text-dark); font-weight: 600; }
-        .detail-item ul { padding-left: 15px !important; }
-        .detail-item ul li { padding: 4px 0; border-bottom: 1px dotted #e9ecef; display: flex; align-items: center; gap: 8px; }
-        .detail-item ul li:last-child { border-bottom: none; }
-        .timeline-title { font-size: 1.1em; font-weight: 700; color: var(--text-dark); margin-top: 20px; padding-bottom: 10px; border-bottom: 2px solid #e9ecef; }
-        .timeline-container { position: relative; padding-left: 25px; margin-top: 15px;}
-        .timeline-container::before { content: ''; position: absolute; left: 8px; top: 10px; bottom: 10px; width: 2px; background-color: #dbe2eb; }
-        .timeline-item { position: relative; margin-bottom: 20px; }
-        .timeline-item::before {
-            content: "\f111"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--primary-color);
-            background-color: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--primary-color); border-radius: 50%;
-            font-size: 10px; position: absolute; left: -27px; width: 20px; height: 20px; line-height: 1.3; text-align: center; top: 5px; z-index: 1;
-        }
-        .timeline-time { font-size: 0.85em; color: var(--text-light); margin-bottom: 4px; }
-        .timeline-action { font-weight: 600; color: var(--text-dark); }
-        .timeline-user { font-size: 0.9em; color: #5a2a78; }
-        .footer { text-align: center; padding: 30px 20px; margin-top: 40px; color: var(--text-light); font-size: 0.85em; opacity: 0.8; }
-        @media (max-width: 1200px) { .stats-grid, .pending-apps-grid, .circuit-apps-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .stats-grid, .pending-apps-grid, .circuit-apps-grid, .app-charts-grid { grid-template-columns: 1fr; } }
-    </style>
+    <style>
+        :root {
+            --primary-color: #28a745; --secondary-color: #6c757d; --background-color: #f8f9fa;
+            --card-background-color: #ffffff; --border-color: #dee2e6; --text-dark: #212529; --text-light: #6c757d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--background-color);
+            color: var(--text-light); min-height: 100vh; padding: 20px; padding-bottom: 50px;
+        }
+        .container {
+            max-width: 1600px; margin: 0 auto; background: var(--card-background-color); border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid var(--border-color);
+        }
+        .header {
+            background: var(--card-background-color); color: var(--text-dark); padding: 40px; text-align: center;
+            position: relative; border-bottom: 1px solid var(--border-color);
+        }
+        .header h1 { font-size: 2.8em; font-weight: 800; margin-bottom: 12px; letter-spacing: -1px; color: #000; }
+        .header h1 i { color: var(--primary-color); }
+        .header p { font-size: 1.1em; font-weight: 400; opacity: 0.8; }
+        .tabs { display: flex; background: var(--card-background-color); padding: 0 30px; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
+        .tab-btn {
+            background: none; border: none; padding: 18px 24px; font-size: 0.95em; font-weight: 600; color: var(--text-light);
+            cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 3px solid transparent; white-space: nowrap;
+        }
+        .tab-btn i { margin-right: 8px; }
+        .tab-btn:hover { color: var(--primary-color); background-color: var(--background-color); }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; padding: 40px; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-controls-container { margin-bottom: 30px; padding: 25px; border: 1px solid var(--border-color); border-radius: 16px; background-color: var(--card-background-color); }
+        .filter-inputs { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .filter-inputs input, .filter-inputs select, .filter-inputs button { padding: 14px 20px; font-size: 1em; min-height: 50px; border-radius: 12px; }
+        .filter-inputs input[type="text"], .filter-inputs select, .filter-inputs input[type="date"] { border: 1px solid #ced4da; }
+        .filter-inputs input:focus, .filter-inputs select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.15); }
+        .filter-inputs button { border: none; color: white; cursor: pointer; transition: all 0.2s ease; background: var(--primary-color); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2); }
+        .filter-inputs button:hover { transform: translateY(-2px); background: #218838; box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3); }
+        .stats-grid, .pending-apps-grid, .circuit-apps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .stat-card {
+            background: var(--card-background-color); padding: 20px; border-radius: 12px; color: var(--text-dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; border: 1px solid var(--border-color);
+            border-left-width: 5px; position: relative;
+        }
+        .stat-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10;}
+        .stat-card.total { border-left-color: #17a2b8; } .stat-card.open { border-left-color: #ffc107; }
+        .stat-card.progress { border-left-color: #fd7e14; } .stat-card.closed { border-left-color: #0d6efd; }
+        .stat-card .stat-label { font-size: 0.8em; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; }
+        .stat-card .stat-value { font-size: 2.2em; font-weight: 700; text-shadow: none; }
+        .stat-card.total .stat-value { color: #17a2b8; } .stat-card.open .stat-value { color: #ffc107; }
+        .stat-card.progress .stat-value { color: #fd7e14; } .stat-card.closed .stat-value { color: #0d6efd; }
+        .pending-card {
+            background: var(--card-background-color); border: 1px solid var(--border-color); color: var(--text-dark); 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; transition: all 0.3s ease;
+        }
+        .pending-card .stat-value { font-size: 2.2em; font-weight: 700; }
+        .pending-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10; }
+        
+        .circuit-card { transition: all 0.3s ease; }
+        .circuit-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10; }
+        .circuit-total { font-size: 2.2em; margin-bottom: 10px; } 
+        .circuit-service-list { font-size: 0.9em; }
+        
+        .chart-container { background: var(--card-background-color); padding: 28px; border-radius: 16px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); min-height: 420px; display: flex; flex-direction: column; }
+        .chart-container:hover { border-color: var(--primary-color); box-shadow: 0 8px 32px rgba(40, 167, 69, 0.1); }
+        .chart-title i { color: var(--primary-color); }
+        .chart-wrapper { position: relative; flex-grow: 1; }
+        .app-charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px; }
+        .tickets-table-container { background: var(--card-background-color); border: 1px solid var(--border-color); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05); margin-bottom: 30px; overflow-x: auto;}
+        .section-title { color: var(--text-dark); border-bottom: 3px solid var(--primary-color); margin-bottom: 24px; padding-bottom: 12px; display: flex; align-items: center; gap: 12px; font-size: 1.4em;}
+        .section-title i { color: var(--primary-color); }
+        .tickets-table { width: 100%; border-collapse: collapse; font-size: 1em; }
+        .tickets-table thead { background: var(--background-color); color: var(--text-dark); }
+        .tickets-table th, .tickets-table td { padding: 18px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border-color);}
+        .tickets-table tbody tr:nth-child(even) { background: var(--background-color); }
+        .clickable-row:hover { background: #f1f3f5; cursor: pointer; }
+        .clickable-row.active-row { background: #e9f5ec; border-left: 4px solid var(--primary-color); }
+        .tickets-table tbody tr.nested-child-row { background: #e7f1ff; border-left: 4px solid #0d6efd; }
+        .tickets-table tbody tr.nested-child-row:hover { background: #d0e3ff !important; }
+        .detail-row { background: #e9f5ec; }
+        .detail-row td { border-top: 3px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+        .ticket-details-container { background: var(--card-background-color); }
+        .timeline-container { position: relative; padding-left: 25px; margin-top: 15px;}
+        .timeline-container::before { content: ''; position: absolute; left: 8px; top: 10px; bottom: 10px; width: 2px; background-color: #dbe2eb; }
+        .timeline-item { position: relative; margin-bottom: 20px; }
+        .timeline-item::before {
+            content: "\f111"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--primary-color);
+            background-color: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--primary-color); border-radius: 50%;
+            font-size: 10px; position: absolute; left: -27px; width: 20px; height: 20px; line-height: 1.3; text-align: center; top: 5px; z-index: 1;
+        }
+        .footer { text-align: center; padding: 30px 20px; margin-top: 40px; color: var(--text-light); font-size: 0.85em; opacity: 0.8; }
+        @media (max-width: 1200px) { .stats-grid, .pending-apps-grid, .circuit-apps-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .stats-grid, .pending-apps-grid, .circuit-apps-grid, .app-charts-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-ticket-alt"></i> Unified Ticket Dashboard</h1>
-            <p>Ticket monitoring and analysis across all applications</p>
-        </div>
-        <div class="tabs">
-            <button class="tab-btn active" onclick="openTab(event, 'dashboard-search')"><i class="fas fa-search"></i> Dashboard</button>
-            <button class="tab-btn" onclick="openTab(event, 'relationships')"><i class="fas fa-project-diagram"></i> Parent-Child Relationship</button>
-            <button class="tab-btn" onclick="openTab(event, 'gt4u')">GT4U</button>
-            <button class="tab-btn" onclick="openTab(event, 'jira-cloud')">JIRA (CLOUD HM)</button>
-            <button class="tab-btn" onclick="openTab(event, 'jira-cbe')">JIRA (CBE)</button>
-            <button class="tab-btn" onclick="openTab(event, 'clickup')">ClickUp (BNG)</button>
-        </div>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-ticket-alt"></i> Unified Ticket Dashboard</h1>
+            <p>Ticket monitoring and analysis across all applications</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'dashboard-search')"><i class="fas fa-search"></i> Dashboard</button>
+            <button class="tab-btn" onclick="openTab(event, 'relationships')"><i class="fas fa-project-diagram"></i> Parent-Child Relationship</button>
+            <button class="tab-btn" onclick="openTab(event, 'gt4u')">GT4U</button>
+            <button class="tab-btn" onclick="openTab(event, 'jira-cloud')">JIRA (CLOUD HM)</button>
+            <button class="tab-btn" onclick="openTab(event, 'jira-cbe')">JIRA (CBE)</button>
+            <button class="tab-btn" onclick="openTab(event, 'clickup')">ClickUp (BNG)</button>
+        </div>
 
-        <div id="dashboard-search" class="tab-content active">
-            <h2 class="section-title" id="circuit-summary-title" style="margin-top: 0px; display: none;"><i class="fas fa-plug"></i> Circuit & Service Summary for <span id="current-customer-name"></span></h2>
-            <div id="circuit-summary-section" class="circuit-apps-grid" style="display: none;"></div>
-            <div class="filter-controls-container">
-                <h2 class="section-title"><i class="fas fa-search"></i> Universal Ticket Explorer</h2>
-                <div class="filter-inputs">
-                    <input type="text" id="universalSearch" placeholder="ค้นหาด้วย ID, Subject, หรือชื่อบริษัท" style="flex-grow: 4;"/> 
-                    <select id="appFilter" style="flex-grow: 2;"><option value="all">ทุก Application</option><option value="gt4u">GT4U</option><option value="jira-cloud">JIRA (CLOUD HM)</option><option value="jira-cbe">JIRA (CBE)</option><option value="clickup">ClickUp (BNG)</option></select>
-                    <input type="date" id="startDate" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
-                    <input type="date" id="endDate" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
-                    <button id="resetAllTicketsBtn" onclick="resetDashboard()" style="flex-grow: 0; background: #6c757d; box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);"><i class="fas fa-redo"></i> รีเซ็ต</button>
-                    <button id="searchAllTicketsBtn" onclick="filterAllTickets()" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
-                </div>
-            </div>
-            <div class="master-ticket-table-container" style="display: none;">
-                <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-list-ul"></i> ผลลัพธ์ Ticket ที่ค้นหา</h2>
-                <table class="tickets-table master-ticket-table">
-                    <thead><tr><th>Ticket ID</th><th>Subject</th><th>Company Name</th><th>Application</th><th>Service Type</th><th>Status</th><th>Priority</th><th>ความสัมพันธ์</th></tr></thead>
-                    <tbody id="universalTicketTableBody"></tbody>
-                </table>
-            </div>
-            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-tachometer-alt"></i> Overall Ticket Summary</h2>
-            <div id="overall-stats-content" class="stats-grid"></div>
-            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-hourglass-half"></i> Pending Tickets Summary</h2>
-            <div class="pending-apps-grid" id="pending-ticket-summary"></div>
-            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-chart-area"></i> Application Performance Charts</h2>
-            <div class="app-charts-grid">
-                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-ticket-alt"></i> Ticket Count by Application</h2><div class="chart-wrapper"><canvas id="ticketCountChart"></canvas></div></div>
-                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-check-circle"></i> Overall SLA Success Rate</h2><div class="chart-wrapper"><canvas id="overallSlaPieChart"></canvas></div></div>
-            </div>
-            <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-percent"></i> SLA Success Rate Comparison</h2>
-            <div id="sla-comparison-section" style="grid-template-columns: 1fr;"></div>
-            <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-project-diagram"></i> Overall Relationship Summary</h2>
-            <div class="app-charts-grid" id="dashboard-relationship-charts" style="grid-template-columns: repeat(2, 1fr);">
-                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="dashboardParentTicketChart"></canvas></div></div>
-                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="dashboardChildDistributionChart"></canvas></div></div>
-            </div>
-        </div>
+        <div id="dashboard-search" class="tab-content active">
+            <h2 class="section-title" id="circuit-summary-title" style="margin-top: 0px; display: none;"><i class="fas fa-plug"></i> Circuit & Service Summary for <span id="current-customer-name"></span></h2>
+            <div id="circuit-summary-section" class="circuit-apps-grid" style="display: none;"></div>
+            <div class="filter-controls-container">
+                <h2 class="section-title"><i class="fas fa-search"></i> Universal Ticket Explorer</h2>
+                <div class="filter-inputs">
+                    <input type="text" id="universalSearch" placeholder="ค้นหาด้วย ID, Subject, หรือชื่อบริษัท" style="flex-grow: 4;"/> 
+                    <select id="appFilter" style="flex-grow: 2;"><option value="all">ทุก Application</option><option value="gt4u">GT4U</option><option value="jira-cloud">JIRA (CLOUD HM)</option><option value="jira-cbe">JIRA (CBE)</option><option value="clickup">ClickUp (BNG)</option></select>
+                    <input type="date" id="startDate" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
+                    <input type="date" id="endDate" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
+                    <button id="resetAllTicketsBtn" onclick="resetDashboard()" style="flex-grow: 0; background: #6c757d; box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                    <button id="searchAllTicketsBtn" onclick="filterAllTickets()" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
+                </div>
+            </div>
+            <div class="master-ticket-table-container" style="display: none;">
+                <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-list-ul"></i> ผลลัพธ์ Ticket ที่ค้นหา</h2>
+                <table class="tickets-table master-ticket-table">
+                    <thead><tr><th>Ticket ID</th><th>Subject</th><th>Company Name</th><th>Application</th><th>Service Type</th><th>Status</th><th>Priority</th><th>ความสัมพันธ์</th></tr></thead>
+                    <tbody id="universalTicketTableBody"></tbody>
+                </table>
+            </div>
+            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-tachometer-alt"></i> Overall Ticket Summary</h2>
+            <div id="overall-stats-content" class="stats-grid"></div>
+            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-hourglass-half"></i> Pending Tickets Summary</h2>
+            <div class="pending-apps-grid" id="pending-ticket-summary"></div>
+            <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-chart-area"></i> Application Performance Charts</h2>
+            <div class="app-charts-grid">
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-ticket-alt"></i> Ticket Count by Application</h2><div class="chart-wrapper"><canvas id="ticketCountChart"></canvas></div></div>
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-check-circle"></i> Overall SLA Success Rate</h2><div class="chart-wrapper"><canvas id="overallSlaPieChart"></canvas></div></div>
+            </div>
+            <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-percent"></i> SLA Success Rate Comparison</h2>
+            <div id="sla-comparison-section" style="grid-template-columns: 1fr;"></div>
+            <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-project-diagram"></i> Overall Relationship Summary</h2>
+            <div class="app-charts-grid" id="dashboard-relationship-charts" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="dashboardParentTicketChart"></canvas></div></div>
+                <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="dashboardChildDistributionChart"></canvas></div></div>
+            </div>
+        </div>
 
-        <div id="relationships" class="tab-content"></div>
-        <div id="gt4u" class="tab-content"></div>
-        <div id="jira-cloud" class="tab-content"></div>
-        <div id="jira-cbe" class="tab-content"></div>
-        <div id="clickup" class="tab-content"></div>
-    </div>
-    
-    <div class="footer">
-        &copy; 2025 Unified Ticket Dashboard. All Rights Reserved. | Data Simulated for Demonstration Purposes.
-    </div>
+        <div id="relationships" class="tab-content"></div>
+        <div id="gt4u" class="tab-content"></div>
+        <div id="jira-cloud" class="tab-content"></div>
+        <div id="jira-cbe" class="tab-content"></div>
+        <div id="clickup" class="tab-content"></div>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 Unified Ticket Dashboard. All Rights Reserved. | Data Simulated for Demonstration Purposes.
+    </div>
 
-    <script>
-        // --- SCRIPT START ---
-let chartInstances = {};
-let relationshipMap = {};
+    <script>
+        // --- SCRIPT START ---
+        let chartInstances = {};
+        let relationshipMap = {};
 
-// --- THEME COLORS ---
-const chartColors = { gt4u: '#28a745', jiracloud: '#ffc107', jiracbe: '#0dcaf0', clickup: '#0d6efd', open: '#ffc107', progress: '#fd7e14', closed: '#0d6efd', slaSuccess: '#20c997', slaFailure: '#dc3545' };
-const pendingColors = { gt4u: '#28a745', 'jira-cloud': '#ffc107', 'jira-cbe': '#0dcaf0', clickup: '#0d6efd' };
-const applicationNames = { 'gt4u': 'GT4U (Connectivity)', 'jira-cloud': 'JIRA (CLOUD HM)', 'jira-cbe': 'JIRA (CBE)', 'clickup': 'ClickUp (BNG)' };
+        // --- THEME COLORS ---
+        const chartColors = { gt4u: '#28a745', jiracloud: '#ffc107', jiracbe: '#0dcaf0', clickup: '#0d6efd', open: '#ffc107', progress: '#fd7e14', closed: '#0d6efd', slaSuccess: '#20c997', slaFailure: '#dc3545' };
+        const pendingColors = { gt4u: '#28a745', 'jira-cloud': '#ffc107', 'jira-cbe': '#0dcaf0', clickup: '#0d6efd' };
+        const applicationNames = { 'gt4u': 'GT4U (Connectivity)', 'jira-cloud': 'JIRA (CLOUD HM)', 'jira-cbe': 'JIRA (CBE)', 'clickup': 'ClickUp (BNG)' };
+        
+        // --- DATA ---
+        const circuitSummaryData = { 'Customer A': { 'gt4u': { appName: 'Connectivity', total: 10, service: { 'MPLS': 4, 'Internet': 5, 'VAS': 1 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 5, service: { 'Cloud VM': 3, 'Fortigate': 2 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 3, service: { 'Firewall Audit': 2, 'Vulnerability Scan': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 4, service: { 'ERP Module A': 3, 'App Integration': 1 } } }, 'Customer B': { 'gt4u': { appName: 'Connectivity', total: 5, service: { 'MPLS': 1, 'Internet': 4 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 2, service: { 'Cloud VM': 1, 'Load Balancer': 1 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 1, service: { 'WAF Deployment': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 6, service: { 'CRM Customization': 4, 'Training': 2 } } }, 'Customer C': { 'gt4u': { appName: 'Connectivity', total: 3, service: { 'MPLS': 1, 'Internet': 1, 'VAS': 1 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 3, service: { 'Cloud VM': 1, 'Fortigate': 1, 'Load Balancer': 1 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 5, service: { 'Firewall Audit': 3, 'WAF Deployment': 1, 'Vulnerability Scan': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 2, service: { 'ERP Module A': 1, 'App Integration': 1 } } } };
+        const masterTicketData = [
+            { id: 'GT-0987', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Major Service Outage - East Region', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Parent', date: '2025-09-29 09:00', closedTime: null, slaSuccess: false, description: 'Service went down for 4 hours.', timeline: [ { date: '2025-09-29 11:30', user: 'N. T.', action: 'Initial investigation points to a core router failure.'}, { date: '2025-09-29 09:15', user: 'S. J.', action: 'Assigned ticket to Network Team. Status changed to In Progress.'}, { date: '2025-09-29 09:05', user: 'Monitoring System', action: 'Ticket automatically created from alert.'} ]},
+            { id: 'GT-1011', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Schema Update for new DB version', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Request for DB schema update.', timeline: [ { date: '2025-10-01 10:20', user: 'A. P.', action: 'Request acknowledged. Pending developer availability.'}, { date: '2025-10-01 10:00', user: 'Customer B Portal', action: 'Ticket created by customer.'} ]},
+            { id: 'GT-1012', sid: 'SID-23948105', cid: 'CID-234512', subject: 'API connection refactor', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 14:00', closedTime: null, slaSuccess: false, description: 'Refactoring of connection layer.', timeline: [ { date: '2025-10-01 14:00', user: 'Internal Request', action: 'Ticket opened for scheduled maintenance.'} ]},
+            { id: 'GT-1018', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Critical Vulnerability Fix (GT4U)', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'gt4u', relationship: 'Child', date: '2025-09-30 08:00', closedTime: '2025-09-30 12:30', slaSuccess: true, description: 'Patch deployed successfully.', timeline: [ { date: '2025-09-30 12:30', user: 'M. H.', action: 'Patch deployed and verified. Ticket closed.'}, { date: '2025-09-30 08:00', user: 'Security Team', action: 'Child ticket created to track GT4U-specific patch.'} ]},
+            { id: 'GT-1024', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Performance Degradation', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: '2025-10-02 10:00', slaSuccess: false, description: 'Identified memory leak. Fixed by rolling back.', timeline: [ { date: '2025-10-02 10:00', user: 'S. J.', action: 'Rollback complete, performance restored. Ticket closed.'}, { date: '2025-10-02 09:45', user: 'S. J.', action: 'Root cause found. Preparing rollback.'}, { date: '2025-10-01 10:00', user: 'Customer A', action: 'Reported slow performance.'} ]},
+            { id: 'GT-1025', sid: 'SID-11223344', cid: 'CID-998877', subject: 'Database Connection Timeout', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer D', application: 'gt4u', relationship: 'Standard', date: '2025-10-02 16:00', closedTime: '2025-10-03 09:00', slaSuccess: true, description: 'Increased connection pool size.', timeline: [ { date: '2025-10-03 09:00', user: 'DevOps Team', action: 'Configuration updated. Closing ticket.'} ]},
+            { id: 'GT-1026', sid: 'SID-55667788', cid: 'CID-112233', subject: 'New Customer Onboarding: Project Alpha', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer E', application: 'gt4u', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: null, slaSuccess: false, description: 'Initial setup of network infrastructure.', timeline: [ { date: '2025-10-03 11:00', user: 'Sales Team', action: 'New onboarding ticket created.'} ]},
+            { id: 'JC-0045', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Cloud VM CPU Spike', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:30', closedTime: null, slaSuccess: false, description: 'Investigating potential rogue process.', timeline: [ { date: '2025-09-29 10:45', user: 'Cloud Team', action: 'Starting diagnostics on the affected VM instance.'}, { date: '2025-09-29 10:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to address Cloud VM issue.'} ]},
+            { id: 'JC-0046', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Fortigate Policy Review', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-01 15:00', closedTime: '2025-10-02 11:00', slaSuccess: true, description: 'Policy review completed.', timeline: [ { date: '2025-10-02 11:00', user: 'P. L.', action: 'Rules applied and verified. Ticket Closed.'} ]},
+            { id: 'JC-0047', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Load Balancer Configuration Change', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 09:00', closedTime: null, slaSuccess: false, description: 'Request to modify LB session settings.', timeline: [ { date: '2025-10-02 09:00', user: 'Customer B', action: 'New request submitted.'} ]},
+            { id: 'JC-0048', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Instance Creation Request', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 14:00', closedTime: '2025-10-03 14:00', slaSuccess: false, description: 'New VM created for testing environment.', timeline: [ { date: '2025-10-03 14:00', user: 'Automation Script', action: 'VM created and details sent to customer. Ticket Closed.'} ]},
+            { id: 'JC-0050', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Cloud Service Monitoring Setup', status: 'progress', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-03 08:00', closedTime: null, slaSuccess: false, description: 'Implementing new Azure Monitor dashboards.', timeline: [ { date: '2025-10-03 08:00', user: 'Project Manager', action: 'Task created for monitoring setup.'} ]},
+            { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Security audit in progress.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.'} ]},
+            { id: 'JCB-011', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Firewall Rule Adjustment', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cbe', relationship: 'Child', date: '2025-09-30 11:00', closedTime: '2025-10-01 11:00', slaSuccess: true, description: 'Opened port 8080 for temporary access.', timeline: [ { date: '2025-10-01 11:00', user: 'CBE Team', action: 'Rules implemented and tested. Ticket Closed.'}, { date: '2025-09-30 11:00', user: 'Parent Ticket GT-0987', action: 'Child ticket created to adjust firewall rules.'} ]},
+            { id: 'JCB-012', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Vulnerability Scan Report', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Generated weekly vulnerability scan report.', timeline: [ { date: '2025-10-01 10:00', user: 'System', action: 'Report generated and attached.'} ]},
+            { id: 'JCB-013', sid: 'SID-23948105', cid: 'CID-234512', subject: 'New WAF Policy Implementation', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-02 12:00', closedTime: '2025-10-03 12:00', slaSuccess: true, description: 'Deployed new custom WAF rule.', timeline: [ { date: '2025-10-03 12:00', user: 'CBE Team', action: 'Policy deployed. Ticket Closed.'} ]},
+            { id: 'JCB-014', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Security Policy Update', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-03 14:00', closedTime: null, slaSuccess: false, description: 'Policy requires update.', timeline: [ { date: '2025-10-03 14:00', user: 'Compliance Officer', action: 'Ticket opened for policy review.'} ]},
+            { id: 'CU-080', sid: 'SID-83749201', cid: 'CID-583921', subject: 'ERP Module A Bug Fix', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'clickup', relationship: 'Child', date: '2025-09-30 09:30', closedTime: null, slaSuccess: false, description: 'Debugging in progress.', timeline: [ { date: '2025-09-30 10:00', user: 'Dev Team', action: 'Bug acknowledged. Investigation started.'}, { date: '2025-09-30 09:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to track ERP bug.'} ]},
+            { id: 'CU-081', sid: 'SID-23948105', cid: 'CID-234512', subject: 'CRM Dashboard Customization', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-01 13:00', closedTime: '2025-10-02 13:00', slaSuccess: true, description: 'Custom sales pipeline view implemented.', timeline: [ { date: '2025-10-02 13:00', user: 'BNG Consultant', action: 'Customization complete. Ticket Closed.'} ]},
+            { id: 'CU-082', sid: 'SID-83749201', cid: 'CID-583921', subject: 'App Integration Testing', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'clickup', relationship: 'Standard', date: '2025-10-02 10:00', closedTime: null, slaSuccess: false, description: 'Testing phase for new integration.', timeline: [ { date: '2025-10-02 10:00', user: 'QA Team', action: 'Testing task created.'} ]},
+            { id: 'CU-083', sid: 'SID-23948105', cid: 'CID-234512', subject: 'User Training Session Schedule', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: '2025-10-03 15:00', slaSuccess: true, description: 'Training scheduled for new module.', timeline: [ { date: '2025-10-03 15:00', user: 'Training Coordinator', action: 'Session scheduled. Ticket Closed.'} ]},
+            { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.'} ]},
+        ];
+        const relationshipData = [ { parent: masterTicketData[0], children: [ masterTicketData[7], masterTicketData[13], masterTicketData[17] ] } ];
 
-// --- DATA ---
-const circuitSummaryData = { 
-    'Customer A': { 
-        'gt4u': { appName: 'Connectivity', total: 10, service: { 'MPLS': 4, 'Internet': 5, 'VAS': 1 }, icon: 'fa-network-wired' }, 
-        'jira-cloud': { appName: 'CLOUD HM', total: 5, service: { 'Cloud VM': 3, 'Fortigate': 2 }, icon: 'fa-cloud' }, 
-        'jira-cbe': { appName: 'CBE (Security)', total: 3, service: { 'Firewall Audit': 2, 'Vulnerability Scan': 1 }, icon: 'fa-shield-halved' }, 
-        'clickup': { appName: 'BNG (Brainergy)', total: 4, service: { 'ERP Module A': 3, 'App Integration': 1 }, icon: 'fa-lightbulb' } 
-    }, 
-    'Customer B': { 
-        'gt4u': { appName: 'Connectivity', total: 5, service: { 'MPLS': 1, 'Internet': 4 }, icon: 'fa-network-wired' }, 
-        'jira-cloud': { appName: 'CLOUD HM', total: 2, service: { 'Cloud VM': 1, 'Load Balancer': 1 }, icon: 'fa-cloud' }, 
-        'jira-cbe': { appName: 'CBE (Security)', total: 1, service: { 'WAF Deployment': 1 }, icon: 'fa-shield-halved' }, 
-        'clickup': { appName: 'BNG (Brainergy)', total: 6, service: { 'CRM Customization': 4, 'Training': 2 }, icon: 'fa-lightbulb' } 
-    }, 
-    'Customer C': { 
-        'gt4u': { appName: 'Connectivity', total: 3, service: { 'MPLS': 1, 'Internet': 1, 'VAS': 1 }, icon: 'fa-network-wired' }, 
-        'jira-cloud': { appName: 'CLOUD HM', total: 3, service: { 'Cloud VM': 1, 'Fortigate': 1, 'Load Balancer': 1 }, icon: 'fa-cloud' }, 
-        'jira-cbe': { appName: 'CBE (Security)', total: 5, service: { 'Firewall Audit': 3, 'WAF Deployment': 1, 'Vulnerability Scan': 1 }, icon: 'fa-shield-halved' }, 
-        'clickup': { appName: 'BNG (Brainergy)', total: 2, service: { 'ERP Module A': 1, 'App Integration': 1 }, icon: 'fa-lightbulb' } 
-    } 
-};
-const masterTicketData = [
-    { id: 'GT-0987', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Major Service Outage', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Parent', date: '2025-09-29 09:00', closedTime: null, slaSuccess: false, description: 'Service went down for 4 hours.', timeline: [ { date: '2025-09-29 11:30', user: 'N. T.', action: 'Initial investigation ongoing.'}, { date: '2025-09-29 09:15', user: 'S. J.', action: 'Assigned Ticket to Network Team.'}, { date: '2025-09-29 09:05', user: 'System', action: 'Ticket automatically created.'} ]},
-    { id: 'GT-1011', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Schema Update for DB', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Request for DB schema update.', timeline: [ { date: '2025-10-01 10:20', user: 'A. P.', action: 'Request acknowledged.'}, { date: '2025-10-01 10:00', user: 'Customer B', action: 'Ticket created by customer.'} ]},
-    { id: 'GT-1012', sid: 'SID-23948105', cid: 'CID-234512', subject: 'API connection refactor', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 14:00', closedTime: null, slaSuccess: false, description: 'Refactoring of connection layer.', timeline: [ { date: '2025-10-01 14:00', user: 'Internal Request', action: 'Ticket opened for maintenance.'} ]},
-    { id: 'GT-1018', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Critical Vulnerability Fix', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'gt4u', relationship: 'Child', date: '2025-09-30 08:00', closedTime: '2025-09-30 12:30', slaSuccess: true, description: 'Patch deployed successfully.', timeline: [ { date: '2025-09-30 12:30', user: 'M. H.', action: 'Patch deployed and verified.'}, { date: '2025-09-30 08:00', user: 'Security Team', action: 'Child Ticket created for patch.'} ]},
-    { id: 'GT-1024', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Performance Degradation', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: '2025-10-02 10:00', slaSuccess: false, description: 'Fixed by rolling back patch.', timeline: [ { date: '2025-10-02 10:00', user: 'S. J.', action: 'Rollback complete. Ticket closed.'}, { date: '2025-10-01 10:00', user: 'Customer A', action: 'Reported slow performance.'} ]},
-    { id: 'GT-1025', sid: 'SID-11223344', cid: 'CID-998877', subject: 'DB Connection Timeout', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer D', application: 'gt4u', relationship: 'Standard', date: '2025-10-02 16:00', closedTime: '2025-10-03 09:00', slaSuccess: true, description: 'Increased connection pool size.', timeline: [ { date: '2025-10-03 09:00', user: 'DevOps Team', action: 'Configuration updated. Closing Ticket.'} ]},
-    { id: 'GT-1026', sid: 'SID-55667788', cid: 'CID-112233', subject: 'New Customer Onboarding', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer E', application: 'gt4u', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: null, slaSuccess: false, description: 'Initial setup of infrastructure.', timeline: [ { date: '2025-10-03 11:00', user: 'Sales Team', action: 'New onboarding Ticket created.'} ]},
-    { id: 'JC-0045', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Cloud VM CPU Spike', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:30', closedTime: null, slaSuccess: false, description: 'Investigating potential rogue process.', timeline: [ { date: '2025-09-29 10:45', user: 'Cloud Team', action: 'Starting diagnostics on VM.'}, { date: '2025-09-29 10:30', user: 'Parent Ticket', action: 'Child Ticket created for Cloud VM issue.'} ]},
-    { id: 'JC-0046', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Fortigate Policy Review', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-01 15:00', closedTime: '2025-10-02 11:00', slaSuccess: true, description: 'Policy review completed.', timeline: [ { date: '2025-10-02 11:00', user: 'P. L.', action: 'Rules applied. Ticket Closed.'} ]},
-    { id: 'JC-0047', sid: 'SID-23948105', cid: 'CID-234512', subject: 'LB Config Change', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 09:00', closedTime: null, slaSuccess: false, description: 'Request to modify LB settings.', timeline: [ { date: '2025-10-02 09:00', user: 'Customer B', action: 'New request submitted.'} ]},
-    { id: 'JC-0048', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Instance Creation', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 14:00', closedTime: '2025-10-03 14:00', slaSuccess: false, description: 'New VM for testing created.', timeline: [ { date: '2025-10-03 14:00', user: 'Automation', action: 'VM created. Ticket Closed.'} ]},
-    { id: 'JC-0050', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Cloud Monitoring Setup', status: 'progress', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-03 08:00', closedTime: null, slaSuccess: false, description: 'Implementing new dashboards.', timeline: [ { date: '2025-10-03 08:00', user: 'Project Manager', action: 'Task created for setup.'} ]},
-    { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Security audit in progress.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.'} ]},
-    { id: 'JCB-011', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Firewall Rule Adjustment', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cbe', relationship: 'Child', date: '2025-09-30 11:00', closedTime: '2025-10-01 11:00', slaSuccess: true, description: 'Opened port 8080 for temporary access.', timeline: [ { date: '2025-10-01 11:00', user: 'CBE Team', action: 'Rules tested. Ticket Closed.'}, { date: '2025-09-30 11:00', user: 'Parent Ticket', action: 'Child Ticket for firewall created.'} ]},
-    { id: 'JCB-012', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Vulnerability Scan Report', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Generated weekly scan report.', timeline: [ { date: '2025-10-01 10:00', user: 'System', action: 'Report generated.'} ]},
-    { id: 'JCB-013', sid: 'SID-23948105', cid: 'CID-234512', subject: 'New WAF Policy', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-02 12:00', closedTime: '2025-10-03 12:00', slaSuccess: true, description: 'Deployed new custom WAF rule.', timeline: [ { date: '2025-10-03 12:00', user: 'CBE Team', action: 'Policy deployed. Ticket Closed.'} ]},
-    { id: 'JCB-014', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Security Policy Update', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-03 14:00', closedTime: null, slaSuccess: false, description: 'Policy requires update.', timeline: [ { date: '2025-10-03 14:00', user: 'Compliance Officer', action: 'Ticket opened for review.'} ]},
-    { id: 'CU-080', sid: 'SID-83749201', cid: 'CID-583921', subject: 'ERP Module A Bug Fix', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'clickup', relationship: 'Child', date: '2025-09-30 09:30', closedTime: null, slaSuccess: false, description: 'Debugging in progress.', timeline: [ { date: '2025-09-30 10:00', user: 'Dev Team', action: 'Bug acknowledged. Investigation started.'}, { date: '2025-09-30 09:30', user: 'Parent Ticket', action: 'Child Ticket for ERP bug created.'} ]},
-    { id: 'CU-081', sid: 'SID-23948105', cid: 'CID-234512', subject: 'CRM Dashboard Customization', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-01 13:00', closedTime: '2025-10-02 13:00', slaSuccess: true, description: 'Custom sales pipeline view implemented.', timeline: [ { date: '2025-10-02 13:00', user: 'BNG Consultant', action: 'Customization complete. Ticket Closed.'} ]},
-    { id: 'CU-082', sid: 'SID-83749201', cid: 'CID-583921', subject: 'App Integration Testing', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'clickup', relationship: 'Standard', date: '2025-10-02 10:00', closedTime: null, slaSuccess: false, description: 'Testing phase for new integration.', timeline: [ { date: '2025-10-02 10:00', user: 'QA Team', action: 'Testing task created.'} ]},
-    { id: 'CU-083', sid: 'SID-23948105', cid: 'CID-234512', subject: 'User Training Schedule', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: '2025-10-03 15:00', slaSuccess: true, description: 'Training scheduled for new module.', timeline: [ { date: '2025-10-03 15:00', user: 'Coordinator', action: 'Session scheduled. Ticket Closed.'} ]},
-    { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.'} ]},
-];
-const relationshipData = [ { parent: masterTicketData[0], children: [ masterTicketData[7], masterTicketData[13], masterTicketData[17] ] } ];
+        // --- SCRIPT LOGIC ---
+        // The script has been refactored for Google Sites compatibility.
+        // It now populates the static HTML shells instead of creating them from scratch.
+        
+        function buildRelationshipMap() {
+            relationshipMap = {};
+            relationshipData.forEach(rel => {
+                const parentId = rel.parent.id;
+                relationshipMap[parentId] = { type: 'Parent', children: rel.children.map(c => ({ id: c.id, application: c.application, name: applicationNames[c.application] })) };
+                rel.children.forEach(child => {
+                    relationshipMap[child.id] = { type: 'Child', parent: { id: parentId, application: rel.parent.application, name: applicationNames[rel.parent.application] } };
+                });
+            });
+        }
 
-// --- SCRIPT LOGIC (Full version) ---
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
 
-// [This is the placeholder for the full JS code which is too long to display here but is included in the final generated code]
-    </script>
+            if (document.getElementById(tabName).getAttribute('data-rendered') !== 'true') {
+                 if (tabName === 'relationships') {
+                    renderRelationshipTab();
+                } else if (applicationNames[tabName]) {
+                    renderAppTab(tabName);
+                }
+                document.getElementById(tabName).setAttribute('data-rendered', 'true');
+            }
+        }
+        
+        function calculateStatsAndChartData(data) {
+            const stats = { totalTickets: data.length, open: 0, progress: 0, closed: 0, slaSuccess: 0 };
+            const pendingByApp = {
+                gt4u: { total: 0, pending: 0, name: 'GT4U (Connectivity)', color: pendingColors.gt4u, icon: 'fas fa-globe' },
+                'jira-cloud': { total: 0, pending: 0, name: 'JIRA (CLOUD HM)', color: pendingColors['jira-cloud'], icon: 'fas fa-cloud' },
+                'jira-cbe': { total: 0, pending: 0, name: 'JIRA (CBE)', color: pendingColors['jira-cbe'], icon: 'fas fa-shield-alt' },
+                'clickup': { total: 0, pending: 0, name: 'ClickUp (BNG)', color: pendingColors.clickup, icon: 'fas fa-lightbulb' }
+            };
+            data.forEach(ticket => {
+                if(stats[ticket.status] !== undefined) stats[ticket.status]++;
+                if (ticket.status === 'open' || ticket.status === 'progress') {
+                    if(pendingByApp[ticket.application]) pendingByApp[ticket.application].pending++;
+                }
+                if (ticket.closedTime && ticket.slaSuccess) stats.slaSuccess++;
+                if(pendingByApp[ticket.application]) pendingByApp[ticket.application].total++;
+            });
+            stats.slaPercentage = stats.closed > 0 ? ((stats.slaSuccess / stats.closed) * 100).toFixed(1) : '0.0';
+            return { overallStats: stats, pendingByApp };
+        }
+
+        function renderOverallStats(stats) {
+            document.getElementById('overall-stats-content').innerHTML = `
+                <div class="stat-card total"><div class="stat-label">Total Tickets</div><div class="stat-value">${stats.totalTickets}</div></div>
+                <div class="stat-card open"><div class="stat-label">Open Tickets</div><div class="stat-value">${stats.open}</div></div>
+                <div class="stat-card progress"><div class="stat-label">In Progress Tickets</div><div class="stat-value">${stats.progress}</div></div>
+                <div class="stat-card closed"><div class="stat-label">Closed Tickets</div><div class="stat-value">${stats.closed}</div></div>`;
+        }
+
+        function renderPendingSummary(pendingByApp) {
+             let pendingContentHTML = '';
+             Object.values(pendingByApp).forEach(app => {
+                if (app.total > 0) {
+                     pendingContentHTML += `<div class="pending-card" style="border-left: 5px solid ${app.color};">
+                        <div class="stat-label"><i class="${app.icon}" style="color: ${app.color};"></i> ${app.name}</div>
+                        <div class="stat-value" style="color: ${app.color};">${app.pending} / ${app.total}</div>
+                        <div class="stat-label" style="margin-top: 10px; font-size: 0.8em; opacity: 0.8;">Pending / Total</div>
+                    </div>`;
+                }
+            });
+            document.getElementById('pending-ticket-summary').innerHTML = pendingContentHTML;
+        }
+        
+        function getGrandTotalCircuitSummary() {
+            const grandTotal = {};
+            Object.keys(applicationNames).forEach(key => grandTotal[key] = { appName: applicationNames[key].split('(')[1].replace(')','').trim(), total: 0, service: {} });
+            
+            Object.values(circuitSummaryData).forEach(customerData => {
+                for (const appKey in customerData) {
+                    if (grandTotal[appKey]) {
+                        const app = customerData[appKey];
+                        grandTotal[appKey].total += app.total;
+                        for (const serviceName in app.service) {
+                            grandTotal[appKey].service[serviceName] = (grandTotal[appKey].service[serviceName] || 0) + app.service[serviceName];
+                        }
+                    }
+                }
+            });
+            return grandTotal;
+        }
+
+        function renderCircuitSummary(customerName) {
+            const summaryTitle = document.getElementById('circuit-summary-title');
+            const summarySection = document.getElementById('circuit-summary-section');
+            let summaryData = customerName ? circuitSummaryData[customerName] : getGrandTotalCircuitSummary();
+            
+            if (!summaryData || Object.keys(summaryData).length === 0) {
+                summaryTitle.style.display = 'none';
+                summarySection.style.display = 'none';
+                return;
+            }
+            summaryTitle.style.display = 'flex';
+            document.getElementById('current-customer-name').textContent = customerName || 'All Customers (รวมทุกบริษัท)';
+            summarySection.style.display = 'grid';
+
+            let html = '';
+            for(const appKey in summaryData) {
+                const app = summaryData[appKey];
+                const cardClass = appKey.replace(/-/g, '');
+                let serviceListHtml = '<ul class="circuit-service-list">';
+                const servicesToShow = Object.entries(app.service).filter(([, count]) => count > 0).sort((a, b) => b[1] - a[1]);
+                servicesToShow.forEach(([serviceName, serviceCount]) => {
+                    serviceListHtml += `<li><span>${serviceName}</span><strong>${serviceCount}</strong></li>`;
+                });
+                serviceListHtml += '</ul>';
+                html += `<div class="circuit-card ${cardClass}"><h4>${app.appName}</h4><div class="circuit-total">${app.total}</div>${serviceListHtml}</div>`;
+            }
+            summarySection.innerHTML = html;
+        }
+
+        function filterTickets() {
+            const searchVal = document.getElementById('universalSearch').value.toLowerCase();
+            const appVal = document.getElementById('appFilter').value;
+            const startDateVal = document.getElementById('startDate').value;
+            const endDateVal = document.getElementById('endDate').value;
+            
+            let customerName = null;
+            if (searchVal.includes('customer a')) customerName = 'Customer A';
+            else if (searchVal.includes('customer b')) customerName = 'Customer B';
+            else if (searchVal.includes('customer c')) customerName = 'Customer C';
+            renderCircuitSummary(customerName);
+
+            return masterTicketData.filter(ticket => {
+                const matchSearch = !searchVal || ticket.id.toLowerCase().includes(searchVal) || ticket.subject.toLowerCase().includes(searchVal) || ticket.company.toLowerCase().includes(searchVal);
+                const matchApp = appVal === 'all' || ticket.application === appVal;
+                const ticketDate = new Date(ticket.date.split(' ')[0]);
+                const matchStartDate = !startDateVal || ticketDate >= new Date(startDateVal);
+                const matchEndDate = !endDateVal || ticketDate <= new Date(endDateVal);
+                return matchSearch && matchApp && matchStartDate && matchEndDate;
+            });
+        }
+        
+        function createHierarchicalList(data) {
+            const hierarchicalList = [];
+            const childTicketsToExclude = new Set();
+            const filteredIds = new Set(data.map(t => t.id));
+            data.filter(t => relationshipMap[t.id]?.type === 'Parent').forEach(parent => {
+                hierarchicalList.push(parent);
+                relationshipMap[parent.id]?.children.forEach(childRef => {
+                    if (filteredIds.has(childRef.id)) {
+                        const childTicket = data.find(t => t.id === childRef.id);
+                        if(childTicket) {
+                            hierarchicalList.push({ ...childTicket, isChildOfParent: true }); 
+                            childTicketsToExclude.add(childTicket.id);
+                        }
+                    }
+                });
+            });
+            data.filter(t => !childTicketsToExclude.has(t.id) && relationshipMap[t.id]?.type !== 'Parent').forEach(ticket => {
+                hierarchicalList.push(ticket);
+            });
+            return hierarchicalList;
+        }
+
+        function renderTicketTable(data, tableBodyId) {
+            const tbody = document.getElementById(tableBodyId);
+            tbody.innerHTML = ``;
+            if (!tbody) return;
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 30px; color: #7f8c7d;">ไม่พบข้อมูล Ticket ตามเงื่อนไขที่ค้นหา</td></tr>`;
+                return;
+            }
+            const colCount = tbody.closest('table').querySelector('thead tr').children.length;
+            data.forEach(ticket => {
+                const relationshipInfo = relationshipMap[ticket.id]; 
+                let relationshipIcon = '<i class="fas fa-minus-circle" title="Standard Ticket" style="color:#6c757d;"></i>', relationshipText = 'Standard';
+                if (relationshipInfo) {
+                    relationshipText = relationshipInfo.type;
+                    if (relationshipInfo.type === 'Parent') relationshipIcon = '<i class="fas fa-sitemap" title="Parent Ticket" style="color:#0d6efd;"></i>';
+                    else if (relationshipInfo.type === 'Child') relationshipIcon = '<i class="fas fa-link" title="Child Ticket" style="color:#fd7e14;"></i>';
+                }
+                const row = document.createElement('tr');
+                row.className = 'clickable-row' + (ticket.isChildOfParent ? ' nested-child-row' : '');
+                row.dataset.ticketId = ticket.id;
+                
+                let innerHtml = `
+                    <td>${ticket.id}</td><td>${ticket.subject}</td><td>${ticket.company}</td>
+                    ${colCount === 8 ? `<td>${applicationNames[ticket.application] || ticket.application}</td>` : ''}
+                    <td><span class="servicetype-badge servicetype-${ticket.serviceType}">${ticket.serviceType}</span></td>
+                    <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
+                    <td><span class="priority-badge priority-${ticket.priority}">${ticket.priority}</span></td>
+                    <td>${relationshipIcon} ${relationshipText}</td>`;
+                row.innerHTML = innerHtml;
+
+                if (ticket.isChildOfParent && tableBodyId === 'universalTicketTableBody') {
+                    const firstCell = row.querySelector('td:first-child');
+                    firstCell.style.paddingLeft = '40px';
+                    firstCell.innerHTML = `<i class="fas fa-level-up-alt fa-rotate-90" style="color: #0d6efd; margin-right: 10px; font-size: 0.9em;"></i>` + firstCell.innerHTML;
+                }
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterAllTickets() {
+            const filteredData = filterTickets();
+            document.querySelector('.master-ticket-table-container').style.display = 'block';
+            renderTicketTable(createHierarchicalList(filteredData), 'universalTicketTableBody');
+            renderDashboardContent(filteredData);
+        }
+
+        function resetDashboard() {
+            ['universalSearch', 'startDate', 'endDate'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('appFilter').value = 'all';
+            document.querySelector('.master-ticket-table-container').style.display = 'none';
+            renderDashboardContent(masterTicketData);
+        }
+
+        function renderDashboardContent(data) {
+            const { overallStats, pendingByApp } = calculateStatsAndChartData(data);
+            renderOverallStats(overallStats);
+            renderPendingSummary(pendingByApp);
+            renderCircuitSummary(null); 
+            renderApplicationPerformanceCharts(data);
+            renderSlaBarChart(data);
+            renderDashboardRelationshipCharts(data);
+        }
+        
+        function destroyChart(chartId) {
+            if (chartInstances[chartId]) {
+                chartInstances[chartId].destroy();
+                delete chartInstances[chartId];
+            }
+        }
+        
+        function renderApplicationPerformanceCharts(data) {
+            destroyChart('ticketCountChart');
+            destroyChart('overallSlaPieChart');
+            
+            const appStatusCounts = data.reduce((acc, ticket) => {
+                const app = applicationNames[ticket.application] || ticket.application;
+                if (!acc[app]) acc[app] = { open: 0, progress: 0, closed: 0 };
+                if (acc[app][ticket.status] !== undefined) acc[app][ticket.status]++;
+                return acc;
+            }, {});
+
+            const labels = Object.keys(appStatusCounts);
+            const datasets = ['open', 'progress', 'closed'].map(status => ({
+                label: status.charAt(0).toUpperCase() + status.slice(1),
+                data: labels.map(label => appStatusCounts[label][status]),
+                backgroundColor: chartColors[status]
+            }));
+
+            const ticketCountCtx = document.getElementById('ticketCountChart')?.getContext('2d');
+            if(ticketCountCtx) chartInstances['ticketCountChart'] = new Chart(ticketCountCtx, {
+                type: 'bar', data: { labels, datasets },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { mode: 'index', intersect: false }, legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+            });
+            
+            const closedTickets = data.filter(t => t.status === 'closed');
+            const slaSuccessCount = closedTickets.filter(t => t.slaSuccess).length;
+            const successPercentage = closedTickets.length > 0 ? ((slaSuccessCount / closedTickets.length) * 100) : 0;
+
+            const centerTextPlugin = {
+                id: 'centerText', afterDraw: (chart) => {
+                    let ctx = chart.ctx; ctx.save();
+                    let centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                    let centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.font = 'bold 32px Inter'; ctx.fillStyle = chartColors.slaSuccess;
+                    ctx.fillText(`${successPercentage.toFixed(1)}%`, centerX, centerY - 10);
+                    ctx.font = '16px Inter'; ctx.fillStyle = '#6c757d'; ctx.fillText('Success', centerX, centerY + 20);
+                    ctx.restore();
+                }
+            };
+            
+            const overallSlaCtx = document.getElementById('overallSlaPieChart')?.getContext('2d');
+            if(overallSlaCtx) chartInstances['overallSlaPieChart'] = new Chart(overallSlaCtx, {
+                type: 'doughnut',
+                data: { labels: ['SLA Success', 'SLA Failure'], datasets: [{ data: [slaSuccessCount, closedTickets.length - slaSuccessCount], backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], borderWidth: 0 }] },
+                plugins: [centerTextPlugin],
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } } }
+            });
+        }
+        
+        function renderSlaBarChart(data) {
+            const slaSection = document.getElementById('sla-comparison-section');
+            if(!slaSection) return;
+            slaSection.innerHTML = ''; 
+            
+            const percentages = Object.keys(applicationNames).map(appKey => {
+                const appData = data.filter(t => t.application === appKey && t.status === 'closed');
+                return appData.length > 0 ? (appData.filter(t => t.slaSuccess).length / appData.length) * 100 : 0;
+            });
+
+            const container = document.createElement('div');
+            container.className = 'chart-container';
+            container.innerHTML = `<h2 class="chart-title"><i class="fas fa-chart-bar"></i> SLA Success Rate by Application</h2><div class="chart-wrapper"><canvas id="slaBarChart"></canvas></div>`;
+            slaSection.appendChild(container);
+            
+            destroyChart('slaBarChart');
+            const ctx = document.getElementById('slaBarChart').getContext('2d');
+            chartInstances['slaBarChart'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.values(applicationNames),
+                    datasets: [{
+                        label: 'SLA Success Rate (%)', data: percentages,
+                        backgroundColor: Object.values(chartColors).slice(0, 4),
+                        borderRadius: 5, barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } }
+                }
+            });
+        }
+        
+        function renderDashboardRelationshipCharts(data) {
+            destroyChart('dashboardParentTicketChart');
+            destroyChart('dashboardChildDistributionChart');
+            const parentTickets = data.filter(t => relationshipMap[t.id]?.type === 'Parent');
+            const parentAppCounts = parentTickets.reduce((acc, t) => { acc[t.application] = (acc[t.application] || 0) + 1; return acc; }, {});
+            const childTickets = data.filter(t => relationshipMap[t.id]?.type === 'Child');
+            const childAppCounts = childTickets.reduce((acc, t) => { acc[t.application] = (acc[t.application] || 0) + 1; return acc; }, {});
+            
+            const parentChartCtx = document.getElementById('dashboardParentTicketChart')?.getContext('2d');
+            if (parentChartCtx && parentTickets.length > 0) {
+                chartInstances['dashboardParentTicketChart'] = new Chart(parentChartCtx, {
+                    type: 'pie', data: { labels: Object.keys(parentAppCounts).map(k => applicationNames[k]), datasets: [{ data: Object.values(parentAppCounts), backgroundColor: Object.keys(parentAppCounts).map(k => chartColors[k.replace('-','')]), hoverOffset: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            } else if(parentChartCtx) { parentChartCtx.canvas.parentNode.innerHTML = '<div style="text-align:center; padding: 20px;">ไม่พบ Parent Ticket</div>'; }
+            
+            const childChartCtx = document.getElementById('dashboardChildDistributionChart')?.getContext('2d');
+            if (childChartCtx && childTickets.length > 0) {
+                chartInstances['dashboardChildDistributionChart'] = new Chart(childChartCtx, {
+                    type: 'bar', data: { labels: Object.keys(childAppCounts).map(k => applicationNames[k]), datasets: [{ label: 'Child Tickets', data: Object.values(childAppCounts), backgroundColor: Object.keys(childAppCounts).map(k => chartColors[k.replace('-','')]) }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            } else if(childChartCtx) { childChartCtx.canvas.parentNode.innerHTML = '<div style="text-align:center; padding: 20px;">ไม่พบ Child Ticket</div>'; }
+        }
+
+        function renderTicketDetails(ticket, colspan) {
+            const closedTimeHtml = ticket.closedTime ? `<span style="color: #28a745; font-weight: 700;">${ticket.closedTime}</span>` : '<span style="color: #dc3545; font-weight: 700;">N/A (Still Open)</span>';
+            const slaHtml = ticket.closedTime ? (ticket.slaSuccess ? '<span class="status-badge status-closed">Success (4h)</span>' : '<span class="status-badge status-open">Failure (4h)</span>') : '<span class="status-badge status-progress">Pending</span>';
+            let relationshipHtml = `<div class="detail-item"><strong>Ticket Relationship</strong><span>Standalone (ไม่มีความสัมพันธ์)</span></div>`;
+            if (relationshipMap[ticket.id]?.type === 'Parent') {
+                const childListHtml = relationshipMap[ticket.id].children.length > 0 ? relationshipMap[ticket.id].children.map(c => `<li><i class="fas fa-link" style="color:#fd7e14;"></i> <strong>${c.id}</strong> (${c.name})</li>`).join('') : '<li><i class="fas fa-minus-circle" style="color:#7f8c8d;"></i> ไม่มี Child Ticket</li>';
+                relationshipHtml = `<div class="detail-item" style="grid-column: span 3;"><strong>Child Tickets (${relationshipMap[ticket.id].children.length} รายการ)</strong><ul style="list-style: none; padding-left: 0; margin-top: 5px; font-size: 0.95em;">${childListHtml}</ul></div>`;
+            } else if (relationshipMap[ticket.id]?.type === 'Child') {
+                const parent = relationshipMap[ticket.id].parent;
+                relationshipHtml = `<div class="detail-item"><strong><i class="fas fa-sitemap" style="color:#0d6efd;"></i> Parent Ticket ID</strong><span style="color: #0d6efd; font-weight: 700;">${parent.id}</span></div><div class="detail-item"><strong>Parent Application</strong><span>${parent.name}</span></div>`;
+            }
+            let timelineHtml = '';
+            if (ticket.timeline && ticket.timeline.length > 0) {
+                const timelineItems = ticket.timeline.slice().reverse().map(item => `<div class="timeline-item"><div class="timeline-time">${item.date}</div><div class="timeline-action">${item.action}</div><div class="timeline-user"><i class="fas fa-user"></i> ผู้ดำเนินการ: ${item.user}</div></div>`).join('');
+                timelineHtml = `<div style="grid-column: 1 / -1;"><h5 class="timeline-title"><i class="fas fa-history"></i> Progressive Timeline History</h5><div class="timeline-container">${timelineItems}</div></div>`;
+            }
+            return `<tr class="detail-row" data-detail-for="${ticket.id}"><td colspan="${colspan}"><div class="ticket-details-container"><div class="details-summary"><h4 style="color: #28a745;">Ticket ID: ${ticket.id} (${applicationNames[ticket.application]})</h4><button onclick="hideTicketDetail(this)" style="background: none; border: none; color: #dc3545; font-weight: 700; cursor: pointer;"><i class="fas fa-times-circle"></i> ปิดรายละเอียด</button></div>
+                        <div class="details-content-grid">
+                            <div class="detail-item"><strong>Ticket ID</strong><span>${ticket.id}</span></div><div class="detail-item"><strong>Application</strong><span>${applicationNames[ticket.application]}</span></div>
+                            <div class="detail-item"><strong>SID</strong><span>${ticket.sid || 'N/A'}</span></div><div class="detail-item"><strong>CID</strong><span>${ticket.cid || 'N/A'}</span></div>
+                            <div class="detail-item"><strong>Company</strong><span>${ticket.company}</span></div><div class="detail-item"><strong>Created Date</strong><span>${ticket.date}</span></div>
+                            <div class="detail-item"><strong>Closed Date</strong>${closedTimeHtml}</div><div class="detail-item"><strong>SLA Status</strong>${slaHtml}</div>
+                            ${relationshipHtml}
+                            <div class="detail-item" style="grid-column: 1 / -1;"><strong>Description</strong><span>${ticket.description || 'No description available.'}</span></div>
+                            ${timelineHtml}
+                        </div></div></td></tr>`;
+        }
+
+        function hideTicketDetail(button) {
+            const detailRow = button.closest('.detail-row');
+            if(detailRow) {
+                const dataRow = document.querySelector(`.clickable-row[data-ticket-id="${detailRow.dataset.detailFor}"]`);
+                if(dataRow) dataRow.classList.remove('active-row');
+                detailRow.remove();
+            }
+        }
+
+        function handleDataRowClick(event) {
+            let target = event.target.closest('.clickable-row');
+            if (target && !event.target.closest('.clickable-child-id')) {
+                const ticketId = target.dataset.ticketId;
+                const ticket = masterTicketData.find(t => t.id === ticketId);
+                if (!ticket) return;
+                const table = target.closest('table');
+                const colspan = table.querySelector('thead tr').children.length;
+                const isDetailOpen = target.nextElementSibling?.dataset.detailFor === ticketId;
+                
+                table.querySelectorAll('.detail-row').forEach(row => row.remove());
+                table.querySelectorAll('.active-row').forEach(row => row.classList.remove('active-row'));
+                
+                if (!isDetailOpen) {
+                    target.classList.add('active-row');
+                    target.insertAdjacentHTML('afterend', renderTicketDetails(ticket, colspan));
+                }
+            }
+        }
+        
+        function handleRelationshipTableClick(event) {
+            const childIdSpan = event.target.closest('.clickable-child-id');
+            if (childIdSpan) {
+                const childId = childIdSpan.dataset.ticketId;
+                const parentRow = childIdSpan.closest('.clickable-row');
+                const parentId = parentRow.dataset.ticketId;
+
+                const childTicket = masterTicketData.find(t => t.id === childId);
+                const parentTicket = masterTicketData.find(t => t.id === parentId);
+                
+                if (childTicket && parentTicket && parentRow) {
+                    const table = parentRow.closest('table');
+                    const colspan = table.querySelector('thead tr').children.length;
+                    const isDetailOpen = parentRow.nextElementSibling?.dataset.detailFor === parentId;
+                    
+                    table.querySelectorAll('.detail-row').forEach(row => row.remove());
+                    table.querySelectorAll('.active-row').forEach(row => row.classList.remove('active-row'));
+                    
+                    if (!isDetailOpen) {
+                        parentRow.classList.add('active-row');
+                        const parentDetails = renderTicketDetails(parentTicket, colspan);
+                        const childDetails = renderTicketDetails(childTicket, colspan);
+                        parentRow.insertAdjacentHTML('afterend', parentDetails + childDetails);
+                    }
+                }
+            }
+        }
+        
+        function renderRelationshipTab(){
+            const tab = document.getElementById('relationships');
+            if(!tab) return;
+            tab.innerHTML = `
+                <h2 class="section-title"><i class="fas fa-project-diagram"></i> Parent-Child Relationship (Detailed View)</h2>
+                <div class="filter-controls-container">
+                     <h2 class="section-title"><i class="fas fa-search"></i> ค้นหา Parent Ticket</h2>
+                    <div class="filter-inputs">
+                        <input type="text" id="relationshipSearch" placeholder="ค้นหาด้วย ID หรือ Subject" style="flex-grow: 2;"/>
+                        <select id="relationshipAppFilter"><option value="all">ทุก Application</option><option value="gt4u">GT4U</option><option value="jira-cloud">JIRA (CLOUD HM)</option><option value="jira-cbe">JIRA (CBE)</option><option value="clickup">ClickUp (BNG)</option></select>
+                        <input type="date" id="relationshipStartDate" style="max-width: 180px;" title="จากวันที่เริ่มต้น" />
+                        <input type="date" id="relationshipEndDate" style="max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
+                        <button onclick="filterRelationshipTable()"><i class="fas fa-search"></i> ค้นหา</button>
+                        <button onclick="resetRelationshipFilter()" style="background: #6c757d;"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                    </div>
+                </div>
+                <div class="tickets-table-container">
+                    <h2 class="section-title"><i class="fas fa-sitemap"></i> Parent-Child Relationship Map</h2>
+                    <table class="tickets-table" id="relationships-main-table">
+                        <thead><tr><th>Parent Ticket (Click for Detail)</th><th>Service Type</th><th>Status / Priority</th><th>Child Tickets (Click ID to view)</th></tr></thead>
+                        <tbody id="relationships-table-body"></tbody>
+                    </table>
+                </div>
+                <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-chart-area"></i> Relationship Charts Summary</h2>
+                <div class="app-charts-grid">
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="relationshipParentTicketChart"></canvas></div></div>
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="relationshipChildDistributionChart"></canvas></div></div>
+                </div>`;
+            filterRelationshipTable();
+            document.getElementById('relationships-main-table')?.addEventListener('click', handleRelationshipTableClick);
+        }
+
+        function filterRelationshipTable() {
+            const searchVal = document.getElementById('relationshipSearch').value.toLowerCase();
+            const appVal = document.getElementById('relationshipAppFilter').value;
+            const startDateVal = document.getElementById('relationshipStartDate').value;
+            const endDateVal = document.getElementById('relationshipEndDate').value;
+            const filteredParents = relationshipData.filter(rel => {
+                const parent = rel.parent;
+                const matchSearch = !searchVal || parent.id.toLowerCase().includes(searchVal) || parent.subject.toLowerCase().includes(searchVal);
+                const matchApp = appVal === 'all' || parent.application === appVal;
+                const ticketDate = new Date(parent.date.split(' ')[0]);
+                return matchSearch && matchApp && (!startDateVal || ticketDate >= new Date(startDateVal)) && (!endDateVal || ticketDate <= new Date(endDateVal));
+            });
+            renderRelationshipTable(filteredParents);
+            renderDashboardRelationshipCharts(filteredParents.flatMap(r => [r.parent, ...r.children]));
+        }
+        
+        function resetRelationshipFilter() {
+            ['relationshipSearch', 'relationshipStartDate', 'relationshipEndDate'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('relationshipAppFilter').value = 'all';
+            filterRelationshipTable();
+        }
+
+        function renderRelationshipTable(relationships) {
+            const tbody = document.getElementById('relationships-table-body');
+            tbody.innerHTML = '';
+            if (relationships.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #7f8c7d;">ไม่พบ Parent Ticket</td></tr>`;
+                return;
+            }
+            relationships.forEach(rel => {
+                const parent = rel.parent;
+                const childIds = rel.children.map(c => `<span class="clickable-child-id" data-ticket-id="${c.id}" style="color:var(--primary-color); text-decoration: underline; cursor: pointer;">${c.id}</span>`).join(', ');
+                const row = document.createElement('tr');
+                row.className = 'clickable-row parent-row';
+                row.dataset.ticketId = parent.id;
+                row.innerHTML = `<td><strong>${parent.id}</strong>: ${parent.subject}<br><small>${applicationNames[parent.application]}</small></td><td><span class="servicetype-badge servicetype-${parent.serviceType}">${parent.serviceType}</span></td><td><span class="status-badge status-${parent.status}">${parent.status}</span><span class="priority-badge priority-${parent.priority}">${parent.priority}</span></td><td>${childIds || 'ไม่มี'}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function renderAppTab(appKey) {
+            const appTab = document.getElementById(appKey);
+            const appName = applicationNames[appKey];
+            appTab.innerHTML = `
+                <h2 class="section-title"><i class="fas fa-ticket-alt"></i> ${appName} Ticket Dashboard</h2>
+                <div class="filter-controls-container">
+                    <h2 class="section-title"><i class="fas fa-search"></i> ค้นหา Ticket ใน ${appName}</h2>
+                    <div class="filter-inputs">
+                        <input type="text" id="search-${appKey}" placeholder="ค้นหาด้วย ID, Subject, หรือชื่อบริษัท" style="flex-grow: 4;"/> 
+                        <input type="date" id="startDate-${appKey}" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
+                        <input type="date" id="endDate-${appKey}" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
+                        <button onclick="resetAppFilter('${appKey}')" style="flex-grow: 0; background: #6c757d;"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                        <button onclick="filterAppTickets('${appKey}')" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
+                    </div>
+                </div>
+                <div id="${appKey}-stats-container" class="stats-grid"></div>
+                <h2 class="section-title" style="margin-top: 40px;"><i class="fas fa-chart-area"></i> Performance Metrics</h2>
+                <div class="app-charts-grid">
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Status Distribution</h2><div class="chart-wrapper"><canvas id="${appKey}-statusChart"></canvas></div></div>
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Service Type Breakdown</h2><div class="chart-wrapper"><canvas id="${appKey}-serviceTypeChart"></canvas></div></div>
+                    <div class="chart-container" style="grid-column: span 2;"><h2 class="chart-title"><i class="fas fa-clock"></i> Average Time to Resolution (Hours)</h2><div class="chart-wrapper"><canvas id="${appKey}-avgTimeChart"></canvas></div></div>
+                </div>
+                <div class="tickets-table-container">
+                    <h3 class="section-title" style="font-size: 1.2em;"><i class="fas fa-list-ul"></i> Ticket List for ${appName}</h3>
+                    <table class="tickets-table app-ticket-table">
+                        <thead><tr><th>Ticket ID</th><th>Subject</th><th>Company Name</th><th>Service Type</th><th>Status</th><th>Priority</th><th>ความสัมพันธ์</th></tr></thead>
+                        <tbody id="${appKey}-ticketTableBody"></tbody>
+                    </table>
+                </div>`;
+            
+            updateAppTab(appKey, masterTicketData.filter(t => t.application === appKey));
+        }
+
+        function updateAppTab(appKey, data) {
+            const { overallStats } = calculateStatsAndChartData(data);
+            const statsContainer = document.getElementById(`${appKey}-stats-container`);
+            statsContainer.innerHTML = `
+                <div class="stat-card total"><div class="stat-label">Total Tickets</div><div class="stat-value">${overallStats.totalTickets}</div></div>
+                <div class="stat-card open"><div class="stat-label">Open Tickets</div><div class="stat-value">${overallStats.open}</div></div>
+                <div class="stat-card progress"><div class="stat-label">In Progress Tickets</div><div class="stat-value">${overallStats.progress}</div></div>
+                <div class="stat-card closed"><div class="stat-label">Closed Tickets</div><div class="stat-value">${overallStats.closed}</div></div>`;
+
+            renderAppTabCharts(data, appKey);
+            renderAppTabTicketList(data, `${appKey}-ticketTableBody`);
+        }
+
+        function filterAppTickets(appKey) {
+            const searchVal = document.getElementById(`search-${appKey}`).value.toLowerCase();
+            const startDateVal = document.getElementById(`startDate-${appKey}`).value;
+            const endDateVal = document.getElementById(`endDate-${appKey}`).value;
+            const filteredData = masterTicketData.filter(t => t.application === appKey && (!searchVal || t.id.toLowerCase().includes(searchVal) || t.subject.toLowerCase().includes(searchVal) || t.company.toLowerCase().includes(searchVal)) && (!startDateVal || new Date(t.date.split(' ')[0]) >= new Date(startDateVal)) && (!endDateVal || new Date(t.date.split(' ')[0]) <= new Date(endDateVal)));
+            updateAppTab(appKey, filteredData);
+        }
+
+        function resetAppFilter(appKey) {
+            document.getElementById(`search-${appKey}`).value = '';
+            document.getElementById(`startDate-${appKey}`).value = '';
+            document.getElementById(`endDate-${appKey}`).value = '';
+            updateAppTab(appKey, masterTicketData.filter(t => t.application === appKey));
+        }
+
+        function renderAppTabTicketList(data, tableBodyId) {
+            const tbody = document.getElementById(tableBodyId);
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #7f8c7d;">ไม่พบข้อมูล Ticket</td></tr>`;
+                return;
+            }
+            data.forEach(ticket => {
+                const relationshipInfo = relationshipMap[ticket.id]; 
+                let relationshipIcon = '<i class="fas fa-minus-circle" title="Standard Ticket" style="color:#6c757d;"></i>', relationshipText = 'Standard';
+                if (relationshipInfo) {
+                    relationshipText = relationshipInfo.type;
+                    if (relationshipInfo.type === 'Parent') relationshipIcon = '<i class="fas fa-sitemap" title="Parent Ticket" style="color:#0d6efd;"></i>';
+                    else if (relationshipInfo.type === 'Child') relationshipIcon = '<i class="fas fa-link" title="Child Ticket" style="color:#fd7e14;"></i>';
+                }
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.dataset.ticketId = ticket.id;
+                row.innerHTML = `<td>${ticket.id}</td><td>${ticket.subject}</td><td>${ticket.company}</td><td><span class="servicetype-badge servicetype-${ticket.serviceType}">${ticket.serviceType}</span></td><td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td><td><span class="priority-badge priority-${ticket.priority}">${ticket.priority}</span></td><td>${relationshipIcon} ${relationshipText}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function renderAppTabCharts(data, appKey) {
+            const appId = appKey.replace(/-/g, '');
+            const appColor = chartColors[appId];
+            const statusCounts = data.reduce((acc, ticket) => { acc[ticket.status] = (acc[ticket.status] || 0) + 1; return acc; }, {});
+            const statusData = ['open', 'progress', 'closed'].map(s => statusCounts[s] || 0);
+            
+            destroyChart(`${appKey}-statusChart`);
+            const statusCtx = document.getElementById(`${appKey}-statusChart`)?.getContext('2d');
+            if(statusCtx) {
+                chartInstances[`${appKey}-statusChart`] = new Chart(statusCtx, {
+                    type: 'pie', data: { labels: ['Open', 'In Progress', 'Closed'], datasets: [{ data: statusData, backgroundColor: [chartColors.open, chartColors.progress, chartColors.closed], hoverOffset: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+            const serviceTypeCounts = data.reduce((acc, ticket) => { acc[ticket.serviceType] = (acc[ticket.serviceType] || 0) + 1; return acc; }, {});
+            destroyChart(`${appKey}-serviceTypeChart`);
+            const serviceTypeCtx = document.getElementById(`${appKey}-serviceTypeChart`)?.getContext('2d');
+            if(serviceTypeCtx) {
+                chartInstances[`${appKey}-serviceTypeChart`] = new Chart(serviceTypeCtx, {
+                    type: 'bar', data: { labels: Object.keys(serviceTypeCounts), datasets: [{ label: 'Service Type Count', data: Object.values(serviceTypeCounts), backgroundColor: appColor }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            }
+
+            // New Avg Resolution Time Chart
+            const closedTickets = data.filter(t => t.closedTime);
+            let totalHours = 0;
+            if (closedTickets.length > 0) {
+                totalHours = closedTickets.reduce((sum, ticket) => {
+                    const startDate = new Date(ticket.date);
+                    const endDate = new Date(ticket.closedTime);
+                    const diffMs = endDate - startDate;
+                    return sum + (diffMs / (1000 * 60 * 60));
+                }, 0);
+            }
+            const avgHours = closedTickets.length > 0 ? (totalHours / closedTickets.length) : 0;
+            
+            destroyChart(`${appKey}-avgTimeChart`);
+            const avgTimeCtx = document.getElementById(`${appKey}-avgTimeChart`)?.getContext('2d');
+            if(avgTimeCtx) {
+                 chartInstances[`${appKey}-avgTimeChart`] = new Chart(avgTimeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Average Time'],
+                        datasets: [{ label: 'Hours', data: [avgHours], backgroundColor: appColor, borderRadius: 5, barThickness: 50 }]
+                    },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true, title: { display: true, text: 'Hours' } } }, plugins: { legend: { display: false } } }
+                });
+            }
+        }
+
+        function runInitialization() {
+            buildRelationshipMap();
+            renderDashboardContent(masterTicketData); 
+            document.querySelector('.container').addEventListener('click', handleDataRowClick);
+        }
+
+        document.addEventListener('DOMContentLoaded', runInitialization);
+    </script>
 </body>
 </html>
