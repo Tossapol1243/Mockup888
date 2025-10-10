@@ -62,7 +62,7 @@
         .pending-card {
             background: var(--card-background-color); border: 1px solid var(--border-color); color: var(--text-dark);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; transition: all 0.3s ease;
-            cursor: pointer; /* MODIFIED: Add pointer cursor */
+            cursor: pointer; 
         }
         .pending-card .stat-value { font-size: 2.2em; font-weight: 700; }
         .pending-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10; }
@@ -264,7 +264,7 @@
             { id: 'JC-0047', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Load Balancer Configuration Change', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 09:00', closedTime: null, slaSuccess: false, description: 'Request to modify LB session settings.', timeline: [ { date: '2025-10-02 09:00', user: 'Customer B', action: 'New request submitted.'} ]},
             { id: 'JC-0048', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Instance Creation Request', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 14:00', closedTime: '2025-10-03 14:00', slaSuccess: false, description: 'New VM created for testing environment.', timeline: [ { date: '2025-10-03 14:00', user: 'Automation Script', action: 'VM created and details sent to customer. Ticket Closed.'} ]},
             { id: 'JC-0050', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Cloud Service Monitoring Setup', status: 'progress', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-03 08:00', closedTime: null, slaSuccess: false, description: 'Implementing new Azure Monitor dashboards.', timeline: [ { date: '2025-10-03 08:00', user: 'Project Manager', action: 'Task created for monitoring setup.'} ]},
-            { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Parent', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Annual security audit in progress. Findings require remediation across multiple teams.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.'} ]}, // MODIFIED: Changed to Parent
+            { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Parent', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Annual security audit in progress. Findings require remediation across multiple teams.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.'} ]}, 
             { id: 'JCB-011', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Firewall Rule Adjustment', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cbe', relationship: 'Child', date: '2025-09-30 11:00', closedTime: '2025-10-01 11:00', slaSuccess: true, description: 'Opened port 8080 for temporary access.', timeline: [ { date: '2025-10-01 11:00', user: 'CBE Team', action: 'Rules implemented and tested. Ticket Closed.'}, { date: '2025-09-30 11:00', user: 'Parent Ticket GT-0987', action: 'Child ticket created to adjust firewall rules.'} ]},
             { id: 'JCB-012', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Vulnerability Scan Report', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Generated weekly vulnerability scan report.', timeline: [ { date: '2025-10-01 10:00', user: 'System', action: 'Report generated and attached.'} ]},
             { id: 'JCB-013', sid: 'SID-23948105', cid: 'CID-234512', subject: 'New WAF Policy Implementation', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-02 12:00', closedTime: '2025-10-03 12:00', slaSuccess: true, description: 'Deployed new custom WAF rule.', timeline: [ { date: '2025-10-03 12:00', user: 'CBE Team', action: 'Policy deployed. Ticket Closed.'} ]},
@@ -274,13 +274,16 @@
             { id: 'CU-082', sid: 'SID-83749201', cid: 'CID-583921', subject: 'App Integration Testing', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'clickup', relationship: 'Standard', date: '2025-10-02 10:00', closedTime: null, slaSuccess: false, description: 'Testing phase for new integration.', timeline: [ { date: '2025-10-02 10:00', user: 'QA Team', action: 'Testing task created.'} ]},
             { id: 'CU-083', sid: 'SID-23948105', cid: 'CID-234512', subject: 'User Training Session Schedule', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: '2025-10-03 15:00', slaSuccess: true, description: 'Training scheduled for new module.', timeline: [ { date: '2025-10-03 15:00', user: 'Training Coordinator', action: 'Session scheduled. Ticket Closed.'} ]},
             { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.'} ]},
-            // --- NEW MOCKUP DATA ---
             { id: 'JC-0051', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Review Cloud Firewall Rules for Audit Finding', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:00', closedTime: null, slaSuccess: false, description: 'Review and update firewall rules based on security audit findings.', timeline: [ { date: '2025-09-29 10:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to address firewall rules.'} ]},
             { id: 'CU-085', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Schedule Remediation Tasks for Audit', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'clickup', relationship: 'Child', date: '2025-09-29 11:00', closedTime: null, slaSuccess: false, description: 'Create and assign tasks in ClickUp for all remediation activities.', timeline: [ { date: '2025-09-29 11:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to manage remediation tasks.'} ]},
+            // --- NEW TICKET FROM USER ---
+            { id: 'GT-1027', sid: '586225', cid: '586225', subject: 'Website access issue (cdd.go.th) on FTTX backup link', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'gt4u', relationship: 'Parent', date: '2025-02-21 10:12', closedTime: null, slaSuccess: false, description: 'Investigating a recurring issue where branch offices cannot access websites under the cdd.go.th domain whenever the primary connection fails over to the FTTX backup link. This issue affects all branches and requires a solution redesign.', timeline: [ { date: '2025-06-04 14:22', user: 'thitipan_t', action: 'Internal meeting with presales and NOC. Identified two main issues: 1. Some PCs need DNS/Chrome cache checks. 2. A long-term redesign is needed for when FTTX backup is active.'}, { date: '2025-05-27 18:19', user: 'thitipan_t', action: 'Internal meeting scheduled to find a conclusive solution.'}, { date: '2025-03-14 17:19', user: 'thitipan_t', action: 'Meeting with customer and vendors. Firewall policy drop identified as a potential cause due to asymmetric routing on MPLS.'}, { date: '2025-03-13 14:59', user: 'thitipan_t', action: 'NOC confirmed traffic reaches the HQ switch but is blocked by the Palo Alto firewall when on MPLS.'}, { date: '2025-02-23 19:40', user: 'chattip_k', action: 'Issue confirmed to affect all branches when FTTX backup is active. Presales team engaged for investigation.'}, { date: '2025-02-21 10:12', user: 'sorachai_y', action: 'Initial ticket opened regarding inability to access cdd.go.th websites.'} ]},
+            { id: 'JCB-015', sid: '586225', cid: '586225', subject: 'Firewall Policy Review for cdd.go.th Asymmetric Routing', status: 'open', serviceType: 'Request', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'jira-cbe', relationship: 'Child', date: '2025-03-15 10:00', closedTime: null, slaSuccess: false, description: 'Analyze and propose new Palo Alto firewall policies to resolve the asymmetric routing issue for cdd.go.th traffic originating from branch MPLS links during FTTX failover.', timeline: [ { date: '2025-03-15 10:00', user: 'Parent Ticket GT-1027', action: 'Child ticket created to address firewall policy review.'} ]},
         ];
         const relationshipData = [
             { parent: masterTicketData[0], children: [ masterTicketData[7], masterTicketData[13], masterTicketData[17] ] },
-            { parent: masterTicketData[12], children: [ masterTicketData[22], masterTicketData[23] ] } // MODIFIED: Added new relationship
+            { parent: masterTicketData[12], children: [ masterTicketData[22], masterTicketData[23] ] }, 
+            { parent: masterTicketData[24], children: [ masterTicketData[25] ] } // --- NEW RELATIONSHIP FROM USER'S TICKET
         ];
 
         // --- SCRIPT LOGIC ---
@@ -302,7 +305,7 @@
             document.getElementById(tabName).classList.add('active');
             if (evt.currentTarget) {
                 evt.currentTarget.classList.add('active');
-            } else { // Handle programmatic clicks
+            } else { 
                 document.querySelector(`.tab-btn[onclick*="'${tabName}'"]`).classList.add('active');
             }
 
@@ -347,9 +350,8 @@
 
         function renderPendingSummary(pendingByApp) {
              let pendingContentHTML = '';
-             Object.entries(pendingByApp).forEach(([appKey, app]) => { // MODIFIED: Get appKey
+             Object.entries(pendingByApp).forEach(([appKey, app]) => { 
                   if (app.total > 0) {
-                        // MODIFIED: Added onclick to switch tabs
                         pendingContentHTML += `<div class="pending-card" style="border-left: 5px solid ${app.color};" onclick="document.querySelector('.tab-btn[onclick*=\\'${appKey}\\']').click();">
                                   <div class="stat-label"><i class="${app.icon}" style="color: ${app.color};"></i> ${app.name}</div>
                                   <div class="stat-value" style="color: ${app.color};">${app.pending} / ${app.total}</div>
@@ -642,7 +644,6 @@
             } else if(childChartCtx) { childChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #7f8c7d;">ไม่พบ Child Ticket</div>'; }
         }
 
-        // --- MODIFIED: Reworked ticket detail rendering ---
         function renderTicketDetails(ticket, colspan) {
             const closedTimeHtml = ticket.closedTime ? `<span style="color: #28a745; font-weight: 700;">${ticket.closedTime}</span>` : '<span style="color: #dc3545; font-weight: 700;">N/A (Still Open)</span>';
             const slaHtml = ticket.closedTime ? (ticket.slaSuccess ? '<span class="status-badge" style="background-color:#e8f5e9; color:#4caf50;">Success</span>' : '<span class="status-badge" style="background-color:#fbe9e7; color:#ff5722;">Failure</span>') : '<span class="status-badge" style="background-color:#fff0e1; color:#fd7e14;">Pending</span>';
