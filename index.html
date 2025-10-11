@@ -124,6 +124,25 @@
         .priority-badge.priority-low { background-color: #e8f5e9; color: #4caf50; }
         .servicetype-badge { background-color: #f3e5f5; color: #9c27b0; }
         .sub-text { font-size: 0.85em; color: var(--text-light); display: block; margin-top: 4px;}
+        
+        /* --- NEW Child Ticket Badge Styles --- */
+        .child-ticket-badge {
+            display: inline-block;
+            background-color: #e9ecef;
+            color: var(--text-dark);
+            padding: 5px 12px;
+            margin: 2px 4px 2px 0;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .child-ticket-badge:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
 
         /* --- TICKET DETAIL VIEW REVAMP STYLES --- */
         .detail-row td { padding: 0 !important; }
@@ -141,19 +160,37 @@
         .relationship-list { list-style: none; padding-left: 0; margin-top: 5px; font-size: 1em; }
         .relationship-list li { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
 
-        .timeline-container { position: relative; padding-left: 25px; margin-top: 15px;}
+        /* --- NEW TIMELINE CARD STYLES --- */
+        .timeline-container { padding-left: 0; }
         .timeline-title { font-size: 1.2em; margin-bottom: 20px; color: var(--text-dark); }
-        .timeline-container::before { content: ''; position: absolute; left: 8px; top: 10px; bottom: 10px; width: 2px; background-color: #dbe2eb; }
-        .timeline-item { position: relative; margin-bottom: 20px; }
-        .timeline-item::before {
-            content: "\f111"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--primary-color);
-            background-color: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--primary-color); border-radius: 50%;
-            font-size: 10px; position: absolute; left: -27px; width: 20px; height: 20px; line-height: 1.3; text-align: center; top: 5px; z-index: 1;
+        .timeline-item {
+            background-color: var(--card-background-color);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .timeline-time { font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
-        .timeline-action { margin-bottom: 6px; white-space: pre-wrap; } 
-        .timeline-user { font-size: 0.9em; color: var(--text-light); }
-
+        .timeline-time {
+            font-weight: 700;
+            font-size: 0.9em;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+        .timeline-action {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        .timeline-user {
+            font-size: 0.85em;
+            color: var(--text-light);
+            text-align: right;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 8px;
+            margin-top: 10px;
+        }
 
         /* --- NEW Key Metric Card for App Tabs --- */
         .key-metric-card-wrapper { grid-column: span 2; }
@@ -279,51 +316,53 @@
             { id: 'GT-1027', sid: '586225', cid: '586225', subject: 'Website access issue (cdd.go.th) on FTTX backup link', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'gt4u', relationship: 'Parent', date: '2025-02-21 10:12', closedTime: null, slaSuccess: false, description: 'Investigating a recurring issue where branch offices cannot access websites under the cdd.go.th domain whenever the primary connection fails over to the FTTX backup link. This issue affects all branches and requires a solution redesign.', 
                 timeline: [
                     { date: '2025-06-04 14:22:56', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 14.15 น.ประชุมภายในกับ presale ตี้,2 Tier คุณเทพ,NOC แบงค์ ทางตี้แจ้งว่า ปัญหามี 2 เรื่องคือ 1.ศพจ เปิดเว็บไม่ได้บางเครื่องให้แนะนำลค.ให้เช็ค DNS ว่าเป็นของกรมหรือยัง,ทำการ update chrome หรือ clear chache 2.ศพช หรือ ศูนย์เรียนรู้ เปิดเว็บกรมฯไม่ได้หาก FTTX down การแก้ไขคือ ให้แก้ dns เป็นของกรมฯเท่านั้น และเร่งแก้ไข FTTX ส่่วนระยะยาวจะมีการ redesign ใหม่ รอทดสอบก่อน//ประชุมอีกครั้งเดือนกย.' },
-                    { date: '2025-05-28 14:20:05', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 2:17 PM ขอเชิญประชุมภายในเพื่อหาแนวทางการแก้ไขปัญหาสาขาไม่สามารถใช้งาน service ภายใต้ domain:cdd.go.th ได้ เมื่อเกิดเหตุ Link Backup FTTX down สามารถเข้าร่วมประชุมตาม Link ด้านล่างครับ (from theptai_s@xx.xx)' },
+                    { date: '2025-05-28 14:20:05', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 2:17 PM ขอเชิญประชุมภายในเพื่อหาแนวทางการแก้ไขปัญหาสาขาไม่สามารถใช้งาน service ภายใต้ domain:cdd.go.th ได้ เมื่อเกิดเหตุ Link Backup FTTX down สามารถเข้าร่วมประชุมตาม Link ด้านล่างครับ (from xxxx@yy.zz)' },
                     { date: '2025-05-28 14:18:48', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 1:54 PM วันพุธที่ 4 ช่วงบ่าย ได้ครับ (from theptai_s)' },
-                    { date: '2025-05-28 14:18:06', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 10:24 AM ขอเป็น วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น. ค่ะ (from napat_c@xx.xx)' },
+                    { date: '2025-05-28 14:18:06', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 10:24 AM ขอเป็น วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น. ค่ะ (from xxxx@yy.zz)' },
                     { date: '2025-05-27 18:19:13', user: 'thitipan_t', action: 'Mail Activity: Tuesday, May 27, 2025 6:13 PM เรียนทุกท่าน ขอนัดคุยภายในเพื่อหาข้อสรุป รบกวนทุกท่านแจ้ง slot ที่สะดวกให้ด้วยครับ (ใช้เวลาประมาณ 2 ชั่วโมง) วันศุกร์ที่ 30/5/2025 ช่วงเช้า 09:00-12:00 น. วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น.' },
-                    { date: '2025-05-26 10:01:02', user: 'chattip_k', action: 'Mail Activity: จ. 26/5/2568 9:58 Dear คุณคำ ผ่านมา 2 เดือนแล้วครับ ทำไมยังวนกลับมาที่เดิมครับ ควรหาทางแก้ไขได้แล้วนะครับ (from sorapong_l@xx.xx)' },
+                    { date: '2025-05-26 10:01:02', user: 'chattip_k', action: 'Mail Activity: จ. 26/5/2568 9:58 Dear คุณคำ ผ่านมา 2 เดือนแล้วครับ ทำไมยังวนกลับมาที่เดิมครับ ควรหาทางแก้ไขได้แล้วนะครับ (from xxxx@yy.zz)' },
                     { date: '2025-05-26 09:23:23', user: 'thitipan_t', action: 'Mail Activity: Monday, May 26, 2025 9:22 AM เรียน ตี้ครับ สำเนาเรียนคุณเทพ ตามที่ประชุมเมื่อ 14/3/2025 ซึ่งยังไม่ได้ข้อสรุป รบกวนปรึกษาแนวทางการแก้ไขด้วยครับ หรือหากได้ solution แล้วรบกวนแจ้งด้วยครับ (from napat)' },
                     { date: '2025-03-26 09:06:17', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: ต่อ..และคุณเทพไทแจ้งว่าขอปรึกษาภายในก่อนแล้วจะแจ้งให้ทราบอีกครั้ง เนื่องจากมีข้อกังวลหากมีการปรับเปลี่ยน solution อาจจะกระทบการใช้งานอย่างอื่นด้วยหรือไม่ ส่วนประเด็นเรื่องแก้ไขโดยให้ตัด DNS ภายนอก(8.8.8.8) ออกเพื่อให้เหลือเฉพาะ DNSของกรมฯ เพื่อให้ resolve ให้เป็น private IP ทาง vendor แจ้งว่าหาก DNS ของกรมฯใช้งานไม่ได้ก็จะทำให้กระทบการใช้งาน จึงไม่แนะนำให้แก้ด้วยวิธีนี้' },
                     { date: '2025-03-14 17:19:54', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 16.00 น.ประชุมกับลค.คุณขนม,vendor ที่ดู SDWAN ,ดู FW(i-secure),NOC คุณเทพไท,CC สุทธิคุณ ธิติพันธ์ ทาง vendor ที่ดู FW แจ้งว่าหากมีการเรียกเว็บผ่าน Link MPLS routing วิ่งผ่าน FW ขาไปกลับจะเป็นคนละทางกันทำให้โดน drop ด้วย policy ด้านความปลอดภัย(ก่อนหน้า whatchguard ไม่แน่ใจว่าทำไมใช้งานได้แต่เดิมก็มีปัญหาเรื่องช่องโหว่เยอะเหมือนกัน) แนะนำให้แยก SW และ Vlan ระหว่าง Link net และ MPLS ทาง presale' },
-                    { date: '2025-03-14 13:03:24', user: 'vittavat_p', action: 'Mail Activity: From: Napat Chorphantha <napat_c@xx.xx> Sent: Friday, March 14, 2025 1:02 PM To: Uraiwan Sarobol รบกวนขอเป็นเจ้าหน้า C Care เข้าร่วมประชุม เพราะทาง NOC ไม่ได้เข้า หากติดอะไร จะได้มีคนแจ้งประสานงานบอก NOC ช่วย tracert ping ตามที่เค้าขอมาใน Meeting ได้ค่ะ เนื่องจาก Presales มีนัดคุย Solution รอบสัญญาหน้า กับลูกค้าที่ THPD หากเสร็จทันทัน จะตามเข้าไปค่ะ' },
-                    { date: '2025-03-14 12:18:09', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:17 PM รบขอเวลาที่ทาง Khun Napat สะดวกครับ เนื่องจากทาง NOC ไม่ได้เข้าครับ ขอบคุณครับ (from napat_c@xx.xx)' },
-                    { date: '2025-03-14 12:16:37', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:06 PM มีนัดคุย Solution รอบสัญญาหน้า กับลูกค้าที่ THPD หากเสร็จทันทันจะตามเข้าไปค่ะ (from napat_c@xx.xx)' },
-                    { date: '2025-03-14 12:08:03', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:04 PM รบกวนทางทีม Presale เข้าประชุมร่วมกับทางลูกค้าครับ ขอบคุณครับ (from napat_c@xx.xx)' },
-                    { date: '2025-03-14 11:50:49', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:45 AM ให้ presales เข้าครับ ลค.ยืนยันไม่เคยใช้ได้มาก่อน (from sorapong_l@xx.xx)' },
-                    { date: '2025-03-14 11:34:29', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:33 AM เรียน NOC เนื่องจากทางลูกค้า กรมการพัฒนาชุมชน ขอให้เข้าร่วมประชุมตามอีเมล์ด้านล่าง รบกวนทาง NOC เข้าร่วมตามเวลาดังกล่าว ขอบคุณครับ. (to noc@xx.xx, nmc@xx.xx)' },
-                    { date: '2025-03-14 11:25:32', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:02 AM Dear C-Care ทางทีมดูแล firewall ขอนัดประชุม เพื่อตรวจสอบและแก้ไขปัญหาร่วมกัน ในวันนี้เวลา 16:00 ค่ะ Link การประชุมทางขนมจะสร้างให้อีกครั้งค่ะ (from naruemon.phu2022@zz.zz)' },
-                    { date: '2025-03-14 10:03:31', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 9:58 AM Dear C-Care ขออนุญาตเปิด e-mail ใหม่ อ้างอิง Ref.Issue เดิมค่ะ พร้อมเพิ่มทีม i-secure ที่ดูแล Firewall ส่วนกลางของกรมการพัฒนาชุมชน ในเมล์ค่ะ (from naruemon.phu2022@zz.zz)' },
-                    { date: '2025-03-13 16:25:08', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 4:20 PM เรียนทีม CC ขอบคุณค่ะ (from napat_c@xx.xx)' },
-                    { date: '2025-03-13 16:20:06', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 4:19 PM NOC 1 Tier และ NOC IOC ตรวจสอบโดย trace จากสาขาไปยัง web site IP 103.40.132.27 พบว่า routing วิ่งผ่าน MPLS ไปยัง Link HQ CID 586225 โดยไม่ผ่าน Internet ซึ่งผล trace ผ่าน switch cisco 3650 ไปถึง firewall Polo Alto แล้ว รบกวนประสานงานทีมที่ดู Firewall ตรวจสอบเพิ่มเติมด้วยครับ (from napat_c@xx.xx)' },
+                    { date: '2025-03-14 13:03:24', user: 'vittavat_p', action: 'Mail Activity: From: Napat Chorphantha <xxxx@yy.zz> Sent: Friday, March 14, 2025 1:02 PM To: Uraiwan Sarobol รบกวนขอเป็นเจ้าหน้า C Care เข้าร่วมประชุม เพราะทาง NOC ไม่ได้เข้า หากติดอะไร จะได้มีคนแจ้งประสานงานบอก NOC ช่วย tracert ping ตามที่เค้าขอมาใน Meeting ได้ค่ะ เนื่องจาก Presales มีนัดคุย Solution รอบสัญญาหน้า กับลูกค้าที่ THPD หากเสร็จทันทัน จะตามเข้าไปค่ะ' },
+                    { date: '2025-03-14 12:18:09', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:17 PM รบขอเวลาที่ทาง Khun Napat สะดวกครับ เนื่องจากทาง NOC ไม่ได้เข้าครับ ขอบคุณครับ (from xxxx@yy.zz)' },
+                    { date: '2025-03-14 12:16:37', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:06 PM มีนัดคุย Solution รอบสัญญาหน้า กับลูกค้าที่ THPD หากเสร็จทันทันจะตามเข้าไปค่ะ (from xxxx@yy.zz)' },
+                    { date: '2025-03-14 12:08:03', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:04 PM รบกวนทางทีม Presale เข้าประชุมร่วมกับทางลูกค้าครับ ขอบคุณครับ (from xxxx@yy.zz)' },
+                    { date: '2025-03-14 11:50:49', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:45 AM ให้ presales เข้าครับ ลค.ยืนยันไม่เคยใช้ได้มาก่อน (from xxxx@yy.zz)' },
+                    { date: '2025-03-14 11:34:29', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:33 AM เรียน NOC เนื่องจากทางลูกค้า กรมการพัฒนาชุมชน ขอให้เข้าร่วมประชุมตามอีเมล์ด้านล่าง รบกวนทาง NOC เข้าร่วมตามเวลาดังกล่าว ขอบคุณครับ. (to xxxx@yy.zz, xxxx@yy.zz)' },
+                    { date: '2025-03-14 11:25:32', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:02 AM Dear C-Care ทางทีมดูแล firewall ขอนัดประชุม เพื่อตรวจสอบและแก้ไขปัญหาร่วมกัน ในวันนี้เวลา 16:00 ค่ะ Link การประชุมทางขนมจะสร้างให้อีกครั้งค่ะ (from xxxx@yy.zz)' },
+                    { date: '2025-03-14 10:03:31', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 9:58 AM Dear C-Care ขออนุญาตเปิด e-mail ใหม่ อ้างอิง Ref.Issue เดิมค่ะ พร้อมเพิ่มทีม i-secure ที่ดูแล Firewall ส่วนกลางของกรมการพัฒนาชุมชน ในเมล์ค่ะ (from xxxx@yy.zz)' },
+                    { date: '2025-03-13 16:25:08', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 4:20 PM เรียนทีม CC ขอบคุณค่ะ (from xxxx@yy.zz)' },
+                    { date: '2025-03-13 16:20:06', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 4:19 PM NOC 1 Tier และ NOC IOC ตรวจสอบโดย trace จากสาขาไปยัง web site IP 103.40.132.27 พบว่า routing วิ่งผ่าน MPLS ไปยัง Link HQ CID 586225 โดยไม่ผ่าน Internet ซึ่งผล trace ผ่าน switch cisco 3650 ไปถึง firewall Polo Alto แล้ว รบกวนประสานงานทีมที่ดู Firewall ตรวจสอบเพิ่มเติมด้วยครับ (from xxxx@yy.zz)' },
                     { date: '2025-03-13 14:59:15', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: NOC คุณสมชาติ โทรมาแจ้งว่าจากผล trace ของ IOC พบว่าวิ่งมาถึง switch ที่อยู่หลัง router ของ Link HQ แล้วแต่ไปต่อไม่ได้โดยลค.นำ fw palo มารับ รบกวนถาม presale ให้ด้วยว่า route จะต้องวิ่งผ่าน MPLS หรือออก net หากวิ่งผ่าน MPLS ต้องไปเช็คที่ palo //โทรแจ้ง presale ตี้แจ้งว่าต้องผ่าน MPLS เพราะมองว่าเป็นระบบหลังบ้าน ตี้ขอให้ส่งผลเช็คไปให้ด้วยเพื่อจะคุยกับทีมที่ดู fw palo ต่อ (from NOC คุณสมชาติ 88018)' },
                     { date: '2025-03-13 14:17:26', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: DT_Created: 2025-03-13 13:32:27 Creator: sunisa_r Operation: Internet Operation Center วง 103.40.132.0/25 มี route บน MPLS ค่ะ เลยไม่ได้วิ่งไปใช้งานผ่าน c-net แต่วิ่งผ่านวงจร MPLS ไปติดที่ 10.1.11.14 ค่ะ' },
                     { date: '2025-03-13 12:59:46', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: DT_Created: 2025-03-13 12:52:06 Creator: jakkon_s Operation: Internet Operation Center รบกวน Core internet ตรวจสอบเพิ่มเติมให้ด้วยครับ จาก Router ปลายทางออกเน็ตได้ปกติ แต่ ping tracert telnet www.cdd.go.th/[103.40.132.27] ไม่ได้ตามไฟล์แนบ CID cloud net 586224' },
                     { date: '2025-03-13 12:44:25', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: เปิด Job ให้ IOC เช็คและโทรแจ้งโจ้ รับทราบแล้วให้เร่งตรวจสอบให้ด้วย (from NOC IOC โจ้ 85001)' },
-                    { date: '2025-03-13 12:43:32', user: 'thitipan_t', action: 'Mail Activity: Thursday, March 13, 2025 12:09 PM เรื่อง: ปัญหาการเข้าถึงเว็บไซต์ภายใต้โดเมน cdd.go.th ที่ศูนย์ศึกษาและพัฒนาชุมชน จ.เพชรบุรี อ้างอิง: Issue TK: 20250207564 รายละเอียด: แม้ว่าการใช้งานอินเทอร์เน็ตที่ศูนย์ศึกษาและพัฒนาชุมชน จ.เพชรบุรี (CID 585875) จะเป็นปกติ แต่คุณขนมแจ้งว่า ไม่สามารถเข้าถึงเว็บไซต์ทุกเว็บไซต์ที่อยู่ภายใต้โดเมนหรือซับโดเมนของ cdd.go.th (from napat_c@xx.xx)' },
-                    { date: '2025-03-13 12:26:45', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 12:26 PM ตอบรับ (from naruemon.phu2022@zz.zz)' },
-                    { date: '2025-03-13 12:25:00', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 11:35 AM สวัสดีค่ะ ติดตามการแก้ไขปัญหานี้ค่ะ ปัจจุบันยังมีปัญหาอยู่ค่ะ ศพช.เพชรบุรีครับ เน็ตเข้าเว็ปกรมไม่ได้ 0815609546 (from naruemon.phu2022@zz.zz)' },
-                    { date: '2025-03-01 09:41:29', user: 'chitsanupong_p', action: 'OUT(ประสานงานลูกค้า): CAT คุณอุกฤษ แจ้งปิดงานได้เลยรึเปล่า // แจ้งปิดงานได้เลยครับ (from CAT 021041919)' },
-                    { date: '2025-02-27 10:27:57', user: 'chitsanupong_p', action: 'Out to Provider: CAT คุณสมร สอบถามลูกค้าใช้งานได้รึยัง // แจ้งลูกค้ายังไม่แจ้งกลับมาเลย รบกวนติดต่อเช็ควันเสาร์อีกทีครับ (from CAT 021041919)' },
-                    { date: '2025-02-25 08:41:37', user: 'chitsanupong_p', action: 'Out to Provider: CAT คุณสมร แจ้งไม่ทราบว่าลูกค้าเช็คการใช้งานรึยัง สามารถใช้งานได้รึเปล่า ทาง cat พบ link ปกติเลย แต่เหมือนจะมีส่วน FW ของลูกค้าด้วย รบกวนให้ลูกค้าเช็คเพิ่มเติมด้วยครับ (from CAT 021041919)' },
+                    { date: '2025-03-13 12:43:32', user: 'thitipan_t', action: 'Mail Activity: Thursday, March 13, 2025 12:09 PM เรื่อง: ปัญหาการเข้าถึงเว็บไซต์ภายใต้โดเมน cdd.go.th ที่ศูนย์ศึกษาและพัฒนาชุมชน จ.เพชรบุรี อ้างอิง: Issue TK: 20250207564 รายละเอียด: แม้ว่าการใช้งานอินเทอร์เน็ตที่ศูนย์ศึกษาและพัฒนาชุมชน จ.เพชรบุรี (CID 585875) จะเป็นปกติ แต่คุณขนมแจ้งว่า ไม่สามารถเข้าถึงเว็บไซต์ทุกเว็บไซต์ที่อยู่ภายใต้โดเมนหรือซับโดเมนของ cdd.go.th (from xxxx@yy.zz)' },
+                    { date: '2025-03-13 12:26:45', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 12:26 PM ตอบรับ (from xxxx@yy.zz)' },
+                    { date: '2025-03-13 12:25:00', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 11:35 AM สวัสดีค่ะ ติดตามการแก้ไขปัญหานี้ค่ะ ปัจจุบันยังมีปัญหาอยู่ค่ะ ศพช.เพชรบุรีครับ เน็ตเข้าเว็ปกรมไม่ได้ 0xx-xxxxxxx (from xxxx@yy.zz)' },
+                    { date: '2025-03-01 09:41:29', user: 'chitsanupong_p', action: 'OUT(ประสานงานลูกค้า): CAT คุณอุกฤษ แจ้งปิดงานได้เลยรึเปล่า // แจ้งปิดงานได้เลยครับ (from CAT 0xx-xxxxxxx)' },
+                    { date: '2025-02-27 10:27:57', user: 'chitsanupong_p', action: 'Out to Provider: CAT คุณสมร สอบถามลูกค้าใช้งานได้รึยัง // แจ้งลูกค้ายังไม่แจ้งกลับมาเลย รบกวนติดต่อเช็ควันเสาร์อีกทีครับ (from CAT 0xx-xxxxxxx)' },
+                    { date: '2025-02-25 08:41:37', user: 'chitsanupong_p', action: 'Out to Provider: CAT คุณสมร แจ้งไม่ทราบว่าลูกค้าเช็คการใช้งานรึยัง สามารถใช้งานได้รึเปล่า ทาง cat พบ link ปกติเลย แต่เหมือนจะมีส่วน FW ของลูกค้าด้วย รบกวนให้ลูกค้าเช็คเพิ่มเติมด้วยครับ (from CAT 0xx-xxxxxxx)' },
                     { date: '2025-02-23 19:57:08', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:40 เนื่องจากคุณขนมแจ้งเป็นปัญหาทุกสาขาเลยครับและเพิ่งพบปัญหาตอน FTTX down รบกวนช่วยตรวจสอบ Solution ของลูกค้าเพิ่มเติมครับ (from Napat Chorphantha)' },
-                    { date: '2025-02-23 19:56:42', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:38 ทีมขอยกเลิกงานตรวจสอบก่อนครับ ทางทีมจะปรึกษา solution กับทาง presale engineer ก่อนครับ (from thara@activesprovision.com)' },
-                    { date: '2025-02-23 19:56:03', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:33 รบกวนขอผล Test จาก SDWAN เพื่อเป็นข้อมูลให้ทาง CAT ตรวจสอบเพิ่มเติมครับ จาก SDWAN สามารถ Ping / telent Port / Tracert web ปลายทางจาก Source interface บน SDWAN ได้หรือไม่ครับ เนื่องจากได้รับแจ้งจากลูกค้าว่าไม่สามารถใช้งาน Web cdd.go.th หากวิ่ง FTTX (from thara@activesprovision.com)' },
+                    { date: '2025-02-23 19:56:42', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:38 ทีมขอยกเลิกงานตรวจสอบก่อนครับ ทางทีมจะปรึกษา solution กับทาง presale engineer ก่อนครับ (from xxxx@yy.zz)' },
+                    { date: '2025-02-23 19:56:03', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:33 รบกวนขอผล Test จาก SDWAN เพื่อเป็นข้อมูลให้ทาง CAT ตรวจสอบเพิ่มเติมครับ จาก SDWAN สามารถ Ping / telent Port / Tracert web ปลายทางจาก Source interface บน SDWAN ได้หรือไม่ครับ เนื่องจากได้รับแจ้งจากลูกค้าว่าไม่สามารถใช้งาน Web cdd.go.th หากวิ่ง FTTX (from xxxx@yy.zz)' },
                     { date: '2025-02-23 19:40:29', user: 'chattip_k', action: 'Update ข้อมูลเพิ่มเติม: 19:32 suchat_t HQ คุณขนม ติดต่อมาแจ้งว่าได้เมล์มา และแจ้งว่าจะเป็นอาการคือเมื่อ fttx ของสาขานั้น ๆ down จะทำให้สาขานั้นไม่สามารถเปิดใช้งานเวป ภายใต้ cdd.go.th ได้ ซึ่งคุณขนมแจ้งว่าเป็นลักษณะนี้ทุกสาขา // รบกวนแจ้งทาง presale ให้ช่วยตรวจสอบว่าทำไมถึงเป็นลักษณะนี้ครับ' },
                     { date: '2025-02-23 19:37:55', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: พี่บ่าว แจ้งคุณขนม แจ้งมาใหม่ว่าเป็นปัญหาทุกสาขา และที่มีปัญหาเป็น เป็นจังหวะที่ FTTX Down และใข้ MPLS จะเข้าใช้งาน cdd.go.th ไม่ได้ // แจ้งพี่บ่าวถ้าเป็นทุกสาขา เดี่ยวแจ้ง presale' },
-                    { date: '2025-02-23 19:11:42', user: 'pichit_t', action: 'Update ข้อมูลเพิ่มเติม: CAT คุณสมลวรรณ แจ้ง IP cat Fix IP : 100.69.94.174 ตรวจสอบทดสอบออก net ปกติ และยังเชื่อมไปที่ web : cdd.go.th ได้ปกติ โดย cat ยังส่งผลให้ทาง mail ครับ - โดย cat แจ้งขอผลจากปลายทางด้วยที่แจ้งใช้งานผ่าน link cat ไม่ได้นั้นมีผลหรือ error หรือยืนยันชุด IP ที่เรียกใช้ส่งมาให้ cat ตรวจสอบเพิ่มเติมด้วยครับ (from CAT 02-1045555)' },
-                    { date: '2025-02-23 19:03:33', user: 'pichit_t', action: 'Out to Provider: คุณเกรียรติศักดิ์_catพื้นที่ แจ้งทดสอบจาก zone พื้นที่ เทียบกันยังสามารถเข้า web : cdd.go.th ได้ปกติ - CC แจ้งหากจะอิงจาก Zone พื้นที่ จึงขอ IP cat ที่แจกให้เรียกใช้งาน Cat ว่าเป็น ip ชุดไหนจะได้นำข้อมูลไปแจ้ง CDD ตรวจสอบว่ามีการ block ip ชุดของ cat หรือไม่ครับ - คุณเกรียรติศักดิ์ แจ้งไม่มีข้อมูล เดียวให้ Cat NOC บางรัก โทรมาให้ช่วยอธิบายว่าจะเอา IP อะไร ตามที่ UIH แจ้งครับ (from คุณเกรียรติศักดิ์_catพื้นที่ 032-919305)' },
+                    { date: '2025-02-23 19:11:42', user: 'pichit_t', action: 'Update ข้อมูลเพิ่มเติม: CAT คุณสมลวรรณ แจ้ง IP cat Fix IP : 100.69.94.174 ตรวจสอบทดสอบออก net ปกติ และยังเชื่อมไปที่ web : cdd.go.th ได้ปกติ โดย cat ยังส่งผลให้ทาง mail ครับ - โดย cat แจ้งขอผลจากปลายทางด้วยที่แจ้งใช้งานผ่าน link cat ไม่ได้นั้นมีผลหรือ error หรือยืนยันชุด IP ที่เรียกใช้ส่งมาให้ cat ตรวจสอบเพิ่มเติมด้วยครับ (from CAT 0xx-xxxxxxx)' },
+                    { date: '2025-02-23 19:03:33', user: 'pichit_t', action: 'Out to Provider: คุณเกรียรติศักดิ์_catพื้นที่ แจ้งทดสอบจาก zone พื้นที่ เทียบกันยังสามารถเข้า web : cdd.go.th ได้ปกติ - CC แจ้งหากจะอิงจาก Zone พื้นที่ จึงขอ IP cat ที่แจกให้เรียกใช้งาน Cat ว่าเป็น ip ชุดไหนจะได้นำข้อมูลไปแจ้ง CDD ตรวจสอบว่ามีการ block ip ชุดของ cat หรือไม่ครับ - คุณเกรียรติศักดิ์ แจ้งไม่มีข้อมูล เดียวให้ Cat NOC บางรัก โทรมาให้ช่วยอธิบายว่าจะเอา IP อะไร ตามที่ UIH แจ้งครับ (from คุณเกรียรติศักดิ์_catพื้นที่ 0xx-xxxxxxx)' },
                     { date: '2025-02-23 18:04:49', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 18:04 ฝ่าย Operation Support รับทราบข้อมูลและขอบคุณครับ (from Pawat Thanicknithigorn)' },
-                    { date: '2025-02-23 18:00:12', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: 23/2/2568 17:55 เรียน CC - อุปกรณ์ SDWAN สามารถประสาน บ.แอกทีฟ โพรวิชั่น คุณต้น 084-5152463 หรือ คุณบอย 080-9799979 - วงจร Internet FTTx ทุกวงจร ทาง UIH เป็นผู้เช่า NT เพื่อให้บริการกรมการพัฒนาชุมชน - ปัญหาทั่วไป สามารถปรึกษาคุณแมกซ์ HelpDesk กรมการพัฒนาชุมชน 087-7087793 หรือ คุณขนม 063-3246263 (from Pawat Thanicknithigorn)' },
-                    { date: '2025-02-23 17:57:53', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: 5030214287 CAT 02-1045555 คุณสุพรรณี รับเรื่องตรวจสอบ - ใช้งาน web cdd.go.th ไม่ได้ - Ip ของ CAT ออก internet ด้วย Ip อะไร จะแจ้งทาง CDD เช็คเพิ่มให้ (from CAT 02-1045555)' },
+                    { date: '2025-02-23 18:00:12', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: 23/2/2568 17:55 เรียน CC - อุปกรณ์ SDWAN สามารถประสาน บ.แอกทีฟ โพรวิชั่น คุณต้น 0xx-xxxxxxx หรือ คุณบอย 0xx-xxxxxxx - วงจร Internet FTTx ทุกวงจร ทาง UIH เป็นผู้เช่า NT เพื่อให้บริการกรมการพัฒนาชุมชน - ปัญหาทั่วไป สามารถปรึกษาคุณแมกซ์ HelpDesk กรมการพัฒนาชุมชน 0xx-xxxxxxx หรือ คุณขนม 0xx-xxxxxxx (from Pawat Thanicknithigorn)' },
+                    { date: '2025-02-23 17:57:53', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: 5030214287 CAT 0xx-xxxxxxx คุณสุพรรณี รับเรื่องตรวจสอบ - ใช้งาน web cdd.go.th ไม่ได้ - Ip ของ CAT ออก internet ด้วย Ip อะไร จะแจ้งทาง CDD เช็คเพิ่มให้ (from CAT 0xx-xxxxxxx)' },
                     { date: '2025-02-23 17:53:25', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 17:52 UIH รับทราบข้อมูลครับ จะประสานงาน Provider ตรวจสอบเพิ่มเติมครับ (from Naruemon Pumee)' },
                     { date: '2025-02-23 17:32:30', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 17:12 ที่ ศพช มี SDWan ค่ะ รับ Fttx และ MPLS ค่ะ (from Naruemon Pumee)' },
-                    { date: '2025-02-23 17:31:44', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: Mr. Pawat Thanicknithigorn sale 081-717-1555 แจ้งว่า Firewall SDWAN เป็น คุณต้น Active provition 084 515 2463 ดูแล แต่โดนปกติคุณขนม น่าจะคุยกับคุณต้นโดยตรงอยู่แล้วเพราะเห็นมีนัด Test กันตลอด // แจ้ง Mr. Pawat ช่วยส่งข้อมูลวงจร Back up ให้หน่อยครับที่หาเจอเหมือน Job ยังไม่ปิดติดตั้งไม่แน่ใช่ใช้งานที่วงจรนี้หรือไม่ จะไปแจ้ง CAT ตรวจสอบ Ip ให้ต่อครับ' },
+                    { date: '2025-02-23 17:31:44', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: Mr. Pawat Thanicknithigorn sale 0xx-xxxxxxx แจ้งว่า Firewall SDWAN เป็น คุณต้น Active provition 0xx-xxxxxxx ดูแล แต่โดนปกติคุณขนม น่าจะคุยกับคุณต้นโดยตรงอยู่แล้วเพราะเห็นมีนัด Test กันตลอด // แจ้ง Mr. Pawat ช่วยส่งข้อมูลวงจร Back up ให้หน่อยครับที่หาเจอเหมือน Job ยังไม่ปิดติดตั้งไม่แน่ใช่ใช้งานที่วงจรนี้หรือไม่ จะไปแจ้ง CAT ตรวจสอบ Ip ให้ต่อครับ' },
                     { date: '2025-02-23 17:16:15', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 17:12 ที่ ศพช มี SDWan ค่ะ รับ Fttx และ MPLS ค่ะ (from Naruemon Pumee)' },
                     { date: '2025-02-23 17:12:19', user: 'narongkorn_u', action: 'Progressive Mail: 23/2/2568 17:10 ตรวจสอบแล้วบน Router ไม่พบ interface to FTTX ครับ สาขานี้ไม่พบมีวงจร FTTX ครับ (from Naruemon Pumee)' },
-                    { date: '2025-02-21 11:26:17', user: 'sorachai_y', action: 'Mail Activity: February 21, 2025 11:07 AM Dear CC อินเทอร์เน็ต สามารถใช้งานได้ปกติค่ะ แต่ไม่สามารถเรียกใช้ web site ทุกเว็บไซต์ที่เป็น domain / sub domain ของ cdd.go.th ค่ะ (from naruemon.phu2022@zz.zz)' },
-                    { date: '2025-02-21 10:52:49', user: 'narongkorn_u', action: 'Progressive Mail: 21/2/2568 10:52 เบื้องต้นตรวจสอบจาก source lan สามารถ ออก internet ได้ปกติครับ แต่พบ port g0/1/0 0/1/1 ,0/1/3 to wifi down อยุ่ครับ รบกวนช่วยตรวจสอบอุปกรณ์ wifi เพิ่มเติม (from Naruemon Pumee)' }
+                    { date: '2025-02-21 11:26:17', user: 'sorachai_y', action: 'Mail Activity: February 21, 2025 11:07 AM Dear CC อินเทอร์เน็ต สามารถใช้งานได้ปกติค่ะ แต่ไม่สามารถเรียกใช้ web site ทุกเว็บไซต์ที่เป็น domain / sub domain ของ cdd.go.th ค่ะ (from xxxx@yy.zz)' },
+                    { date: '2025-02-21 10:52:49', user: 'narongkorn_u', action: 'Progressive Mail: 21/2/2568 10:52 เบื้องต้นตรวจสอบจาก source lan สามารถ ออก internet ได้ปกติครับ แต่พบ port g0/1/0 0/1/1 ,0/1/3 to wifi down อยุ่ครับ รบกวนช่วยตรวจสอบอุปกรณ์ wifi เพิ่มเติม (from Naruemon Pumee)' },
+                    { date: '2025-02-21 10:13:01', user: 'narongkorn_u', action: 'E-mail (Send) to Naruemon Pumee' },
+                    { date: '2025-02-21 10:12:01', user: 'narongkorn_u', action: 'E-mail (Receive) from Naruemon Pumee' }
                 ]
             },
             { id: 'JCB-015', sid: '586225', cid: '586225', subject: 'Firewall Policy Review for cdd.go.th Asymmetric Routing', status: 'open', serviceType: 'Request', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'jira-cbe', relationship: 'Child', date: '2025-03-15 10:00', closedTime: null, slaSuccess: false, description: 'Analyze and propose new Palo Alto firewall policies to resolve the asymmetric routing issue for cdd.go.th traffic originating from branch MPLS links during FTTX failover.', timeline: [ { date: '2025-03-15 10:00', user: 'Parent Ticket GT-1027', action: 'Child ticket created to address firewall policy review.'} ]},
@@ -561,13 +600,13 @@
             document.getElementById('appFilter').value = 'all';
             document.querySelector('.master-ticket-table-container').style.display = 'none';
             renderDashboardContent(masterTicketData);
+            renderCircuitSummary(null); 
         }
 
         function renderDashboardContent(data) {
             const { overallStats, pendingByApp } = calculateStatsAndChartData(data);
             renderOverallStats(overallStats);
             renderPendingSummary(pendingByApp);
-            renderCircuitSummary(null);
             renderApplicationPerformanceCharts(data);
             renderSlaBarChart(data);
             renderRelationshipCharts(data, 'dashboardParentTicketChart', 'dashboardChildDistributionChart');
@@ -614,7 +653,8 @@
                     let centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
                     let centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.font = 'bold 32px Inter'; ctx.fillStyle = chartColors.slaSuccess;
+                    ctx.font = 'bold 36px Inter'; // MODIFIED: Bolder font
+                    ctx.fillStyle = chartColors.slaSuccess;
                     ctx.fillText(`${successPercentage.toFixed(1)}%`, centerX, centerY - 10);
                     ctx.font = '16px Inter'; ctx.fillStyle = '#6c757d'; ctx.fillText('Success', centerX, centerY + 20);
                     ctx.restore();
@@ -624,9 +664,25 @@
             const overallSlaCtx = document.getElementById('overallSlaPieChart')?.getContext('2d');
             if(overallSlaCtx) chartInstances['overallSlaPieChart'] = new Chart(overallSlaCtx, {
                 type: 'doughnut',
-                data: { labels: ['SLA Success', 'SLA Failure'], datasets: [{ data: [slaSuccessCount, closedTickets.length - slaSuccessCount], backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], borderWidth: 0 }] },
+                data: { 
+                    labels: ['SLA Success', 'SLA Failure'], 
+                    datasets: [{ 
+                        data: [slaSuccessCount, closedTickets.length - slaSuccessCount], 
+                        backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], 
+                        borderColor: getComputedStyle(document.body).getPropertyValue('--background-color'), // MODIFIED: Added border
+                        borderWidth: 4 // MODIFIED: Added border width
+                    }] 
+                },
                 plugins: [centerTextPlugin],
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '60%', // MODIFIED: Made ring thicker
+                    plugins: { 
+                        legend: { position: 'bottom' }, 
+                        tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } 
+                    } 
+                }
             });
         }
 
@@ -648,19 +704,34 @@
             destroyChart('slaBarChart');
             const ctx = document.getElementById('slaBarChart').getContext('2d');
             chartInstances['slaBarChart'] = new Chart(ctx, {
-                type: 'bar',
+                type: 'bar', // MODIFIED: Switched to horizontal bar chart
                 data: {
                     labels: Object.values(applicationNames),
                     datasets: [{
                         label: 'SLA Success Rate (%)', data: percentages,
                         backgroundColor: Object.values(chartColors).slice(0, 4),
-                        borderRadius: 5, barPercentage: 0.6
+                        borderRadius: 5,
+                        barPercentage: 0.7
                     }]
                 },
                 options: {
+                    indexAxis: 'y', // MODIFIED: Key property for horizontal bar
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } }
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            max: 100, 
+                            ticks: { callback: (v) => v + '%' },
+                            title: {
+                                display: true,
+                                text: 'SLA Success Rate'
+                            }
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } 
+                    }
                 }
             });
         }
@@ -905,7 +976,7 @@
             }
             relationships.forEach(rel => {
                 const parent = rel.parent;
-                const childIds = rel.children.map(c => `<span class="clickable-child-id" data-ticket-id="${c.id}" style="color:var(--primary-color); text-decoration: underline; cursor: pointer;">${c.id}</span>`).join(', ');
+                const childIds = rel.children.map(c => `<span class="clickable-child-id child-ticket-badge" data-ticket-id="${c.id}">${c.id}</span>`).join('');
                 const row = document.createElement('tr');
                 row.className = 'clickable-row parent-row';
                 row.dataset.ticketId = parent.id;
@@ -1037,10 +1108,10 @@
             }
         }
 
-
         function runInitialization() {
             buildRelationshipMap();
             renderDashboardContent(masterTicketData);
+            renderCircuitSummary(null);
             document.querySelector('.container').addEventListener('click', handleDataRowClick);
         }
 
