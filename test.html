@@ -317,7 +317,7 @@
                 timeline: [
                     { date: '2025-06-04 14:22:56', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 14.15 น.ประชุมภายในกับ presale ตี้,2 Tier คุณเทพ,NOC แบงค์ ทางตี้แจ้งว่า ปัญหามี 2 เรื่องคือ 1.ศพจ เปิดเว็บไม่ได้บางเครื่องให้แนะนำลค.ให้เช็ค DNS ว่าเป็นของกรมหรือยัง,ทำการ update chrome หรือ clear chache 2.ศพช หรือ ศูนย์เรียนรู้ เปิดเว็บกรมฯไม่ได้หาก FTTX down การแก้ไขคือ ให้แก้ dns เป็นของกรมฯเท่านั้น และเร่งแก้ไข FTTX ส่่วนระยะยาวจะมีการ redesign ใหม่ รอทดสอบก่อน//ประชุมอีกครั้งเดือนกย.' },
                     { date: '2025-05-28 14:20:05', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 2:17 PM ขอเชิญประชุมภายในเพื่อหาแนวทางการแก้ไขปัญหาสาขาไม่สามารถใช้งาน service ภายใต้ domain:cdd.go.th ได้ เมื่อเกิดเหตุ Link Backup FTTX down สามารถเข้าร่วมประชุมตาม Link ด้านล่างครับ (from xxxx@yy.zz)' },
-                    { date: '2025-05-28 14:18:48', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 1:54 PM วันพุธที่ 4 ช่วงบ่าย ได้ครับ (from theptai_s)' },
+                    { date: '2025-05-28 14:18:48', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 1.54 PM วันพุธที่ 4 ช่วงบ่าย ได้ครับ (from theptai_s)' },
                     { date: '2025-05-28 14:18:06', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 10:24 AM ขอเป็น วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น. ค่ะ (from xxxx@yy.zz)' },
                     { date: '2025-05-27 18:19:13', user: 'thitipan_t', action: 'Mail Activity: Tuesday, May 27, 2025 6:13 PM เรียนทุกท่าน ขอนัดคุยภายในเพื่อหาข้อสรุป รบกวนทุกท่านแจ้ง slot ที่สะดวกให้ด้วยครับ (ใช้เวลาประมาณ 2 ชั่วโมง) วันศุกร์ที่ 30/5/2025 ช่วงเช้า 09:00-12:00 น. วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น.' },
                     { date: '2025-05-26 10:01:02', user: 'chattip_k', action: 'Mail Activity: จ. 26/5/2568 9:58 Dear คุณคำ ผ่านมา 2 เดือนแล้วครับ ทำไมยังวนกลับมาที่เดิมครับ ควรหาทางแก้ไขได้แล้วนะครับ (from xxxx@yy.zz)' },
@@ -653,7 +653,8 @@
                     let centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
                     let centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.font = 'bold 32px Inter'; ctx.fillStyle = chartColors.slaSuccess;
+                    ctx.font = 'bold 36px Inter'; 
+                    ctx.fillStyle = chartColors.slaSuccess;
                     ctx.fillText(`${successPercentage.toFixed(1)}%`, centerX, centerY - 10);
                     ctx.font = '16px Inter'; ctx.fillStyle = '#6c757d'; ctx.fillText('Success', centerX, centerY + 20);
                     ctx.restore();
@@ -663,9 +664,25 @@
             const overallSlaCtx = document.getElementById('overallSlaPieChart')?.getContext('2d');
             if(overallSlaCtx) chartInstances['overallSlaPieChart'] = new Chart(overallSlaCtx, {
                 type: 'doughnut',
-                data: { labels: ['SLA Success', 'SLA Failure'], datasets: [{ data: [slaSuccessCount, closedTickets.length - slaSuccessCount], backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], borderWidth: 0 }] },
+                data: { 
+                    labels: ['SLA Success', 'SLA Failure'], 
+                    datasets: [{ 
+                        data: [slaSuccessCount, closedTickets.length - slaSuccessCount], 
+                        backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], 
+                        borderColor: getComputedStyle(document.body).getPropertyValue('--background-color'), 
+                        borderWidth: 4 
+                    }] 
+                },
                 plugins: [centerTextPlugin],
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '60%', 
+                    plugins: { 
+                        legend: { position: 'bottom' }, 
+                        tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } 
+                    } 
+                }
             });
         }
 
@@ -687,19 +704,34 @@
             destroyChart('slaBarChart');
             const ctx = document.getElementById('slaBarChart').getContext('2d');
             chartInstances['slaBarChart'] = new Chart(ctx, {
-                type: 'bar',
+                type: 'bar', 
                 data: {
                     labels: Object.values(applicationNames),
                     datasets: [{
                         label: 'SLA Success Rate (%)', data: percentages,
                         backgroundColor: Object.values(chartColors).slice(0, 4),
-                        borderRadius: 5, barPercentage: 0.6
+                        borderRadius: 5,
+                        barPercentage: 0.7
                     }]
                 },
                 options: {
+                    indexAxis: 'y', 
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } }
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            max: 100, 
+                            ticks: { callback: (v) => v + '%' },
+                            title: {
+                                display: true,
+                                text: 'SLA Success Rate'
+                            }
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } 
+                    }
                 }
             });
         }
@@ -885,7 +917,14 @@
             if(!tab) return;
             tab.innerHTML = `
                 <h2 class="section-title"><i class="fas fa-project-diagram"></i> Parent-Child Relationship (Detailed View)</h2>
-                <div class="filter-controls-container">
+                
+                <h2 class="section-title" style="margin-top: 0;"><i class="fas fa-chart-area"></i> Relationship Charts Summary</h2>
+                <div class="app-charts-grid">
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="relationshipParentTicketChart"></canvas></div></div>
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="relationshipChildDistributionChart"></canvas></div></div>
+                </div>
+
+                <div class="filter-controls-container" style="margin-top: 40px;">
                      <h2 class="section-title"><i class="fas fa-search"></i> ค้นหา Parent Ticket</h2>
                     <div class="filter-inputs">
                         <input type="text" id="relationshipSearch" placeholder="ค้นหาด้วย ID หรือ Subject" style="flex-grow: 2;"/>
@@ -902,11 +941,6 @@
                         <thead><tr><th>Parent Ticket (Click for Detail)</th><th>Service Type</th><th>Status / Priority</th><th>Child Tickets (Click ID to view)</th></tr></thead>
                         <tbody id="relationships-table-body"></tbody>
                     </table>
-                </div>
-                <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-chart-area"></i> Relationship Charts Summary</h2>
-                <div class="app-charts-grid">
-                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="relationshipParentTicketChart"></canvas></div></div>
-                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="relationshipChildDistributionChart"></canvas></div></div>
                 </div>`;
             filterRelationshipTable();
             document.getElementById('relationships-main-table')?.addEventListener('click', handleRelationshipTableClick);
