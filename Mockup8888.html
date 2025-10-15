@@ -6,1086 +6,259 @@
     <title>Unified Ticket Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #10b981;
-            --primary-dark: #059669;
-            --primary-light: #34d399;
-            --secondary-color: #6b7280;
-            --accent-gold: #fbbf24;
-            --background-color: #f9fafb;
-            --background-light: #ffffff;
-            --card-background: #ffffff;
-            --border-color: #e5e7eb;
-            --text-dark: #111827;
-            --text-medium: #6b7280;
-            --text-light: #9ca3af;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08);
-            --gradient-green: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            --gradient-white: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+            --primary-color: #28a745; --secondary-color: #6c757d; --background-color: #f8f9fa;
+            --card-background-color: #ffffff; --border-color: #dee2e6; --text-dark: #212529; --text-light: #6c757d;
         }
-        
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #f9fafb 100%);
-            color: var(--text-medium);
-            min-height: 100vh;
-            padding: 40px 20px 80px;
-            position: relative;
-            overflow-x: hidden;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--background-color);
+            color: var(--text-light); min-height: 100vh; padding: 20px; padding-bottom: 50px;
         }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.08), transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.08), transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(167, 243, 208, 0.05), transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 32px;
-            box-shadow: 
-                0 0 0 1px rgba(16, 185, 129, 0.08),
-                0 25px 50px -12px rgba(0, 0, 0, 0.08),
-                0 0 80px rgba(16, 185, 129, 0.06);
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(229, 231, 235, 0.8);
+            max-width: 1600px; margin: 0 auto; background: var(--card-background-color); border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid var(--border-color);
         }
-        
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, 
-                #10b981 0%, 
-                #34d399 25%, 
-                #6ee7b7 50%, 
-                #34d399 75%, 
-                #10b981 100%);
-            background-size: 200% 100%;
-            animation: shimmer 4s linear infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
         .header {
-            background: linear-gradient(135deg, rgba(236, 253, 245, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
-            padding: 60px 40px;
-            text-align: center;
-            position: relative;
-            border-bottom: 1px solid var(--border-color);
-            overflow: hidden;
+            background: var(--card-background-color); color: var(--text-dark); padding: 40px; text-align: center;
+            position: relative; border-bottom: 1px solid var(--border-color);
         }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
-            animation: rotate 25s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .header h1 {
-            font-size: 3.2em;
-            font-weight: 900;
-            margin-bottom: 16px;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #047857 0%, #10b981 50%, #34d399 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.15));
-        }
-        
-        .header h1 i {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.2));
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            font-weight: 500;
-            color: var(--text-medium);
-            position: relative;
-            z-index: 1;
-        }
-        
-        .tabs {
-            display: flex;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.98) 100%);
-            padding: 0 30px;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-        }
-        
+        .header h1 { font-size: 2.8em; font-weight: 800; margin-bottom: 12px; letter-spacing: -1px; color: #000; }
+        .header h1 i { color: var(--primary-color); }
+        .header p { font-size: 1.1em; font-weight: 400; opacity: 0.8; }
+        .tabs { display: flex; background: var(--card-background-color); padding: 0 30px; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
         .tab-btn {
-            background: none;
-            border: none;
-            padding: 22px 28px;
-            font-size: 0.95em;
-            font-weight: 600;
-            color: var(--text-medium);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            position: relative;
+            background: none; border: none; padding: 18px 24px; font-size: 0.95em; font-weight: 600; color: var(--text-light);
+            cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 3px solid transparent; white-space: nowrap;
         }
-        
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
-            border-radius: 3px 3px 0 0;
-        }
-        
-        .tab-btn:hover {
-            color: var(--primary-color);
-            background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
-        }
-        
-        .tab-btn:hover::before {
-            width: 80%;
-        }
-        
-        .tab-btn.active {
-            color: var(--primary-color);
-            background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%);
-        }
-        
-        .tab-btn.active::before {
-            width: 100%;
-        }
-        
-        .tab-btn i {
-            margin-right: 10px;
-            transition: transform 0.3s ease;
-        }
-        
-        .tab-btn:hover i {
-            transform: scale(1.15);
-        }
-        
-        .tab-content {
-            display: none;
-            padding: 50px;
-            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .filter-controls-container {
-            margin-bottom: 40px;
-            padding: 36px;
-            border-radius: 24px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.98) 100%);
-            border: 1px solid var(--border-color);
-            box-shadow: 
-                var(--shadow-lg),
-                0 0 0 1px rgba(16, 185, 129, 0.05) inset;
-            backdrop-filter: blur(10px);
-        }
-        
-        .filter-inputs {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .filter-inputs input,
-        .filter-inputs select,
-        .filter-inputs button {
-            padding: 16px 24px;
-            font-size: 1em;
-            min-height: 56px;
-            border-radius: 14px;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .filter-inputs input[type="text"],
-        .filter-inputs select,
-        .filter-inputs input[type="date"] {
-            border: 2px solid var(--border-color);
-            background: white;
-            color: var(--text-dark);
-        }
-        
-        .filter-inputs input:focus,
-        .filter-inputs select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.08);
-            transform: translateY(-2px);
-        }
-        
-        .filter-inputs button {
-            border: none;
-            color: white;
-            cursor: pointer;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .filter-inputs button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .filter-inputs button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .filter-inputs button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
-        }
-        
-        .filter-inputs button:active {
-            transform: translateY(-1px);
-        }
-        
-        .stats-grid,
-        .pending-apps-grid,
-        .circuit-apps-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-        }
-        
+        .tab-btn i { margin-right: 8px; }
+        .tab-btn:hover { color: var(--primary-color); background-color: var(--background-color); }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; padding: 40px; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-controls-container { margin-bottom: 30px; padding: 25px; border: 1px solid var(--border-color); border-radius: 16px; background-color: var(--card-background-color); }
+        .filter-inputs { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .filter-inputs input, .filter-inputs select, .filter-inputs button { padding: 14px 20px; font-size: 1em; min-height: 50px; border-radius: 12px; }
+        .filter-inputs input[type="text"], .filter-inputs select, .filter-inputs input[type="date"] { border: 1px solid #ced4da; }
+        .filter-inputs input:focus, .filter-inputs select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.15); }
+        .filter-inputs button { border: none; color: white; cursor: pointer; transition: all 0.2s ease; background: var(--primary-color); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2); }
+        .filter-inputs button:hover { transform: translateY(-2px); background: #218838; box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3); }
+        .stats-grid, .pending-apps-grid, .circuit-apps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
         .stat-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
-            padding: 32px;
-            border-radius: 20px;
-            color: var(--text-dark);
-            box-shadow: 
-                var(--shadow-md),
-                0 0 0 1px rgba(229, 231, 235, 0.8);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 5px solid currentColor;
-            position: relative;
-            overflow: hidden;
+            background: var(--card-background-color); padding: 20px; border-radius: 12px; color: var(--text-dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; border: 1px solid var(--border-color);
+            border-left-width: 5px; position: relative;
         }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, currentColor 0%, transparent 70%);
-            opacity: 0.05;
-            transform: translate(40%, -40%);
-            transition: all 0.4s ease;
-        }
-        
-        .stat-card:hover::before {
-            transform: translate(30%, -30%) scale(1.3);
-            opacity: 0.08;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 
-                0 20px 30px -10px rgba(0, 0, 0, 0.08),
-                0 0 0 1px currentColor;
-        }
-        
-        .stat-card.total { border-left-color: #06b6d4; color: #06b6d4; }
-        .stat-card.open { border-left-color: #f59e0b; color: #f59e0b; }
-        .stat-card.progress { border-left-color: #8b5cf6; color: #8b5cf6; }
-        .stat-card.closed { border-left-color: #10b981; color: #10b981; }
-        
-        .stat-card .stat-label {
-            font-size: 0.85em;
-            color: var(--text-light);
-            margin-bottom: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 700;
-        }
-        
-        .stat-card .stat-value {
-            font-size: 3em;
-            font-weight: 900;
-            color: currentColor;
-            position: relative;
-            z-index: 1;
-        }
-        
+        .stat-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10;}
+        .stat-card.total { border-left-color: #17a2b8; } .stat-card.open { border-left-color: #ffc107; }
+        .stat-card.progress { border-left-color: #fd7e14; } .stat-card.closed { border-left-color: #0d6efd; }
+        .stat-card .stat-label { font-size: 0.8em; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; }
+        .stat-card .stat-value { font-size: 2.2em; font-weight: 700; text-shadow: none; }
+        .stat-card.total .stat-value { color: #17a2b8; } .stat-card.open .stat-value { color: #ffc107; }
+        .stat-card.progress .stat-value { color: #fd7e14; } .stat-card.closed .stat-value { color: #0d6efd; }
         .pending-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
-            border: 1px solid var(--border-color);
-            color: var(--text-dark);
-            box-shadow: var(--shadow-md);
-            padding: 32px;
-            border-radius: 20px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            background: var(--card-background-color); border: 1px solid var(--border-color); color: var(--text-dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); padding: 20px; border-radius: 12px; transition: all 0.3s ease;
+            cursor: pointer; 
         }
-        
-        .pending-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
-            transform: translate(30%, -30%);
-            transition: transform 0.4s ease;
-        }
-        
-        .pending-card:hover::after {
-            transform: translate(20%, -20%) scale(1.4);
-        }
-        
-        .pending-card .stat-value {
-            font-size: 3em;
-            font-weight: 900;
-        }
-        
-        .pending-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 
-                0 20px 30px -10px rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(16, 185, 129, 0.2);
-        }
-        
+        .pending-card .stat-value { font-size: 2.2em; font-weight: 700; }
+        .pending-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); z-index: 10; }
+
+        /* --- NEW Circuit Card Styles --- */
         .circuit-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-md);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .circuit-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.03) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .circuit-card:hover::before {
-            opacity: 1;
-        }
-        
-        .circuit-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 
-                0 20px 30px -10px rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(16, 185, 129, 0.15);
-        }
-        
-        .circuit-card-header {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            padding: 28px;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-            z-index: 1;
-        }
-        
-        .circuit-card-icon {
-            font-size: 2.2em;
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 14px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
-        }
-        
-        .circuit-card-title {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-        
-        .circuit-total {
-            font-size: 3em;
-            font-weight: 900;
-            margin-left: auto;
-        }
-        
-        .circuit-card.gt4u .circuit-card-icon,
-        .circuit-card.gt4u .circuit-total { color: #10b981; }
-        .circuit-card.jiracloud .circuit-card-icon,
-        .circuit-card.jiracloud .circuit-total { color: #f59e0b; }
-        .circuit-card.jiracbe .circuit-card-icon,
-        .circuit-card.jiracbe .circuit-total { color: #06b6d4; }
-        .circuit-card.clickup .circuit-card-icon,
-        .circuit-card.clickup .circuit-total { color: #8b5cf6; }
-        
-        .circuit-service-list {
-            font-size: 0.98em;
-            padding: 24px 28px;
-            list-style: none;
-        }
-        
-        .circuit-service-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid #f3f4f6;
-            transition: all 0.2s ease;
-        }
-        
-        .circuit-service-list li:hover {
-            padding-left: 10px;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
-        }
-        
-        .circuit-service-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .service-count-badge {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
-        }
-        
-        .chart-container {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
-            padding: 36px;
-            border-radius: 20px;
-            box-shadow: 
-                var(--shadow-md),
-                0 0 0 1px rgba(229, 231, 235, 0.8);
-            border: 1px solid var(--border-color);
-            min-height: 420px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-        
-        .chart-container:hover {
-            box-shadow: 
-                var(--shadow-xl),
-                0 0 0 1px rgba(16, 185, 129, 0.2);
-        }
-        
-        .chart-title {
-            color: var(--text-dark);
-            font-weight: 700;
-            margin-bottom: 28px;
-            font-size: 1.25em;
-        }
-        
-        .chart-title i {
-            color: var(--primary-color);
-            margin-right: 10px;
-        }
-        
-        .chart-wrapper {
-            position: relative;
-            flex-grow: 1;
-        }
-        
-        .app-charts-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 28px;
-            margin-bottom: 40px;
-        }
-        
-        .tickets-table-container {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 40px;
-            overflow-x: auto;
-            border-radius: 20px;
-        }
-        
-        .section-title {
-            color: var(--text-dark);
-            margin-bottom: 32px;
-            padding-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 1.6em;
-            font-weight: 800;
-            position: relative;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100px;
-            height: 5px;
-            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-            border-radius: 3px;
-        }
-        
-        .section-title i {
-            color: var(--primary-color);
-            font-size: 1.1em;
-            filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.2));
-        }
-        
-        .tickets-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 1em;
-        }
-        
-        .tickets-table thead {
-            background: linear-gradient(135deg, rgba(236, 253, 245, 0.6) 0%, rgba(209, 250, 229, 0.4) 100%);
-            color: var(--text-dark);
-        }
-        
-        .tickets-table th,
-        .tickets-table td {
-            padding: 22px;
-            text-align: left;
-            vertical-align: middle;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .tickets-table th {
-            letter-spacing: 0.8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            color: var(--primary-dark);
-        }
-        
-        .tickets-table tbody tr {
-            transition: all 0.2s ease;
-            background: white;
-        }
-        
-        .tickets-table tbody tr:nth-child(even) {
-            background: #fafafa;
-        }
-        
-        .clickable-row:hover {
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.06) 0%, transparent 100%);
-            cursor: pointer;
-        }
-        
-        .clickable-row.active-row {
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 100%);
-            border-left: 5px solid var(--primary-color);
-        }
-        
-        .tickets-table tbody tr.nested-child-row {
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
-            border-left: 5px solid #8b5cf6;
-        }
-        
-        .tickets-table tbody tr.nested-child-row:hover {
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
-        }
-        
-        .status-badge,
-        .priority-badge,
-        .servicetype-badge {
-            padding: 7px 18px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 700;
-            text-transform: capitalize;
-            white-space: nowrap;
-            display: inline-block;
-            border: 1px solid currentColor;
-        }
-        
-        .status-badge.status-open {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            color: #92400e;
-            border-color: #fbbf24;
-        }
-        .status-badge.status-progress {
-            background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
-            color: #6b21a8;
-            border-color: #a78bfa;
-        }
-        .status-badge.status-closed {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #065f46;
-            border-color: #34d399;
-        }
-        
-        .priority-badge.priority-high {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #991b1b;
-            border-color: #f87171;
-        }
-        .priority-badge.priority-medium {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            color: #1e3a8a;
-            border-color: #60a5fa;
-        }
-        .priority-badge.priority-low {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #065f46;
-            border-color: #34d399;
-        }
-        
-        .servicetype-badge {
-            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-            color: #3730a3;
-            border-color: #818cf8;
-        }
-        
-        .sub-text {
-            font-size: 0.85em;
-            color: var(--text-light);
-            display: block;
-            margin-top: 6px;
-        }
-        
-        .detail-row td {
-            padding: 0 !important;
-        }
-        
-        .ticket-details-container {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-            padding: 48px;
-        }
-        
-        .details-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 36px;
-            padding-bottom: 28px;
-            border-bottom: 2px solid var(--border-color);
-        }
-        
-        .details-header h4 {
-            color: var(--primary-color);
-            font-size: 1.8em;
-            margin: 0;
-            font-weight: 900;
-        }
-        
-        .details-header button {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-        
-        .details-header button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-        }
-        
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-        
-        .detail-block {
-            background: white;
-            padding: 28px;
+            background: var(--card-background-color);
             border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            overflow: hidden;
         }
-        
-        .detail-block:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-3px);
-            border-color: rgba(16, 185, 129, 0.2);
+        .circuit-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+            z-index: 10;
         }
+        .circuit-card-header { display: flex; align-items: center; gap: 15px; padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .circuit-card-icon { font-size: 1.8em; width: 40px; text-align: center; }
+        .circuit-card-title { font-size: 1.1em; font-weight: 700; color: var(--text-dark); }
+        .circuit-total { font-size: 2.5em; font-weight: 800; margin-left: auto; }
+        .circuit-card.gt4u .circuit-card-icon, .circuit-card.gt4u .circuit-total { color: #28a745; }
+        .circuit-card.jiracloud .circuit-card-icon, .circuit-card.jiracloud .circuit-total { color: #ffc107; }
+        .circuit-card.jiracbe .circuit-card-icon, .circuit-card.jiracbe .circuit-total { color: #0dcaf0; }
+        .circuit-card.clickup .circuit-card-icon, .circuit-card.clickup .circuit-total { color: #0d6efd; }
+        .circuit-service-list { font-size: 0.95em; padding: 15px 20px; list-style: none; }
+        .circuit-service-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f3f5; }
+        .circuit-service-list li:last-child { border-bottom: none; }
+        .service-count-badge { background-color: #e9ecef; color: var(--text-dark); font-weight: 600; padding: 4px 10px; border-radius: 12px; font-size: 0.9em; }
+
+        .chart-container { background: var(--card-background-color); padding: 28px; border-radius: 16px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); min-height: 420px; display: flex; flex-direction: column; }
+        .chart-container:hover { border-color: var(--primary-color); box-shadow: 0 8px 32px rgba(40, 167, 69, 0.1); }
+        .chart-title i { color: var(--primary-color); }
+        .chart-wrapper { position: relative; flex-grow: 1; }
+        .app-charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px; }
+        .tickets-table-container { background: var(--card-background-color); border: 1px solid var(--border-color); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05); margin-bottom: 30px; overflow-x: auto;}
+        .section-title { color: var(--text-dark); border-bottom: 3px solid var(--primary-color); margin-bottom: 24px; padding-bottom: 12px; display: flex; align-items: center; gap: 12px; font-size: 1.4em;}
+        .section-title i { color: var(--primary-color); }
+
+        /* --- UPDATED Ticket Table Styles --- */
+        .tickets-table { width: 100%; border-collapse: collapse; font-size: 1.05em; }
+        .tickets-table thead { background: var(--background-color); color: var(--text-dark); }
+        .tickets-table th, .tickets-table td { padding: 20px; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--border-color); }
+        .tickets-table th { letter-spacing: 0.5px; }
+        .tickets-table tbody tr:nth-child(even) { background: #fcfcfc; }
+        .clickable-row:hover { background: #f1f3f5; cursor: pointer; }
+        .clickable-row.active-row { background: #e9f5ec; border-left: 4px solid var(--primary-color); }
+        .tickets-table tbody tr.nested-child-row { background: #e7f1ff; border-left: 4px solid #0d6efd; }
+        .tickets-table tbody tr.nested-child-row:hover { background: #d0e3ff !important; }
+
+        /* --- NEW Badge Styles --- */
+        .status-badge, .priority-badge, .servicetype-badge { padding: 5px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 700; text-transform: capitalize; white-space: nowrap; }
+        .status-badge.status-open { background-color: #fff8e1; color: #ffab00; }
+        .status-badge.status-progress { background-color: #fff0e1; color: #fd7e14; }
+        .status-badge.status-closed { background-color: #e7f1ff; color: #0d6efd; }
+        .priority-badge.priority-high { background-color: #fbe9e7; color: #ff5722; }
+        .priority-badge.priority-medium { background-color: #e3f2fd; color: #2196f3; }
+        .priority-badge.priority-low { background-color: #e8f5e9; color: #4caf50; }
+        .servicetype-badge { background-color: #f3e5f5; color: #9c27b0; }
+        .sub-text { font-size: 0.85em; color: var(--text-light); display: block; margin-top: 4px;}
         
-        .detail-label {
-            display: block;
-            color: var(--text-light);
-            font-size: 0.8em;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-        }
-        
-        .detail-value {
-            font-size: 1.15em;
-            font-weight: 600;
+        .child-ticket-badge {
+            display: inline-block;
+            background-color: #e9ecef;
             color: var(--text-dark);
-            word-wrap: break-word;
-        }
-        
-        .detail-value .status-badge,
-        .detail-value .priority-badge {
-            font-size: 1em;
-            padding: 8px 20px;
-        }
-        
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .relationship-list {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 10px;
-            font-size: 1em;
-        }
-        
-        .relationship-list li {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 20px;
-            margin: 10px 0;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.06) 0%, transparent 100%);
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-color);
+            padding: 5px 12px;
+            margin: 2px 4px 2px 0;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
-        
-        .relationship-list li:hover {
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
-            transform: translateX(6px);
+        .child-ticket-badge:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
         }
-        
-        .timeline-container {
+
+        /* --- TICKET DETAIL VIEW REVAMP STYLES --- */
+        .detail-row td { padding: 0 !important; }
+        .ticket-details-container { background: #f8f9fa; padding: 30px; }
+        .details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .details-header h4 { color: var(--primary-color); font-size: 1.5em; margin: 0; }
+        .details-header button { background: none; border: none; font-size: 1em; color: #dc3545; font-weight: 700; cursor: pointer; transition: color 0.2s; }
+        .details-header button:hover { color: #a71d2a; }
+        .details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .detail-block { background: var(--card-background-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .detail-label { display: block; color: var(--text-light); font-size: 0.85em; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+        .detail-value { font-size: 1.1em; font-weight: 500; color: var(--text-dark); word-wrap: break-word; }
+        .detail-value .status-badge, .detail-value .priority-badge { font-size: 1em; padding: 6px 18px; }
+        .full-width { grid-column: 1 / -1; }
+        .relationship-list { list-style: none; padding-left: 0; margin-top: 5px; font-size: 1em; }
+        .relationship-list li { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+
+        /* --- MODIFIED TIMELINE CARD STYLES --- */
+        @keyframes subtle-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 5px rgba(40, 167, 69, 0.2); }
+            50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 0 5px rgba(40, 167, 69, 0.2); }
+        }
+        .timeline-container { 
             position: relative;
-            padding-left: 36px;
-            margin-top: 24px;
+            padding-left: 30px;
         }
-        
-        .timeline-title {
-            font-size: 1.4em;
-            margin-bottom: 28px;
-            color: var(--text-dark);
-            font-weight: 800;
-        }
-        
         .timeline-container::before {
             content: '';
             position: absolute;
-            left: 12px;
-            top: 20px;
-            bottom: 20px;
-            width: 3px;
-            background: linear-gradient(180deg, #10b981 0%, #34d399 100%);
-            border-radius: 2px;
+            left: 10px;
+            top: 15px;
+            bottom: 15px;
+            width: 2px;
+            background-color: #e9ecef;
+            z-index: 0;
         }
-        
+        .timeline-title { font-size: 1.2em; margin-bottom: 20px; color: var(--text-dark); }
         .timeline-item {
             position: relative;
-            margin-bottom: 32px;
-            padding: 24px;
-            background: white;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
+            background: linear-gradient(to bottom right, #ffffff, #fcfdfc);
+            border: 1px solid #eef0f2;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease-out;
         }
-        
         .timeline-item:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateX(10px);
-            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-5px) scale(1.005);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.12);
+            border-color: rgba(40, 167, 69, 0.3);
+            z-index: 10;
         }
-        
         .timeline-item::before {
-            content: "\f111";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            color: white;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border: 4px solid white;
-            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(16, 185, 129, 0.3);
-            border-radius: 50%;
-            font-size: 11px;
-            position: absolute;
-            left: -40px;
-            width: 28px;
-            height: 28px;
-            line-height: 20px;
-            text-align: center;
-            top: 26px;
-            z-index: 2;
-        }
-        
-        .timeline-time {
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-        
-        .timeline-action {
-            margin-bottom: 10px;
-            white-space: pre-wrap;
-            color: var(--text-dark);
-            line-height: 1.7;
-        }
-        
-        .timeline-user {
-            font-size: 0.9em;
-            color: var(--text-light);
-            font-weight: 600;
-        }
-        
-        .timeline-user i {
-            margin-right: 8px;
-            color: var(--primary-color);
-        }
-        
-        .key-metric-card-wrapper {
-            grid-column: span 2;
-        }
-        
-        .key-metric-card {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 48px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 
-                0 20px 40px -15px rgba(16, 185, 129, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .key-metric-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        .key-metric-card > * {
-            position: relative;
             z-index: 1;
+            left: -27px;
+            top: 21px;
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(ellipse at center, #ffffff 20%, var(--primary-color) 70%);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+            animation: subtle-pulse 3s infinite ease-in-out;
         }
-        
-        .key-metric-card .metric-title {
-            font-size: 1.4em;
-            font-weight: 700;
-            opacity: 0.95;
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
         }
-        
-        .key-metric-card .metric-value {
-            font-size: 4.2em;
-            font-weight: 900;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .key-metric-card .metric-unit {
-            font-size: 1.5em;
-            font-weight: 600;
-            opacity: 0.9;
-            margin-left: 14px;
-        }
-        
-        .key-metric-card .metric-icon {
-            font-size: 5.5em;
-            opacity: 0.15;
-        }
-        
-        .clickable-child-id {
-            color: var(--primary-color);
-            text-decoration: none;
-            cursor: pointer;
+        .timeline-time {
             font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.08) 100%);
-            transition: all 0.2s ease;
-            display: inline-block;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 0.9em;
+            color: var(--text-dark);
         }
-        
-        .clickable-child-id:hover {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.15) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        .timeline-type-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
         }
-        
-        .footer {
-            text-align: center;
-            padding: 48px 20px;
-            margin-top: 60px;
-            color: var(--text-medium);
-            font-size: 0.95em;
-            font-weight: 500;
-            background: linear-gradient(135deg, rgba(236, 253, 245, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%);
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
+        .timeline-type-badge.type-internal { background-color: #e3f2fd; color: #2196f3; }
+        .timeline-type-badge.type-external { background-color: #e8f5e9; color: #4caf50; }
+        .timeline-action {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
         }
-        
-        ::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
+        .timeline-user {
+            font-size: 0.85em;
+            color: var(--text-light);
+            text-align: right;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 8px;
+            margin-top: 10px;
         }
-        
-        ::-webkit-scrollbar-track {
-            background: #f3f4f6;
-            border-radius: 10px;
+
+        /* --- NEW Key Metric Card for App Tabs --- */
+        .key-metric-card-wrapper { grid-column: span 2; }
+        .key-metric-card {
+            background: linear-gradient(135deg, #28a745, #218838); color: white; padding: 30px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
         }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            border-radius: 10px;
-            border: 2px solid #f3f4f6;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-        }
-        
-        @media (max-width: 1200px) {
-            .stats-grid,
-            .pending-apps-grid,
-            .circuit-apps-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 992px) {
-            .details-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .app-charts-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .stats-grid,
-            .pending-apps-grid,
-            .circuit-apps-grid,
-            .app-charts-grid,
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
-            .header h1 {
-                font-size: 2.2em;
-            }
-            .tab-content {
-                padding: 30px 20px;
-            }
-        }
+        .key-metric-card .metric-title { font-size: 1.2em; font-weight: 600; opacity: 0.9; }
+        .key-metric-card .metric-value { font-size: 3.5em; font-weight: 800; }
+         .key-metric-card .metric-unit { font-size: 1.2em; font-weight: 500; opacity: 0.9; margin-left: 10px; }
+        .key-metric-card .metric-icon { font-size: 4em; opacity: 0.2; }
+
+        .footer { text-align: center; padding: 30px 20px; margin-top: 40px; color: var(--text-light); font-size: 0.85em; opacity: 0.8; }
+        @media (max-width: 1200px) { .stats-grid, .pending-apps-grid, .circuit-apps-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 992px) { .details-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .stats-grid, .pending-apps-grid, .circuit-apps-grid, .app-charts-grid, .details-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -1113,7 +286,7 @@
                     <select id="appFilter" style="flex-grow: 2;"><option value="all">ทุก Application</option><option value="gt4u">GT4U</option><option value="jira-cloud">JIRA (CLOUD HM)</option><option value="jira-cbe">JIRA (CBE)</option><option value="clickup">ClickUp (BNG)</option></select>
                     <input type="date" id="startDate" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
                     <input type="date" id="endDate" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
-                    <button id="resetAllTicketsBtn" onclick="resetDashboard()" style="flex-grow: 0; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                    <button id="resetAllTicketsBtn" onclick="resetDashboard()" style="flex-grow: 0; background: #6c757d; box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);"><i class="fas fa-redo"></i> รีเซ็ต</button>
                     <button id="searchAllTicketsBtn" onclick="filterAllTickets()" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
                 </div>
             </div>
@@ -1159,8 +332,8 @@
         let relationshipMap = {};
 
         // --- THEME COLORS ---
-        const chartColors = { gt4u: '#10b981', jiracloud: '#f59e0b', jiracbe: '#06b6d4', clickup: '#8b5cf6', open: '#f59e0b', progress: '#8b5cf6', closed: '#10b981', slaSuccess: '#10b981', slaFailure: '#ef4444' };
-        const pendingColors = { gt4u: '#10b981', 'jira-cloud': '#f59e0b', 'jira-cbe': '#06b6d4', clickup: '#8b5cf6' };
+        const chartColors = { gt4u: '#28a745', jiracloud: '#ffc107', jiracbe: '#0dcaf0', clickup: '#0d6efd', open: '#ffc107', progress: '#fd7e14', closed: '#0d6efd', slaSuccess: '#20c997', slaFailure: '#dc3545' };
+        const pendingColors = { gt4u: '#28a745', 'jira-cloud': '#ffc107', 'jira-cbe': '#0dcaf0', clickup: '#0d6efd' };
         const applicationNames = { 'gt4u': 'GT4U (Connectivity)', 'jira-cloud': 'JIRA (CLOUD HM)', 'jira-cbe': 'JIRA (CBE)', 'clickup': 'ClickUp (BNG)' };
         const applicationIcons = { 'gt4u': 'fas fa-globe', 'jira-cloud': 'fas fa-cloud', 'jira-cbe': 'fas fa-shield-alt', 'clickup': 'fas fa-lightbulb' };
 
@@ -1168,42 +341,83 @@
         // --- DATA ---
         const circuitSummaryData = { 'Customer A': { 'gt4u': { appName: 'Connectivity', total: 10, service: { 'MPLS': 4, 'Internet': 5, 'VAS': 1 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 5, service: { 'Cloud VM': 3, 'Fortigate': 2 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 3, service: { 'Firewall Audit': 2, 'Vulnerability Scan': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 4, service: { 'ERP Module A': 3, 'App Integration': 1 } } }, 'Customer B': { 'gt4u': { appName: 'Connectivity', total: 5, service: { 'MPLS': 1, 'Internet': 4 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 2, service: { 'Cloud VM': 1, 'Load Balancer': 1 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 1, service: { 'WAF Deployment': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 6, service: { 'CRM Customization': 4, 'Training': 2 } } }, 'Customer C': { 'gt4u': { appName: 'Connectivity', total: 3, service: { 'MPLS': 1, 'Internet': 1, 'VAS': 1 } }, 'jira-cloud': { appName: 'CLOUD HM', total: 3, service: { 'Cloud VM': 1, 'Fortigate': 1, 'Load Balancer': 1 } }, 'jira-cbe': { appName: 'CBE (Security)', total: 5, service: { 'Firewall Audit': 3, 'WAF Deployment': 1, 'Vulnerability Scan': 1 } }, 'clickup': { appName: 'BNG (Brainergy)', total: 2, service: { 'ERP Module A': 1, 'App Integration': 1 } } } };
         const masterTicketData = [
-            { id: 'GT-0987', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Major Service Outage - East Region', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Parent', date: '2025-09-29 09:00', closedTime: null, slaSuccess: false, description: 'Service went down for 4 hours.', timeline: [ { date: '2025-09-29 11:30', user: 'N. T.', action: 'Initial investigation points to a core router failure.'}, { date: '2025-09-29 09:15', user: 'S. J.', action: 'Assigned ticket to Network Team. Status changed to In Progress.'}, { date: '2025-09-29 09:05', user: 'Monitoring System', action: 'Ticket automatically created from alert.'} ]},
-            { id: 'GT-1011', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Schema Update for new DB version', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Request for DB schema update.', timeline: [ { date: '2025-10-01 10:20', user: 'A. P.', action: 'Request acknowledged. Pending developer availability.'}, { date: '2025-10-01 10:00', user: 'Customer B Portal', action: 'Ticket created by customer.'} ]},
-            { id: 'GT-1012', sid: 'SID-23948105', cid: 'CID-234512', subject: 'API connection refactor', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 14:00', closedTime: null, slaSuccess: false, description: 'Refactoring of connection layer.', timeline: [ { date: '2025-10-01 14:00', user: 'Internal Request', action: 'Ticket opened for scheduled maintenance.'} ]},
-            { id: 'GT-1018', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Critical Vulnerability Fix (GT4U)', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'gt4u', relationship: 'Child', date: '2025-09-30 08:00', closedTime: '2025-09-30 12:30', slaSuccess: true, description: 'Patch deployed successfully.', timeline: [ { date: '2025-09-30 12:30', user: 'M. H.', action: 'Patch deployed and verified. Ticket closed.'}, { date: '2025-09-30 08:00', user: 'Security Team', action: 'Child ticket created to track GT4U-specific patch.'} ]},
-            { id: 'GT-1024', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Performance Degradation', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: '2025-10-02 10:00', slaSuccess: false, description: 'Identified memory leak. Fixed by rolling back.', timeline: [ { date: '2025-10-02 10:00', user: 'S. J.', action: 'Rollback complete, performance restored. Ticket closed.'}, { date: '2025-10-02 09:45', user: 'S. J.', action: 'Root cause found. Preparing rollback.'}, { date: '2025-10-01 10:00', user: 'Customer A', action: 'Reported slow performance.'} ]},
-            { id: 'GT-1025', sid: 'SID-11223344', cid: 'CID-998877', subject: 'Database Connection Timeout', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer D', application: 'gt4u', relationship: 'Standard', date: '2025-10-02 16:00', closedTime: '2025-10-03 09:00', slaSuccess: true, description: 'Increased connection pool size.', timeline: [ { date: '2025-10-03 09:00', user: 'DevOps Team', action: 'Configuration updated. Closing ticket.'} ]},
-            { id: 'GT-1026', sid: 'SID-55667788', cid: 'CID-112233', subject: 'New Customer Onboarding: Project Alpha', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer E', application: 'gt4u', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: null, slaSuccess: false, description: 'Initial setup of network infrastructure.', timeline: [ { date: '2025-10-03 11:00', user: 'Sales Team', action: 'New onboarding ticket created.'} ]},
-            { id: 'JC-0045', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Cloud VM CPU Spike', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:30', closedTime: null, slaSuccess: false, description: 'Investigating potential rogue process.', timeline: [ { date: '2025-09-29 10:45', user: 'Cloud Team', action: 'Starting diagnostics on the affected VM instance.'}, { date: '2025-09-29 10:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to address Cloud VM issue.'} ]},
-            { id: 'JC-0046', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Fortigate Policy Review', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-01 15:00', closedTime: '2025-10-02 11:00', slaSuccess: true, description: 'Policy review completed.', timeline: [ { date: '2025-10-02 11:00', user: 'P. L.', action: 'Rules applied and verified. Ticket Closed.'} ]},
-            { id: 'JC-0047', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Load Balancer Configuration Change', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 09:00', closedTime: null, slaSuccess: false, description: 'Request to modify LB session settings.', timeline: [ { date: '2025-10-02 09:00', user: 'Customer B', action: 'New request submitted.'} ]},
-            { id: 'JC-0048', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Instance Creation Request', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 14:00', closedTime: '2025-10-03 14:00', slaSuccess: false, description: 'New VM created for testing environment.', timeline: [ { date: '2025-10-03 14:00', user: 'Automation Script', action: 'VM created and details sent to customer. Ticket Closed.'} ]},
-            { id: 'JC-0050', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Cloud Service Monitoring Setup', status: 'progress', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-03 08:00', closedTime: null, slaSuccess: false, description: 'Implementing new Azure Monitor dashboards.', timeline: [ { date: '2025-10-03 08:00', user: 'Project Manager', action: 'Task created for monitoring setup.'} ]},
-            { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Parent', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Annual security audit in progress. Findings require remediation across multiple teams.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.'} ]}, 
-            { id: 'JCB-011', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Firewall Rule Adjustment', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cbe', relationship: 'Child', date: '2025-09-30 11:00', closedTime: '2025-10-01 11:00', slaSuccess: true, description: 'Opened port 8080 for temporary access.', timeline: [ { date: '2025-10-01 11:00', user: 'CBE Team', action: 'Rules implemented and tested. Ticket Closed.'}, { date: '2025-09-30 11:00', user: 'Parent Ticket GT-0987', action: 'Child ticket created to adjust firewall rules.'} ]},
-            { id: 'JCB-012', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Vulnerability Scan Report', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Generated weekly vulnerability scan report.', timeline: [ { date: '2025-10-01 10:00', user: 'System', action: 'Report generated and attached.'} ]},
-            { id: 'JCB-013', sid: 'SID-23948105', cid: 'CID-234512', subject: 'New WAF Policy Implementation', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-02 12:00', closedTime: '2025-10-03 12:00', slaSuccess: true, description: 'Deployed new custom WAF rule.', timeline: [ { date: '2025-10-03 12:00', user: 'CBE Team', action: 'Policy deployed. Ticket Closed.'} ]},
-            { id: 'JCB-014', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Security Policy Update', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-03 14:00', closedTime: null, slaSuccess: false, description: 'Policy requires update.', timeline: [ { date: '2025-10-03 14:00', user: 'Compliance Officer', action: 'Ticket opened for policy review.'} ]},
-            { id: 'CU-080', sid: 'SID-83749201', cid: 'CID-583921', subject: 'ERP Module A Bug Fix', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'clickup', relationship: 'Child', date: '2025-09-30 09:30', closedTime: null, slaSuccess: false, description: 'Debugging in progress.', timeline: [ { date: '2025-09-30 10:00', user: 'Dev Team', action: 'Bug acknowledged. Investigation started.'}, { date: '2025-09-30 09:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to track ERP bug.'} ]},
-            { id: 'CU-081', sid: 'SID-23948105', cid: 'CID-234512', subject: 'CRM Dashboard Customization', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-01 13:00', closedTime: '2025-10-02 13:00', slaSuccess: true, description: 'Custom sales pipeline view implemented.', timeline: [ { date: '2025-10-02 13:00', user: 'BNG Consultant', action: 'Customization complete. Ticket Closed.'} ]},
-            { id: 'CU-082', sid: 'SID-83749201', cid: 'CID-583921', subject: 'App Integration Testing', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'clickup', relationship: 'Standard', date: '2025-10-02 10:00', closedTime: null, slaSuccess: false, description: 'Testing phase for new integration.', timeline: [ { date: '2025-10-02 10:00', user: 'QA Team', action: 'Testing task created.'} ]},
-            { id: 'CU-083', sid: 'SID-23948105', cid: 'CID-234512', subject: 'User Training Session Schedule', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: '2025-10-03 15:00', slaSuccess: true, description: 'Training scheduled for new module.', timeline: [ { date: '2025-10-03 15:00', user: 'Training Coordinator', action: 'Session scheduled. Ticket Closed.'} ]},
-            { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.'} ]},
-            { id: 'JC-0051', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Review Cloud Firewall Rules for Audit Finding', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:00', closedTime: null, slaSuccess: false, description: 'Review and update firewall rules based on security audit findings.', timeline: [ { date: '2025-09-29 10:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to address firewall rules.'} ]},
-            { id: 'CU-085', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Schedule Remediation Tasks for Audit', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'clickup', relationship: 'Child', date: '2025-09-29 11:00', closedTime: null, slaSuccess: false, description: 'Create and assign tasks in ClickUp for all remediation activities.', timeline: [ { date: '2025-09-29 11:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to manage remediation tasks.'} ]},
+            { id: 'GT-0987', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Major Service Outage - East Region', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Parent', date: '2025-09-29 09:00', closedTime: null, slaSuccess: false, description: 'Service went down for 4 hours.', timeline: [ { date: '2025-09-29 11:30', user: 'N. T.', action: 'Initial investigation points to a core router failure.', type: 'Internal'}, { date: '2025-09-29 09:15', user: 'S. J.', action: 'Assigned ticket to Network Team. Status changed to In Progress.', type: 'Internal'}, { date: '2025-09-29 09:05', user: 'Monitoring System', action: 'Ticket automatically created from alert.', type: 'Internal'} ]},
+            { id: 'GT-1011', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Schema Update for new DB version', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Request for DB schema update.', timeline: [ { date: '2025-10-01 10:20', user: 'A. P.', action: 'Request acknowledged. Pending developer availability.', type: 'Internal'}, { date: '2025-10-01 10:00', user: 'Customer B Portal', action: 'Ticket created by customer.', type: 'External'} ]},
+            { id: 'GT-1012', sid: 'SID-23948105', cid: 'CID-234512', subject: 'API connection refactor', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 14:00', closedTime: null, slaSuccess: false, description: 'Refactoring of connection layer.', timeline: [ { date: '2025-10-01 14:00', user: 'Internal Request', action: 'Ticket opened for scheduled maintenance.', type: 'Internal'} ]},
+            { id: 'GT-1018', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Critical Vulnerability Fix (GT4U)', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'gt4u', relationship: 'Child', date: '2025-09-30 08:00', closedTime: '2025-09-30 12:30', slaSuccess: true, description: 'Patch deployed successfully.', timeline: [ { date: '2025-09-30 12:30', user: 'M. H.', action: 'Patch deployed and verified. Ticket closed.', type: 'Internal'}, { date: '2025-09-30 08:00', user: 'Security Team', action: 'Child ticket created to track GT4U-specific patch.', type: 'Internal'} ]},
+            { id: 'GT-1024', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Performance Degradation', status: 'closed', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'gt4u', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: '2025-10-02 10:00', slaSuccess: false, description: 'Identified memory leak. Fixed by rolling back.', timeline: [ { date: '2025-10-02 10:00', user: 'S. J.', action: 'Rollback complete, performance restored. Ticket closed.', type: 'Internal'}, { date: '2025-10-02 09:45', user: 'S. J.', action: 'Root cause found. Preparing rollback.', type: 'Internal'}, { date: '2025-10-01 10:00', user: 'Customer A', action: 'Reported slow performance.', type: 'External'} ]},
+            { id: 'GT-1025', sid: 'SID-11223344', cid: 'CID-998877', subject: 'Database Connection Timeout', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer D', application: 'gt4u', relationship: 'Standard', date: '2025-10-02 16:00', closedTime: '2025-10-03 09:00', slaSuccess: true, description: 'Increased connection pool size.', timeline: [ { date: '2025-10-03 09:00', user: 'DevOps Team', action: 'Configuration updated. Closing ticket.', type: 'Internal'} ]},
+            { id: 'GT-1026', sid: 'SID-55667788', cid: 'CID-112233', subject: 'New Customer Onboarding: Project Alpha', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer E', application: 'gt4u', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: null, slaSuccess: false, description: 'Initial setup of network infrastructure.', timeline: [ { date: '2025-10-03 11:00', user: 'Sales Team', action: 'New onboarding ticket created.', type: 'Internal'} ]},
+            { id: 'JC-0045', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Cloud VM CPU Spike', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:30', closedTime: null, slaSuccess: false, description: 'Investigating potential rogue process.', timeline: [ { date: '2025-09-29 10:45', user: 'Cloud Team', action: 'Starting diagnostics on the affected VM instance.', type: 'Internal'}, { date: '2025-09-29 10:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to address Cloud VM issue.', type: 'Internal'} ]},
+            { id: 'JC-0046', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Fortigate Policy Review', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-01 15:00', closedTime: '2025-10-02 11:00', slaSuccess: true, description: 'Policy review completed.', timeline: [ { date: '2025-10-02 11:00', user: 'P. L.', action: 'Rules applied and verified. Ticket Closed.', type: 'Internal'} ]},
+            { id: 'JC-0047', sid: 'SID-23948105', cid: 'CID-234512', subject: 'Load Balancer Configuration Change', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 09:00', closedTime: null, slaSuccess: false, description: 'Request to modify LB session settings.', timeline: [ { date: '2025-10-02 09:00', user: 'Customer B', action: 'New request submitted.', type: 'External'} ]},
+            { id: 'JC-0048', sid: 'SID-83749201', cid: 'CID-583921', subject: 'VM Instance Creation Request', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-02 14:00', closedTime: '2025-10-03 14:00', slaSuccess: false, description: 'New VM created for testing environment.', timeline: [ { date: '2025-10-03 14:00', user: 'Automation Script', action: 'VM created and details sent to customer. Ticket Closed.', type: 'Internal'} ]},
+            { id: 'JC-0050', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Cloud Service Monitoring Setup', status: 'progress', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cloud', relationship: 'Standard', date: '2025-10-03 08:00', closedTime: null, slaSuccess: false, description: 'Implementing new Azure Monitor dashboards.', timeline: [ { date: '2025-10-03 08:00', user: 'Project Manager', action: 'Task created for monitoring setup.', type: 'Internal'} ]},
+            { id: 'JCB-010', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Web App Security Audit', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'jira-cbe', relationship: 'Parent', date: '2025-09-28 16:00', closedTime: null, slaSuccess: false, description: 'Annual security audit in progress. Findings require remediation across multiple teams.', timeline: [ { date: '2025-09-28 16:00', user: 'Security Team', action: 'Scheduled audit started.', type: 'Internal'} ]}, 
+            { id: 'JCB-011', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Firewall Rule Adjustment', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer A', application: 'jira-cbe', relationship: 'Child', date: '2025-09-30 11:00', closedTime: '2025-10-01 11:00', slaSuccess: true, description: 'Opened port 8080 for temporary access.', timeline: [ { date: '2025-10-01 11:00', user: 'CBE Team', action: 'Rules implemented and tested. Ticket Closed.', type: 'Internal'}, { date: '2025-09-30 11:00', user: 'Parent Ticket GT-0987', action: 'Child ticket created to adjust firewall rules.', type: 'Internal'} ]},
+            { id: 'JCB-012', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Vulnerability Scan Report', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer C', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-01 10:00', closedTime: null, slaSuccess: false, description: 'Generated weekly vulnerability scan report.', timeline: [ { date: '2025-10-01 10:00', user: 'System', action: 'Report generated and attached.', type: 'Internal'} ]},
+            { id: 'JCB-013', sid: 'SID-23948105', cid: 'CID-234512', subject: 'New WAF Policy Implementation', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-02 12:00', closedTime: '2025-10-03 12:00', slaSuccess: true, description: 'Deployed new custom WAF rule.', timeline: [ { date: '2025-10-03 12:00', user: 'CBE Team', action: 'Policy deployed. Ticket Closed.', type: 'Internal'} ]},
+            { id: 'JCB-014', sid: 'SID-83749201', cid: 'CID-583921', subject: 'Security Policy Update', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'jira-cbe', relationship: 'Standard', date: '2025-10-03 14:00', closedTime: null, slaSuccess: false, description: 'Policy requires update.', timeline: [ { date: '2025-10-03 14:00', user: 'Compliance Officer', action: 'Ticket opened for policy review.', type: 'Internal'} ]},
+            { id: 'CU-080', sid: 'SID-83749201', cid: 'CID-583921', subject: 'ERP Module A Bug Fix', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'Customer A', application: 'clickup', relationship: 'Child', date: '2025-09-30 09:30', closedTime: null, slaSuccess: false, description: 'Debugging in progress.', timeline: [ { date: '2025-09-30 10:00', user: 'Dev Team', action: 'Bug acknowledged. Investigation started.', type: 'Internal'}, { date: '2025-09-30 09:30', user: 'Parent Ticket GT-0987', action: 'Child ticket created to track ERP bug.', type: 'Internal'} ]},
+            { id: 'CU-081', sid: 'SID-23948105', cid: 'CID-234512', subject: 'CRM Dashboard Customization', status: 'closed', serviceType: 'Request', priority: 'medium', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-01 13:00', closedTime: '2025-10-02 13:00', slaSuccess: true, description: 'Custom sales pipeline view implemented.', timeline: [ { date: '2025-10-02 13:00', user: 'BNG Consultant', action: 'Customization complete. Ticket Closed.', type: 'Internal'} ]},
+            { id: 'CU-082', sid: 'SID-83749201', cid: 'CID-583921', subject: 'App Integration Testing', status: 'open', serviceType: 'Information', priority: 'low', company: 'Customer A', application: 'clickup', relationship: 'Standard', date: '2025-10-02 10:00', closedTime: null, slaSuccess: false, description: 'Testing phase for new integration.', timeline: [ { date: '2025-10-02 10:00', user: 'QA Team', action: 'Testing task created.', type: 'Internal'} ]},
+            { id: 'CU-083', sid: 'SID-23948105', cid: 'CID-234512', subject: 'User Training Session Schedule', status: 'closed', serviceType: 'Information', priority: 'low', company: 'Customer B', application: 'clickup', relationship: 'Standard', date: '2025-10-03 11:00', closedTime: '2025-10-03 15:00', slaSuccess: true, description: 'Training scheduled for new module.', timeline: [ { date: '2025-10-03 15:00', user: 'Training Coordinator', action: 'Session scheduled. Ticket Closed.', type: 'Internal'} ]},
+            { id: 'CU-084', sid: 'SID-45678901', cid: 'CID-887432', subject: 'ERP Reporting Issue', status: 'open', serviceType: 'Problem', priority: 'high', company: 'Customer C', application: 'clickup', relationship: 'Standard', date: '2025-10-03 16:00', closedTime: null, slaSuccess: false, description: 'Error generating quarterly financial report.', timeline: [ { date: '2025-10-03 16:00', user: 'Customer C', action: 'Reported issue with financial reports.', type: 'External'} ]},
+            { id: 'JC-0051', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Review Cloud Firewall Rules for Audit Finding', status: 'open', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'jira-cloud', relationship: 'Child', date: '2025-09-29 10:00', closedTime: null, slaSuccess: false, description: 'Review and update firewall rules based on security audit findings.', timeline: [ { date: '2025-09-29 10:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to address firewall rules.', type: 'Internal'} ]},
+            { id: 'CU-085', sid: 'SID-45678901', cid: 'CID-887432', subject: 'Schedule Remediation Tasks for Audit', status: 'progress', serviceType: 'Request', priority: 'medium', company: 'Customer C', application: 'clickup', relationship: 'Child', date: '2025-09-29 11:00', closedTime: null, slaSuccess: false, description: 'Create and assign tasks in ClickUp for all remediation activities.', timeline: [ { date: '2025-09-29 11:00', user: 'Parent Ticket JCB-010', action: 'Child ticket created to manage remediation tasks.', type: 'Internal'} ]},
             { id: 'GT-1027', sid: '586225', cid: '586225', subject: 'Website access issue (cdd.go.th) on FTTX backup link', status: 'progress', serviceType: 'Problem', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'gt4u', relationship: 'Parent', date: '2025-02-21 10:12', closedTime: null, slaSuccess: false, description: 'Investigating a recurring issue where branch offices cannot access websites under the cdd.go.th domain whenever the primary connection fails over to the FTTX backup link. This issue affects all branches and requires a solution redesign.', 
                 timeline: [
-                    { date: '2025-06-04 14:22:56', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 14.15 น.ประชุม ภายในกับ presale ตี้,2 Tier คุณเทพ,NOC แบงค์ ทางตี้แจ้งว่า ปัญหามี 2 เรื่องคือ 1.ศพจ เปิดเว็บไม่ได้บางเครื่องให้แนะนำลค.ให้เช็ค DNS ว่าเป็นของกรมหรือยัง,ทำการ update chrome หรือ clear chache 2.ศพช หรือ ศูนย์เรียนรู้ เปิดเว็บกรมฯไม่ได้หา FTTX down การแก้ไขคือ ให้แก้ dns เป็นของกรมฯเท่านั้น และเร่งแก้ไข FTTX ส่่วนระยะยาวจะมีการ redesign ใหม่ รอทดสอบก่อน//ประชุมอีกครั้งเดือนกย.' },
-                    { date: '2025-05-28 14:20:05', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 2:17 PM ขอเชิญประชุม ภายในเพื่อหาแนวทางการแก้ไขปัญหาสาขาไม่สามารถใช้งาน service ภายใต้ domain:cdd.go.th ได้ เมื่อเกิดเหตุ Link Backup FTTX down สามารถเข้าร่วมประชุมตาม Link ด้านล่างครับ (from theptai_s@xx.xx)' },
-                    { date: '2025-05-28 14:18:48', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 1:54 PM วันพุธที่ 4 ช่วงบ่าย ได้ครับ (from theptai_s)' },
-                    { date: '2025-05-28 14:18:06', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 10:24 AM ขอเป็น วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น. ค่ะ (from napat_c@xx.xx)' },
-                    { date: '2025-05-27 18:19:13', user: 'thitipan_t', action: 'Mail Activity: Tuesday, May 27, 2025 6:13 PM เรียนทุกท่าน ขอนัดคุยภายในเพื่อหาข้อสรุป รบกวนทุกท่านแจ้ง slot ที่สะดวกให้ด้วยครับ (ใช้เวลาประมาณ 2 ชั่วโมง) วันศุกร์ที่ 30/5/2025 ช่วงเช้า 09:00-12:00 น. วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น.' },
-                    { date: '2025-05-26 10:01:02', user: 'chattip_k', action: 'Mail Activity: จ. 26/5/2568 9:58 Dear คุณคำ ผ่านมา 2 เดือนแล้วครับ ทำไมยังวนกลับมาที่เดิมครับ ควรหาทางแก้ไขได้แล้วนะครับ (from sorapong_l@xx.xx)' },
-                    { date: '2025-05-26 09:23:23', user: 'thitipan_t', action: 'Mail Activity: Monday, May 26, 2025 9:22 AM เรียน ตี้ครับ สำเนาเรียนคุณเทพ ตามที่ประชุมเมื่อ 14/3/2025 ซึ่งยังไม่ได้ข้อสรุป รบกวนปรึกษาแนวทางการแก้ไขด้วยครับ หรือหากได้ solution แล้วรบกวนแจ้งด้วยครับ (from napat)' }
+                    { date: '2025-06-04 14:22:56', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 14.15 น.ประชุมภายในกับ presale ตี้,2 Tier คุณเทพ,NOC แบงค์ ทางตี้แจ้งว่า ปัญหามี 2 เรื่องคือ 1.ศพจ เปิดเว็บไม่ได้บางเครื่องให้แนะนำลค.ให้เช็ค DNS ว่าเป็นของกรมหรือยัง,ทำการ update chrome หรือ clear chache 2.ศพช หรือ ศูนย์เรียนรู้ เปิดเว็บกรมฯไม่ได้หาก FTTX down การแก้ไขคือ ให้แก้ dns เป็นของกรมฯเท่านั้น และเร่งแก้ไข FTTX ส่่วนระยะยาวจะมีการ redesign ใหม่ รอทดสอบก่อน//ประชุมอีกครั้งเดือนกย.', type: 'Internal' },
+                    { date: '2025-05-28 14:20:05', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 2:17 PM ขอเชิญประชุมภายในเพื่อหาแนวทางการแก้ไขปัญหาสาขาไม่สามารถใช้งาน service ภายใต้ domain:cdd.go.th ได้ เมื่อเกิดเหตุ Link Backup FTTX down สามารถเข้าร่วมประชุมตาม Link ด้านล่างครับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-05-28 14:18:48', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 1.54 PM วันพุธที่ 4 ช่วงบ่าย ได้ครับ (from theptai_s)', type: 'Internal' },
+                    { date: '2025-05-28 14:18:06', user: 'thitipan_t', action: 'Mail Activity: Wednesday, May 28, 2025 10:24 AM ขอเป็น วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น. ค่ะ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-05-27 18:19:13', user: 'thitipan_t', action: 'Mail Activity: Tuesday, May 27, 2025 6:13 PM เรียนทุกท่าน ขอนัดคุยภายในเพื่อหาข้อสรุป รบกวนทุกท่านแจ้ง slot ที่สะดวกให้ด้วยครับ (ใช้เวลาประมาณ 2 ชั่วโมง) วันศุกร์ที่ 30/5/2025 ช่วงเช้า 09:00-12:00 น. วันพุธที่ 4/6/2025 ช่วงบ่าย 14:00-17:30 น.', type: 'Internal' },
+                    { date: '2025-05-26 10:01:02', user: 'chattip_k', action: 'Mail Activity: จ. 26/5/2568 9:58 Dear คุณคำ ผ่านมา 2 เดือนแล้วครับ ทำไมยังวนกลับมาที่เดิมครับ ควรหาทางแก้ไขได้แล้วนะครับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-05-26 09:23:23', user: 'thitipan_t', action: 'Mail Activity: Monday, May 26, 2025 9:22 AM เรียน ตี้ครับ สำเนาเรียนคุณเทพ ตามที่ประชุมเมื่อ 14/3/2025 ซึ่งยังไม่ได้ข้อสรุป รบกวนปรึกษาแนวทางการแก้ไขด้วยครับ หรือหากได้ solution แล้วรบกวนแจ้งด้วยครับ (from napat)', type: 'Internal' },
+                    { date: '2025-03-26 09:06:17', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: ต่อ..และคุณเทพไทแจ้งว่าขอปรึกษาภายในก่อนแล้วจะแจ้งให้ทราบอีกครั้ง เนื่องจากมีข้อกังวลหากมีการปรับเปลี่ยน solution อาจจะกระทบการใช้งานอย่างอื่นด้วยหรือไม่ ส่วนประเด็นเรื่องแก้ไขโดยให้ตัด DNS ภายนอก(8.8.8.8) ออกเพื่อให้เหลือเฉพาะ DNSของกรมฯ เพื่อให้ resolve ให้เป็น private IP ทาง vendor แจ้งว่าหาก DNS ของกรมฯใช้งานไม่ได้ก็จะทำให้กระทบการใช้งาน จึงไม่แนะนำให้แก้ด้วยวิธีนี้', type: 'Internal' },
+                    { date: '2025-03-14 17:19:54', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: 16.00 น.ประชุมกับลค.คุณขนม,vendor ที่ดู SDWAN ,ดู FW(i-secure),NOC คุณเทพไท,CC สุทธิคุณ ธิติพันธ์ ทาง vendor ที่ดู FW แจ้งว่าหากมีการเรียกเว็บผ่าน Link MPLS routing วิ่งผ่าน FW ขาไปกลับจะเป็นคนละทางกันทำให้โดน drop ด้วย policy ด้านความปลอดภัย(ก่อนหน้า whatchguard ไม่แน่ใจว่าทำไมใช้งานได้แต่เดิมก็มีปัญหาเรื่องช่องโหว่เยอะเหมือนกัน) แนะนำให้แยก SW และ Vlan ระหว่าง Link net และ MPLS ทาง presale', type: 'Internal' },
+                    { date: '2025-03-14 13:03:24', user: 'vittavat_p', action: 'Mail Activity: From: Napat Chorphantha <xxxx@yy.zz> Sent: Friday, March 14, 2025 1:02 PM To: Uraiwan Sarobol รบกวนขอเป็นเจ้าหน้า C Care เข้าร่วมประชุม เพราะทาง NOC ไม่ได้เข้า หากติดอะไร จะได้มีคนแจ้งประสานงานบอก NOC ช่วย tracert ping ตามที่เค้าขอมาใน Meeting ได้ค่ะ เนื่องจาก Presales มีนัดคุย Solution รอบสัญญาหน้า กับลูกค้าที่ THPD หากเสร็จทันทัน จะตามเข้าไปค่ะ', type: 'Internal' },
+                    { date: '2025-03-14 12:18:09', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:17 PM รบขอเวลาที่ทาง Khun Napat สะดวกครับ เนื่องจากทาง NOC ไม่ได้เข้าครับ ขอบคุณครับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-14 12:16:37', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:06 PM มีนัดคุย Solution รอบสัญญาหน้า กับลูกค้าที่ THPD หากเสร็จทันทันจะตามเข้าไปค่ะ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-14 12:08:03', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 12:04 PM รบกวนทางทีม Presale เข้าประชุมร่วมกับทางลูกค้าครับ ขอบคุณครับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-14 11:50:49', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:45 AM ให้ presales เข้าครับ ลค.ยืนยันไม่เคยใช้ได้มาก่อน (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-14 11:34:29', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:33 AM เรียน NOC เนื่องจากทางลูกค้า กรมการพัฒนาชุมชน ขอให้เข้าร่วมประชุมตามอีเมล์ด้านล่าง รบกวนทาง NOC เข้าร่วมตามเวลาดังกล่าว ขอบคุณครับ. (to xxxx@yy.zz, xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-14 11:25:32', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 11:02 AM Dear C-Care ทางทีมดูแล firewall ขอนัดประชุม เพื่อตรวจสอบและแก้ไขปัญหาร่วมกัน ในวันนี้เวลา 16:00 ค่ะ Link การประชุมทางขนมจะสร้างให้อีกครั้งค่ะ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-14 10:03:31', user: 'sorachai_y', action: 'Mail Activity: March 14, 2025 9:58 AM Dear C-Care ขออนุญาตเปิด e-mail ใหม่ อ้างอิง Ref.Issue เดิมค่ะ พร้อมเพิ่มทีม i-secure ที่ดูแล Firewall ส่วนกลางของกรมการพัฒนาชุมชน ในเมล์ค่ะ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-13 16:25:08', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 4:20 PM เรียนทีม CC ขอบคุณค่ะ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-13 16:20:06', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 4:19 PM NOC 1 Tier และ NOC IOC ตรวจสอบโดย trace จากสาขาไปยัง web site IP 103.40.132.27 พบว่า routing วิ่งผ่าน MPLS ไปยัง Link HQ CID 586225 โดยไม่ผ่าน Internet ซึ่งผล trace ผ่าน switch cisco 3650 ไปถึง firewall Polo Alto แล้ว รบกวนประสานงานทีมที่ดู Firewall ตรวจสอบเพิ่มเติมด้วยครับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-13 14:59:15', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: NOC คุณสมชาติ โทรมาแจ้งว่าจากผล trace ของ IOC พบว่าวิ่งมาถึง switch ที่อยู่หลัง router ของ Link HQ แล้วแต่ไปต่อไม่ได้โดยลค.นำ fw palo มารับ รบกวนถาม presale ให้ด้วยว่า route จะต้องวิ่งผ่าน MPLS หรือออก net หากวิ่งผ่าน MPLS ต้องไปเช็คที่ palo //โทรแจ้ง presale ตี้แจ้งว่าต้องผ่าน MPLS เพราะมองว่าเป็นระบบหลังบ้าน ตี้ขอให้ส่งผลเช็คไปให้ด้วยเพื่อจะคุยกับทีมที่ดู fw palo ต่อ (from NOC คุณสมชาติ 88018)', type: 'Internal' },
+                    { date: '2025-03-13 14:17:26', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: DT_Created: 2025-03-13 13:32:27 Creator: sunisa_r Operation: Internet Operation Center วง 103.40.132.0/25 มี route บน MPLS ค่ะ เลยไม่ได้วิ่งไปใช้งานผ่าน c-net แต่วิ่งผ่านวงจร MPLS ไปติดที่ 10.1.11.14 ค่ะ', type: 'Internal' },
+                    { date: '2025-03-13 12:59:46', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: DT_Created: 2025-03-13 12:52:06 Creator: jakkon_s Operation: Internet Operation Center รบกวน Core internet ตรวจสอบเพิ่มเติมให้ด้วยครับ จาก Router ปลายทางออกเน็ตได้ปกติ แต่ ping tracert telnet www.cdd.go.th/[103.40.132.27] ไม่ได้ตามไฟล์แนบ CID cloud net 586224', type: 'Internal' },
+                    { date: '2025-03-13 12:44:25', user: 'thitipan_t', action: 'Update ข้อมูลเพิ่มเติม: เปิด Job ให้ IOC เช็คและโทรแจ้งโจ้ รับทราบแล้วให้เร่งตรวจสอบให้ด้วย (from NOC IOC โจ้ 85001)', type: 'Internal' },
+                    { date: '2025-03-13 12:43:32', user: 'thitipan_t', action: 'Mail Activity: Thursday, March 13, 2025 12:09 PM เรื่อง: ปัญหาการเข้าถึงเว็บไซต์ภายใต้โดเมน cdd.go.th ที่ศูนย์ศึกษาและพัฒนาชุมชน จ.เพชรบุรี อ้างอิง: Issue TK: 20250207564 รายละเอียด: แม้ว่าการใช้งานอินเทอร์เน็ตที่ศูนย์ศึกษาและพัฒนาชุมชน จ.เพชรบุรี (CID 585875) จะเป็นปกติ แต่คุณขนมแจ้งว่า ไม่สามารถเข้าถึงเว็บไซต์ทุกเว็บไซต์ที่อยู่ภายใต้โดเมนหรือซับโดเมนของ cdd.go.th (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-13 12:26:45', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 12:26 PM ตอบรับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-13 12:25:00', user: 'sorachai_y', action: 'Mail Activity: March 13, 2025 11:35 AM สวัสดีค่ะ ติดตามการแก้ไขปัญหานี้ค่ะ ปัจจุบันยังมีปัญหาอยู่ค่ะ ศพช.เพชรบุรีครับ เน็ตเข้าเว็ปกรมไม่ได้ 0xx-xxxxxxx (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-03-01 09:41:29', user: 'chitsanupong_p', action: 'OUT(ประสานงานลูกค้า): CAT คุณอุกฤษ แจ้งปิดงานได้เลยรึเปล่า // แจ้งปิดงานได้เลยครับ (from CAT 0xx-xxxxxxx)', type: 'Internal' },
+                    { date: '2025-02-27 10:27:57', user: 'chitsanupong_p', action: 'Out to Provider: CAT คุณสมร สอบถามลูกค้าใช้งานได้รึยัง // แจ้งลูกค้ายังไม่แจ้งกลับมาเลย รบกวนติดต่อเช็ควันเสาร์อีกทีครับ (from CAT 0xx-xxxxxxx)', type: 'Internal' },
+                    { date: '2025-02-25 08:41:37', user: 'chitsanupong_p', action: 'Out to Provider: CAT คุณสมร แจ้งไม่ทราบว่าลูกค้าเช็คการใช้งานรึยัง สามารถใช้งานได้รึเปล่า ทาง cat พบ link ปกติเลย แต่เหมือนจะมีส่วน FW ของลูกค้าด้วย รบกวนให้ลูกค้าเช็คเพิ่มเติมด้วยครับ (from CAT 0xx-xxxxxxx)', type: 'Internal' },
+                    { date: '2025-02-23 19:57:08', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:40 เนื่องจากคุณขนมแจ้งเป็นปัญหาทุกสาขาเลยครับและเพิ่งพบปัญหาตอน FTTX down รบกวนช่วยตรวจสอบ Solution ของลูกค้าเพิ่มเติมครับ (from Napat Chorphantha)', type: 'Internal' },
+                    { date: '2025-02-23 19:56:42', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:38 ทีมขอยกเลิกงานตรวจสอบก่อนครับ ทางทีมจะปรึกษา solution กับทาง presale engineer ก่อนครับ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-02-23 19:56:03', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 19:33 รบกวนขอผล Test จาก SDWAN เพื่อเป็นข้อมูลให้ทาง CAT ตรวจสอบเพิ่มเติมครับ จาก SDWAN สามารถ Ping / telent Port / Tracert web ปลายทางจาก Source interface บน SDWAN ได้หรือไม่ครับ เนื่องจากได้รับแจ้งจากลูกค้าว่าไม่สามารถใช้งาน Web cdd.go.th หากวิ่ง FTTX (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-02-23 19:40:29', user: 'chattip_k', action: 'Update ข้อมูลเพิ่มเติม: 19:32 suchat_t HQ คุณขนม ติดต่อมาแจ้งว่าได้เมล์มา และแจ้งว่าจะเป็นอาการคือเมื่อ fttx ของสาขานั้น ๆ down จะทำให้สาขานั้นไม่สามารถเปิดใช้งานเวป ภายใต้ cdd.go.th ได้ ซึ่งคุณขนมแจ้งว่าเป็นลักษณะนี้ทุกสาขา // รบกวนแจ้งทาง presale ให้ช่วยตรวจสอบว่าทำไมถึงเป็นลักษณะนี้ครับ', type: 'Internal' },
+                    { date: '2025-02-23 19:37:55', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: พี่บ่าว แจ้งคุณขนม แจ้งมาใหม่ว่าเป็นปัญหาทุกสาขา และที่มีปัญหาเป็น เป็นจังหวะที่ FTTX Down และใข้ MPLS จะเข้าใช้งาน cdd.go.th ไม่ได้ // แจ้งพี่บ่าวถ้าเป็นทุกสาขา เดี่ยวแจ้ง presale', type: 'Internal' },
+                    { date: '2025-02-23 19:11:42', user: 'pichit_t', action: 'Update ข้อมูลเพิ่มเติม: CAT คุณสมลวรรณ แจ้ง IP cat Fix IP : 100.69.94.174 ตรวจสอบทดสอบออก net ปกติ และยังเชื่อมไปที่ web : cdd.go.th ได้ปกติ โดย cat ยังส่งผลให้ทาง mail ครับ - โดย cat แจ้งขอผลจากปลายทางด้วยที่แจ้งใช้งานผ่าน link cat ไม่ได้นั้นมีผลหรือ error หรือยืนยันชุด IP ที่เรียกใช้ส่งมาให้ cat ตรวจสอบเพิ่มเติมด้วยครับ (from CAT 0xx-xxxxxxx)', type: 'Internal' },
+                    { date: '2025-02-23 19:03:33', user: 'pichit_t', action: 'Out to Provider: คุณเกรียรติศักดิ์_catพื้นที่ แจ้งทดสอบจาก zone พื้นที่ เทียบกันยังสามารถเข้า web : cdd.go.th ได้ปกติ - CC แจ้งหากจะอิงจาก Zone พื้นที่ จึงขอ IP cat ที่แจกให้เรียกใช้งาน Cat ว่าเป็น ip ชุดไหนจะได้นำข้อมูลไปแจ้ง CDD ตรวจสอบว่ามีการ block ip ชุดของ cat หรือไม่ครับ - คุณเกรียรติศักดิ์ แจ้งไม่มีข้อมูล เดียวให้ Cat NOC บางรัก โทรมาให้ช่วยอธิบายว่าจะเอา IP อะไร ตามที่ UIH แจ้งครับ (from คุณเกรียรติศักดิ์_catพื้นที่ 0xx-xxxxxxx)', type: 'Internal' },
+                    { date: '2025-02-23 18:04:49', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 18:04 ฝ่าย Operation Support รับทราบข้อมูลและขอบคุณครับ (from Pawat Thanicknithigorn)', type: 'Internal' },
+                    { date: '2025-02-23 18:00:12', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: 23/2/2568 17:55 เรียน CC - อุปกรณ์ SDWAN สามารถประสาน บ.แอกทีฟ โพรวิชั่น คุณต้น 0xx-xxxxxxx หรือ คุณบอย 0xx-xxxxxxx - วงจร Internet FTTx ทุกวงจร ทาง UIH เป็นผู้เช่า NT เพื่อให้บริการกรมการพัฒนาชุมชน - ปัญหาทั่วไป สามารถปรึกษาคุณแมกซ์ HelpDesk กรมการพัฒนาชุมชน 0xx-xxxxxxx หรือ คุณขนม 0xx-xxxxxxx (from Pawat Thanicknithigorn)', type: 'Internal' },
+                    { date: '2025-02-23 17:57:53', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: 5030214287 CAT 0xx-xxxxxxx คุณสุพรรณี รับเรื่องตรวจสอบ - ใช้งาน web cdd.go.th ไม่ได้ - Ip ของ CAT ออก internet ด้วย Ip อะไร จะแจ้งทาง CDD เช็คเพิ่มให้ (from CAT 0xx-xxxxxxx)', type: 'Internal' },
+                    { date: '2025-02-23 17:53:25', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 17:52 UIH รับทราบข้อมูลครับ จะประสานงาน Provider ตรวจสอบเพิ่มเติมครับ (from Naruemon Pumee)', type: 'Internal' },
+                    { date: '2025-02-23 17:32:30', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 17:12 ที่ ศพช มี SDWan ค่ะ รับ Fttx และ MPLS ค่ะ (from Naruemon Pumee)', type: 'Internal' },
+                    { date: '2025-02-23 17:31:44', user: 'narongkorn_u', action: 'Update ข้อมูลเพิ่มเติม: Mr. Pawat Thanicknithigorn sale 0xx-xxxxxxx แจ้งว่า Firewall SDWAN เป็น คุณต้น Active provition 0xx-xxxxxxx ดูแล แต่โดนปกติคุณขนม น่าจะคุยกับคุณต้นโดยตรงอยู่แล้วเพราะเห็นมีนัด Test กันตลอด // แจ้ง Mr. Pawat ช่วยส่งข้อมูลวงจร Back up ให้หน่อยครับที่หาเจอเหมือน Job ยังไม่ปิดติดตั้งไม่แน่ใช่ใช้งานที่วงจรนี้หรือไม่ จะไปแจ้ง CAT ตรวจสอบ Ip ให้ต่อครับ', type: 'Internal' },
+                    { date: '2025-02-23 17:16:15', user: 'narongkorn_u', action: 'Mail Activity: 23/2/2568 17:12 ที่ ศพช มี SDWan ค่ะ รับ Fttx และ MPLS ค่ะ (from Naruemon Pumee)', type: 'Internal' },
+                    { date: '2025-02-23 17:12:19', user: 'narongkorn_u', action: 'Progressive Mail: 23/2/2568 17:10 ตรวจสอบแล้วบน Router ไม่พบ interface to FTTX ครับ สาขานี้ไม่พบมีวงจร FTTX ครับ (from Naruemon Pumee)', type: 'Internal' },
+                    { date: '2025-02-21 11:26:17', user: 'sorachai_y', action: 'Mail Activity: February 21, 2025 11:07 AM Dear CC อินเทอร์เน็ต สามารถใช้งานได้ปกติค่ะ แต่ไม่สามารถเรียกใช้ web site ทุกเว็บไซต์ที่เป็น domain / sub domain ของ cdd.go.th ค่ะ (from xxxx@yy.zz)', type: 'Internal' },
+                    { date: '2025-02-21 10:52:49', user: 'narongkorn_u', action: 'Progressive Mail: 21/2/2568 10:52 เบื้องต้นตรวจสอบจาก source lan สามารถ ออก internet ได้ปกติครับ แต่พบ port g0/1/0 0/1/1 ,0/1/3 to wifi down อยุ่ครับ รบกวนช่วยตรวจสอบอุปกรณ์ wifi เพิ่มเติม (from Naruemon Pumee)', type: 'Internal' },
+                    { date: '2025-02-21 10:13:01', user: 'narongkorn_u', action: 'E-mail (Send) to Naruemon Pumee', type: 'Internal' },
+                    { date: '2025-02-21 10:12:01', user: 'narongkorn_u', action: 'E-mail (Receive) from Naruemon Pumee', type: 'Internal' }
                 ]
             },
-            { id: 'JCB-015', sid: '586225', cid: '586225', subject: 'Firewall Policy Review for cdd.go.th Asymmetric Routing', status: 'open', serviceType: 'Request', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'jira-cbe', relationship: 'Child', date: '2025-03-15 10:00', closedTime: null, slaSuccess: false, description: 'Analyze and propose new Palo Alto firewall policies to resolve the asymmetric routing issue for cdd.go.th traffic originating from branch MPLS links during FTTX failover.', timeline: [ { date: '2025-03-15 10:00', user: 'Parent Ticket GT-1027', action: 'Child ticket created to address firewall policy review.'} ]},
+            { id: 'JCB-015', sid: '586225', cid: '586225', subject: 'Firewall Policy Review for cdd.go.th Asymmetric Routing', status: 'open', serviceType: 'Request', priority: 'high', company: 'กรมการพัฒนาชุมชน', application: 'jira-cbe', relationship: 'Child', date: '2025-03-15 10:00', closedTime: null, slaSuccess: false, description: 'Analyze and propose new Palo Alto firewall policies to resolve the asymmetric routing issue for cdd.go.th traffic originating from branch MPLS links during FTTX failover.', timeline: [ { date: '2025-03-15 10:00', user: 'Parent Ticket GT-1027', action: 'Child ticket created to address firewall policy review.', type: 'Internal'} ]},
         ];
         const relationshipData = [
             { parent: masterTicketData[0], children: [ masterTicketData[7], masterTicketData[13], masterTicketData[17] ] },
@@ -1233,6 +447,7 @@
             } else { 
                 document.querySelector(`.tab-btn[onclick*="'${tabName}'"]`).classList.add('active');
             }
+
 
             if (document.getElementById(tabName).getAttribute('data-rendered') !== 'true') {
                  if (tabName === 'relationships') {
@@ -1341,6 +556,7 @@
             summarySection.innerHTML = html;
         }
 
+
         function filterTickets() {
             const searchVal = document.getElementById('universalSearch').value.toLowerCase();
             const appVal = document.getElementById('appFilter').value;
@@ -1390,17 +606,17 @@
             tbody.innerHTML = ``;
             if (!tbody) return;
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 30px; color: #9ca3af;">ไม่พบข้อมูล Ticket ตามเงื่อนไขที่ค้นหา</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 30px; color: #7f8c7d;">ไม่พบข้อมูล Ticket ตามเงื่อนไขที่ค้นหา</td></tr>`;
                 return;
             }
             const colCount = tbody.closest('table').querySelector('thead tr').children.length;
             data.forEach(ticket => {
                 const relationshipInfo = relationshipMap[ticket.id];
-                let relationshipIcon = '<i class="fas fa-minus-circle" title="Standard Ticket" style="color:#6b7280;"></i>', relationshipText = 'Standard';
+                let relationshipIcon = '<i class="fas fa-minus-circle" title="Standard Ticket" style="color:#6c757d;"></i>', relationshipText = 'Standard';
                 if (relationshipInfo) {
                     relationshipText = relationshipInfo.type;
-                    if (relationshipInfo.type === 'Parent') relationshipIcon = '<i class="fas fa-sitemap" title="Parent Ticket" style="color:#06b6d4;"></i>';
-                    else if (relationshipInfo.type === 'Child') relationshipIcon = '<i class="fas fa-link" title="Child Ticket" style="color:#8b5cf6;"></i>';
+                    if (relationshipInfo.type === 'Parent') relationshipIcon = '<i class="fas fa-sitemap" title="Parent Ticket" style="color:#0d6efd;"></i>';
+                    else if (relationshipInfo.type === 'Child') relationshipIcon = '<i class="fas fa-link" title="Child Ticket" style="color:#fd7e14;"></i>';
                 }
                 const row = document.createElement('tr');
                 row.className = 'clickable-row' + (ticket.isChildOfParent ? ' nested-child-row' : '');
@@ -1418,7 +634,7 @@
                 if (ticket.isChildOfParent && tableBodyId === 'universalTicketTableBody') {
                     const firstCell = row.querySelector('td:first-child');
                     firstCell.style.paddingLeft = '40px';
-                    firstCell.innerHTML = `<i class="fas fa-level-up-alt fa-rotate-90" style="color: #8b5cf6; margin-right: 10px; font-size: 0.9em;"></i>` + firstCell.innerHTML;
+                    firstCell.innerHTML = `<i class="fas fa-level-up-alt fa-rotate-90" style="color: #0d6efd; margin-right: 10px; font-size: 0.9em;"></i>` + firstCell.innerHTML;
                 }
                 tbody.appendChild(row);
             });
@@ -1436,13 +652,13 @@
             document.getElementById('appFilter').value = 'all';
             document.querySelector('.master-ticket-table-container').style.display = 'none';
             renderDashboardContent(masterTicketData);
+            renderCircuitSummary(null); 
         }
 
         function renderDashboardContent(data) {
             const { overallStats, pendingByApp } = calculateStatsAndChartData(data);
             renderOverallStats(overallStats);
             renderPendingSummary(pendingByApp);
-            renderCircuitSummary(null);
             renderApplicationPerformanceCharts(data);
             renderSlaBarChart(data);
             renderRelationshipCharts(data, 'dashboardParentTicketChart', 'dashboardChildDistributionChart');
@@ -1489,9 +705,10 @@
                     let centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
                     let centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.font = 'bold 32px Inter'; ctx.fillStyle = chartColors.slaSuccess;
+                    ctx.font = 'bold 36px Inter'; 
+                    ctx.fillStyle = chartColors.slaSuccess;
                     ctx.fillText(`${successPercentage.toFixed(1)}%`, centerX, centerY - 10);
-                    ctx.font = '16px Inter'; ctx.fillStyle = '#6b7280'; ctx.fillText('Success', centerX, centerY + 20);
+                    ctx.font = '16px Inter'; ctx.fillStyle = '#6c757d'; ctx.fillText('Success', centerX, centerY + 20);
                     ctx.restore();
                 }
             };
@@ -1499,9 +716,25 @@
             const overallSlaCtx = document.getElementById('overallSlaPieChart')?.getContext('2d');
             if(overallSlaCtx) chartInstances['overallSlaPieChart'] = new Chart(overallSlaCtx, {
                 type: 'doughnut',
-                data: { labels: ['SLA Success', 'SLA Failure'], datasets: [{ data: [slaSuccessCount, closedTickets.length - slaSuccessCount], backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], borderWidth: 0 }] },
+                data: { 
+                    labels: ['SLA Success', 'SLA Failure'], 
+                    datasets: [{ 
+                        data: [slaSuccessCount, closedTickets.length - slaSuccessCount], 
+                        backgroundColor: [chartColors.slaSuccess, chartColors.slaFailure], 
+                        borderColor: getComputedStyle(document.body).getPropertyValue('--background-color'), 
+                        borderWidth: 4 
+                    }] 
+                },
                 plugins: [centerTextPlugin],
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '60%', 
+                    plugins: { 
+                        legend: { position: 'bottom' }, 
+                        tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} (${(c.raw / c.chart.getDatasetMeta(0).total * 100).toFixed(1)}%)` } } 
+                    } 
+                }
             });
         }
 
@@ -1523,19 +756,34 @@
             destroyChart('slaBarChart');
             const ctx = document.getElementById('slaBarChart').getContext('2d');
             chartInstances['slaBarChart'] = new Chart(ctx, {
-                type: 'bar',
+                type: 'bar', 
                 data: {
                     labels: Object.values(applicationNames),
                     datasets: [{
                         label: 'SLA Success Rate (%)', data: percentages,
                         backgroundColor: Object.values(chartColors).slice(0, 4),
-                        borderRadius: 5, barPercentage: 0.6
+                        borderRadius: 5,
+                        barPercentage: 0.7
                     }]
                 },
                 options: {
+                    indexAxis: 'y', 
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } }
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            max: 100, 
+                            ticks: { callback: (v) => v + '%' },
+                            title: {
+                                display: true,
+                                text: 'SLA Success Rate'
+                            }
+                        } 
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { callbacks: { label: (c) => c.formattedValue + '%' } } 
+                    }
                 }
             });
         }
@@ -1556,7 +804,7 @@
                     type: 'pie', data: { labels: Object.keys(parentAppCounts).map(k => applicationNames[k]), datasets: [{ data: Object.values(parentAppCounts), backgroundColor: Object.keys(parentAppCounts).map(k => chartColors[k.replace('-','')]), hoverOffset: 10 }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
                 });
-            } else if(parentChartCtx) { parentChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #9ca3af;">ไม่พบ Parent Ticket</div>'; }
+            } else if(parentChartCtx) { parentChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #7f8c7d;">ไม่พบ Parent Ticket</div>'; }
 
             const childChartCtx = document.getElementById(childCanvasId)?.getContext('2d');
             if (childChartCtx && childTickets.length > 0) {
@@ -1564,27 +812,27 @@
                     type: 'bar', data: { labels: Object.keys(childAppCounts).map(k => applicationNames[k]), datasets: [{ label: 'Child Tickets', data: Object.values(childAppCounts), backgroundColor: Object.keys(childAppCounts).map(k => chartColors[k.replace('-','')]) }] },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
                 });
-            } else if(childChartCtx) { childChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #9ca3af;">ไม่พบ Child Ticket</div>'; }
+            } else if(childChartCtx) { childChartCtx.canvas.parentNode.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color: #7f8c7d;">ไม่พบ Child Ticket</div>'; }
         }
 
         function renderTicketDetails(ticket, colspan) {
-            const closedTimeHtml = ticket.closedTime ? `<span style="color: #10b981; font-weight: 700;">${ticket.closedTime}</span>` : '<span style="color: #ef4444; font-weight: 700;">N/A (Still Open)</span>';
-            const slaHtml = ticket.closedTime ? (ticket.slaSuccess ? '<span class="status-badge" style="background-color:#d1fae5; color:#065f46;">Success</span>' : '<span class="status-badge" style="background-color:#fee2e2; color:#991b1b;">Failure</span>') : '<span class="status-badge" style="background-color:#e9d5ff; color:#6b21a8;">Pending</span>';
+            const closedTimeHtml = ticket.closedTime ? `<span style="color: #28a745; font-weight: 700;">${ticket.closedTime}</span>` : '<span style="color: #dc3545; font-weight: 700;">N/A (Still Open)</span>';
+            const slaHtml = ticket.closedTime ? (ticket.slaSuccess ? '<span class="status-badge" style="background-color:#e8f5e9; color:#4caf50;">Success</span>' : '<span class="status-badge" style="background-color:#fbe9e7; color:#ff5722;">Failure</span>') : '<span class="status-badge" style="background-color:#fff0e1; color:#fd7e14;">Pending</span>';
 
             let relationshipHtml = '';
             if (relationshipMap[ticket.id]?.type === 'Parent') {
                 const childListHtml = relationshipMap[ticket.id].children.length > 0
-                    ? relationshipMap[ticket.id].children.map(c => `<li><i class="fas fa-link" style="color:#8b5cf6;"></i> <strong>${c.id}</strong> (${c.name})</li>`).join('')
-                    : '<li><i class="fas fa-minus-circle" style="color:#9ca3af;"></i> ไม่มี Child Ticket</li>';
+                    ? relationshipMap[ticket.id].children.map(c => `<li><i class="fas fa-link" style="color:#fd7e14;"></i> <strong>${c.id}</strong> (${c.name})</li>`).join('')
+                    : '<li><i class="fas fa-minus-circle" style="color:#7f8c8d;"></i> ไม่มี Child Ticket</li>';
                 relationshipHtml = `<div class="detail-block full-width">
-                    <span class="detail-label"><i class="fas fa-sitemap" style="color:#06b6d4;"></i> Child Tickets (${relationshipMap[ticket.id].children.length} รายการ)</span>
+                    <span class="detail-label"><i class="fas fa-sitemap" style="color:#0d6efd;"></i> Child Tickets (${relationshipMap[ticket.id].children.length} รายการ)</span>
                     <div class="detail-value"><ul class="relationship-list">${childListHtml}</ul></div>
                 </div>`;
             } else if (relationshipMap[ticket.id]?.type === 'Child') {
                 const parent = relationshipMap[ticket.id].parent;
                 relationshipHtml = `<div class="detail-block">
-                    <span class="detail-label"><i class="fas fa-sitemap" style="color:#06b6d4;"></i> Parent Ticket ID</span>
-                    <span class="detail-value" style="color: #06b6d4; font-weight: 700;">${parent.id}</span>
+                    <span class="detail-label"><i class="fas fa-sitemap" style="color:#0d6efd;"></i> Parent Ticket ID</span>
+                    <span class="detail-value" style="color: #0d6efd; font-weight: 700;">${parent.id}</span>
                 </div>
                 <div class="detail-block">
                     <span class="detail-label">Parent Application</span>
@@ -1594,9 +842,12 @@
 
             let timelineHtml = '';
             if (ticket.timeline && ticket.timeline.length > 0) {
-                const timelineItems = ticket.timeline.slice().reverse().map(item =>
+                const timelineItems = ticket.timeline.slice().map(item => // REMOVED .reverse()
                     `<div class="timeline-item">
-                        <div class="timeline-time">${item.date}</div>
+                        <div class="timeline-header">
+                            <div class="timeline-time">${item.date}</div>
+                            <span class="timeline-type-badge type-${(item.type || 'internal').toLowerCase()}">${item.type || 'Internal'}</span>
+                        </div>
                         <div class="timeline-action">${item.action}</div>
                         <div class="timeline-user"><i class="fas fa-user"></i> ผู้ดำเนินการ: ${item.user}</div>
                     </div>`).join('');
@@ -1721,7 +972,14 @@
             if(!tab) return;
             tab.innerHTML = `
                 <h2 class="section-title"><i class="fas fa-project-diagram"></i> Parent-Child Relationship (Detailed View)</h2>
-                <div class="filter-controls-container">
+                
+                <h2 class="section-title" style="margin-top: 0;"><i class="fas fa-chart-area"></i> Relationship Charts Summary</h2>
+                <div class="app-charts-grid">
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="relationshipParentTicketChart"></canvas></div></div>
+                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="relationshipChildDistributionChart"></canvas></div></div>
+                </div>
+
+                <div class="filter-controls-container" style="margin-top: 40px;">
                      <h2 class="section-title"><i class="fas fa-search"></i> ค้นหา Parent Ticket</h2>
                     <div class="filter-inputs">
                         <input type="text" id="relationshipSearch" placeholder="ค้นหาด้วย ID หรือ Subject" style="flex-grow: 2;"/>
@@ -1729,7 +987,7 @@
                         <input type="date" id="relationshipStartDate" style="max-width: 180px;" title="จากวันที่เริ่มต้น" />
                         <input type="date" id="relationshipEndDate" style="max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
                         <button onclick="filterRelationshipTable()"><i class="fas fa-search"></i> ค้นหา</button>
-                        <button onclick="resetRelationshipFilter()" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                        <button onclick="resetRelationshipFilter()" style="background: #6c757d;"><i class="fas fa-redo"></i> รีเซ็ต</button>
                     </div>
                 </div>
                 <div class="tickets-table-container">
@@ -1738,11 +996,6 @@
                         <thead><tr><th>Parent Ticket (Click for Detail)</th><th>Service Type</th><th>Status / Priority</th><th>Child Tickets (Click ID to view)</th></tr></thead>
                         <tbody id="relationships-table-body"></tbody>
                     </table>
-                </div>
-                <h2 class="section-title" style="margin-top: 30px;"><i class="fas fa-chart-area"></i> Relationship Charts Summary</h2>
-                <div class="app-charts-grid">
-                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-pie"></i> Parent Ticket Origin</h2><div class="chart-wrapper"><canvas id="relationshipParentTicketChart"></canvas></div></div>
-                    <div class="chart-container"><h2 class="chart-title"><i class="fas fa-chart-bar"></i> Child Ticket Distribution</h2><div class="chart-wrapper"><canvas id="relationshipChildDistributionChart"></canvas></div></div>
                 </div>`;
             filterRelationshipTable();
             document.getElementById('relationships-main-table')?.addEventListener('click', handleRelationshipTableClick);
@@ -1775,12 +1028,12 @@
             const tbody = document.getElementById('relationships-table-body');
             tbody.innerHTML = '';
             if (relationships.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #9ca3af;">ไม่พบ Parent Ticket</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #7f8c7d;">ไม่พบ Parent Ticket</td></tr>`;
                 return;
             }
             relationships.forEach(rel => {
                 const parent = rel.parent;
-                const childIds = rel.children.map(c => `<span class="clickable-child-id" data-ticket-id="${c.id}" style="color:var(--primary-color); text-decoration: underline; cursor: pointer;">${c.id}</span>`).join(', ');
+                const childIds = rel.children.map(c => `<span class="clickable-child-id child-ticket-badge" data-ticket-id="${c.id}">${c.id}</span>`).join('');
                 const row = document.createElement('tr');
                 row.className = 'clickable-row parent-row';
                 row.dataset.ticketId = parent.id;
@@ -1810,7 +1063,7 @@
                         <input type="text" id="search-${appKey}" placeholder="ค้นหาด้วย ID, Subject, หรือชื่อบริษัท" style="flex-grow: 4;"/>
                         <input type="date" id="startDate-${appKey}" style="flex-grow: 1; max-width: 180px;" title="จากวันที่เริ่มต้น" />
                         <input type="date" id="endDate-${appKey}" style="flex-grow: 1; max-width: 180px;" title="ถึงวันที่สิ้นสุด" />
-                        <button onclick="resetAppFilter('${appKey}')" style="flex-grow: 0; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);"><i class="fas fa-redo"></i> รีเซ็ต</button>
+                        <button onclick="resetAppFilter('${appKey}')" style="flex-grow: 0; background: #6c757d;"><i class="fas fa-redo"></i> รีเซ็ต</button>
                         <button onclick="filterAppTickets('${appKey}')" style="flex-grow: 0;"><i class="fas fa-search"></i> ค้นหา</button>
                     </div>
                 </div>
@@ -1915,6 +1168,7 @@
         function runInitialization() {
             buildRelationshipMap();
             renderDashboardContent(masterTicketData);
+            renderCircuitSummary(null);
             document.querySelector('.container').addEventListener('click', handleDataRowClick);
         }
 
