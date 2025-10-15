@@ -160,10 +160,10 @@
         .relationship-list li { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
 
         /* --- MODIFIED TIMELINE CARD STYLES --- */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(40, 167, 69, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        @keyframes subtle-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 5px rgba(40, 167, 69, 0.2); }
+            50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 0 5px rgba(40, 167, 69, 0.2); }
         }
         .timeline-container { 
             position: relative;
@@ -177,35 +177,38 @@
             bottom: 15px;
             width: 2px;
             background-color: #e9ecef;
+            z-index: 0;
         }
         .timeline-title { font-size: 1.2em; margin-bottom: 20px; color: var(--text-dark); }
         .timeline-item {
             position: relative;
-            background-color: var(--card-background-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: all 0.3s ease-in-out;
+            background: linear-gradient(to bottom right, #ffffff, #fcfdfc);
+            border: 1px solid #eef0f2;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease-out;
         }
         .timeline-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(40,167,69,0.1);
-            border-color: rgba(40,167,69,0.5);
+            transform: translateY(-5px) scale(1.005);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.12);
+            border-color: rgba(40, 167, 69, 0.3);
+            z-index: 10;
         }
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -26px;
-            top: 18px;
-            width: 12px;
-            height: 12px;
-            background-color: var(--primary-color);
+            z-index: 1;
+            left: -27px;
+            top: 21px;
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(ellipse at center, #ffffff 20%, var(--primary-color) 70%);
             border-radius: 50%;
-            border: 3px solid var(--card-background-color);
-            box-shadow: 0 0 0 2px var(--primary-color);
-            animation: pulse 2.5s infinite;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+            animation: subtle-pulse 3s infinite ease-in-out;
         }
         .timeline-header {
             display: flex;
@@ -839,7 +842,7 @@
 
             let timelineHtml = '';
             if (ticket.timeline && ticket.timeline.length > 0) {
-                const timelineItems = ticket.timeline.slice().reverse().map(item =>
+                const timelineItems = ticket.timeline.slice().map(item => // REMOVED .reverse()
                     `<div class="timeline-item">
                         <div class="timeline-header">
                             <div class="timeline-time">${item.date}</div>
